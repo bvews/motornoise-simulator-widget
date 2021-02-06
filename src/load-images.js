@@ -3,9 +3,9 @@ function loadImages(imageEntries, onload, onupdate) {
     const imageCount = imageEntries.length;
     onupdate(loadCount, imageCount);
 
-    imageEntries.forEach(function (entry) {
+    imageEntries.forEach(entry => {
         const image = new Image();
-        image.onload = function () {
+        image.onload = () => {
             entry.image = image;
 
             loadCount++;
@@ -16,7 +16,7 @@ function loadImages(imageEntries, onload, onupdate) {
                 onload(imageEntries);
             }
         };
-        image.onerror = function () {
+        image.onerror = () => {
             entry.image = null;
 
             loadCount++;
