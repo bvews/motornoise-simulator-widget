@@ -16,7 +16,5 @@
     "url": "https://github.com/bvews/motornoise-simulator-widget/issues"
   },
   "homepage": "https://github.com/bvews/motornoise-simulator-widget#readme",
-  "devDependencies": {
-    "lebab": "^3.1.0"
-  }
+  "devDependencies": {}
 }
