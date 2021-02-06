@@ -53,7 +53,7 @@ function MotornoiseSimulator(audioContext, relativeUrl, maxSpeed) {
     this.isMuted = false;
 
     /** @type {number} */
-    this.setInterval(this.intervalMillisec);
+    //this.startMainLoop(this.intervalMillisec);
 
     this.textFileLoader = {
         'PowerVol.csv': {
@@ -104,15 +104,83 @@ MotornoiseSimulator.prototype.toggleMute = function (onMuted, onUnmuted) {
     }
 }
 
-MotornoiseSimulator.prototype.setInterval = function (intervalMillisec) {
-    'use strict';
-    intervalMillisec = parseFloat(intervalMillisec);
-    this.intervalMillisec = intervalMillisec;
-    if (this.tickId) {
-        clearInterval(this.tickId);
+MotornoiseSimulator.prototype.handleVisibilitychange = function (event) {
+    if (this.audioContext) {
+        if (document.hidden) {
+            if (this.audioContext.state === 'running') {
+                this._isMuted = false;
+            } else {
+                this._isMuted = true;
+            }
+            this.audioContext.suspend();
+            this._hidden = true;
+        } else {
+            if (!this._isMuted) {
+                this.audioContext.resume();
+            }
+        }
     }
+}
+
+MotornoiseSimulator.prototype.startMainLoop = function (intervalMillisec) {
+    'use strict';
+    // intervalMillisec = parseFloat(intervalMillisec);
+    // this.intervalMillisec = intervalMillisec;
+    // if (this.tickId) {
+    //     clearInterval(this.tickId);
+    // }
+    //const self = this;
+    //this.tickId = setInterval(function () { self.tick(intervalMillisec); }, intervalMillisec);
+    if (!this._isRunning) {
+        this._isRunning = true;
+
+        const self = this;
+        requestAnimationFrame(function mainLoop(timeStamp) {
+            if (self._isRunning) {
+                if (!self._prevTimeStamp) {
+                    self._prevTimeStamp = timeStamp;
+                } else {
+                    const timeElapsed = timeStamp - self._prevTimeStamp;
+                    self._prevTimeStamp = timeStamp;
+
+                    if (!self._hidden) {
+                        self.update(timeElapsed);
+                    }
+
+                    if (!document.hidden && self._hidden) {
+                        self._hidden = false;
+                    }
+                }
+
+                requestAnimationFrame(mainLoop);
+            } else {
+                self._prevTimeStamp = NaN;
+            }
+        });
+    }
+
+    if (!this._isMuted) {
+        this.audioContext.resume();
+    }
+}
+
+MotornoiseSimulator.prototype.stopMainLoop = function () {
+    'use strict';
+    this._isRunning = false;
+
     const self = this;
-    this.tickId = setInterval(function () { self.tick(intervalMillisec); }, intervalMillisec);
+
+    // Defer audio context suspension for preventing noise on resume.
+    setTimeout(function () {
+        if (!self._isRunning) {
+            if (self.audioContext.state === 'running') {
+                self._isMuted = false;
+            } else {
+                self._isMuted = true;
+            }
+            self.audioContext.suspend();
+        }
+    }, 100);
 }
 
 /**
@@ -161,7 +229,6 @@ MotornoiseSimulator.prototype.loadFiles = function (textFileLoader, relativeUrl,
         var brakeVolumeFile = textFileLoader['BrakeVol.csv'].object;
         var brakePitchFile = textFileLoader['BrakeFreq.csv'].object;
         var trainDatFile = textFileLoader['Train.dat'].object;
-
 
         // Load parameters.
         var regenerationLimit = parametersFile['maincircuit']['regenerationlimit'];
@@ -283,7 +350,7 @@ MotornoiseSimulator.prototype.createLerpObject = function (pointData) {
     return result;
 }
 
-MotornoiseSimulator.prototype.tick = function (intervalMillisec) {
+MotornoiseSimulator.prototype.update = function (intervalMillisec) {
     'use strict';
     // Check motornoise simulate preparation.
     if (!this.isAllFileLoaded && this.isAllFileLoaded === false) {
@@ -312,13 +379,13 @@ MotornoiseSimulator.prototype.tick = function (intervalMillisec) {
     }
     this.speed = speed;
 
-    if (this.isMuted) {
-        return;
-    }
-
-    // Gauge update.
+    // Update gauge.
     if (this.ontick) {
         this.ontick(speed);
+    }
+
+    if (this.isMuted) {
+        return;
     }
 
     const audioContext = this.audioContext;
@@ -326,13 +393,12 @@ MotornoiseSimulator.prototype.tick = function (intervalMillisec) {
     if (speed === 0) {
         this.setAllVolumeZero();
 
-        if (!this.isMuted && audioContext.state === 'running') {
-            // Suspend context for CPU load reducing.
-            setTimeout(function () { audioContext.suspend(); }, 100);
+        // Suspend simulation for CPU load reducing.
+        if (this._isRunning === true) {
+            this.stopMainLoop();
         }
         return;
-    }
-    else {
+    } else {
         if (audioContext.state === 'suspended') {
             audioContext.resume();
         }
@@ -503,7 +569,7 @@ MotornoiseSimulator.prototype.setAllVolumeZero = function () {
 
 MotornoiseSimulator.prototype.setNotchIncrement = function () {
     'use strict';
-
+    this.startMainLoop();
     if (this.accelerationSimulator) {
         this.notch++;
         if (this.notch > this.accelerationSimulator.maxPowerNotch) {
@@ -517,6 +583,7 @@ MotornoiseSimulator.prototype.setNotchIncrement = function () {
 
 MotornoiseSimulator.prototype.setNotchDecrement = function () {
     'use strict';
+    this.startMainLoop();
     if (this.accelerationSimulator) {
         this.notch--;
         if (this.notch > this.accelerationSimulator.maxPowerNotch) {
@@ -530,6 +597,7 @@ MotornoiseSimulator.prototype.setNotchDecrement = function () {
 
 MotornoiseSimulator.prototype.setNotchFullPower = function () {
     'use strict';
+    this.startMainLoop();
     if (this.accelerationSimulator) {
         this.notch = this.accelerationSimulator.maxPowerNotch;
     }
@@ -537,6 +605,7 @@ MotornoiseSimulator.prototype.setNotchFullPower = function () {
 
 MotornoiseSimulator.prototype.setNotchFullBrake = function () {
     'use strict';
+    this.startMainLoop();
     if (this.accelerationSimulator) {
         this.notch = -this.accelerationSimulator.maxBrakeNotch;
     }
@@ -544,6 +613,7 @@ MotornoiseSimulator.prototype.setNotchFullBrake = function () {
 
 MotornoiseSimulator.prototype.setNotchNeutral = function () {
     'use strict';
+    this.startMainLoop();
     this.notch = 0;
 }
 
@@ -566,6 +636,7 @@ MotornoiseSimulator.prototype.finalize = function () {
         this.stopSound(this.runningnoiseData, runningNoiseIndex);
     }
 
+    this._finalized = true;
     //console.log('Finalized.');
 }
 
@@ -664,11 +735,11 @@ function RunningResistanceSimulator(parameters, mw, tw, mc, tc, mif, tif, a, b, 
 
     this.getForce = function (speed) {
         return coefficientA * speed * speed + coefficientB * speed + coefficientC;
-    }
+    };
 
     this.getAcceleration = function (speed) {
         const resistanceForce = coefficientA * speed * speed + coefficientB * speed + coefficientC;
         return -3.6 * resistanceForce / (motorcarCount * motorcarWeight * (motorcarInertiaFactor + 1) + trailerCount * trailerWeight * (trailerInertiaFactor + 1));
-    }
+    };
 }
 

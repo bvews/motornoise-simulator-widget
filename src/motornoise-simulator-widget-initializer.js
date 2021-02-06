@@ -7,7 +7,7 @@
  * 
  * @param {createHtmlElement} createHtmlElement 
  */
-function MotornoiseSimulatorWidgetSet(createHtmlElement) {
+function MotornoiseSimulatorWidgetInitializer(createHtmlElement) {
     this.audioContextHandler = new AudioContextHandler();
     const handler = this.audioContextHandler;
     const enabledWebAudioApi = handler.enabledWebAudioApi;
@@ -68,7 +68,6 @@ function MotornoiseSimulatorWidgetSet(createHtmlElement) {
         const operation = content.querySelector('.operation');
         const system = content.querySelector('.system');
 
-
         launcher.style.display = '';
 
         controls.style.display = 'none';
@@ -81,7 +80,7 @@ function MotornoiseSimulatorWidgetSet(createHtmlElement) {
                 .replace(/&quot;/g, '"')
                 .replace(/&#39;/g, '\'')
                 .replace(/&amp;/g, '&');
-        }
+        };
         const setTitle = function (element, title, lang) {
             if (!element || !title) {
                 return;
@@ -95,7 +94,7 @@ function MotornoiseSimulatorWidgetSet(createHtmlElement) {
                 }
             }
             element.innerText = titles[0];
-        }
+        };
         setTitle(title, motornoiseSimulatorDiv.dataset.title, lang);
 
         // Check touch event implement on browsers.
@@ -156,7 +155,7 @@ function MotornoiseSimulatorWidgetSet(createHtmlElement) {
             const elt = element.querySelector(query);
             if (elt && value) {
                 elt.src = value;
-                elt.style.display = 'block';
+                elt.style.visibility = 'visible';
             }
         };
 
@@ -178,17 +177,17 @@ function MotornoiseSimulatorWidgetSet(createHtmlElement) {
             digitsElt.style.display = 'block';
         }
 
-        let intSpeed = 0;
+        let intSpeed = NaN;
         let prevNums = [0, NaN, NaN];
 
-
+        const width = 42;
+        pathElt.setAttribute('stroke-width', width);
         const updateGauge = function (speed) {
             // const minValue = 0;
             // const maxValue = 140;
             // const minAngle = -136;
             // const maxAngle = 144;
             const radius = 225;
-            const width = 42;
             const step = 2;
 
             let angle = speed * (maxAngle - minAngle) / (maxValue - minValue) + minAngle;
@@ -197,26 +196,25 @@ function MotornoiseSimulatorWidgetSet(createHtmlElement) {
             const angleStep = (maxAngle - minAngle) / (maxValue - minValue) * step;
             const digitalAngle = minAngle + parseInt((angleD - minAngle) / angleStep) * angleStep - angleStep / 2;
 
-            imgGaugeNeedle.style.transform = 'rotate(' + angle + 'deg)';
-
             if (isScaleDigital === 'true') {
-                // Update scale.
-                pathElt.setAttribute('d', generateArcPath(radius, digitalAngle, maxAngle));
-                pathElt.setAttribute('stroke-width', width);
-
-                // Update digits.
                 if (intSpeed !== parseInt(speed)) {
                     intSpeed = parseInt(speed);
 
-                    const insSpeedAbs = Math.abs(intSpeed);
-                    let n0 = parseInt(insSpeedAbs % 10);
-                    let n1 = parseInt(parseInt(insSpeedAbs / 10) % 10);
-                    let n2 = parseInt(parseInt(insSpeedAbs / 100) % 10);
+                    // Update scale.
+                    if (intSpeed === 0 || intSpeed % 2 === 1) {
+                        pathElt.setAttribute('d', generateArcPath(radius, digitalAngle, maxAngle));
+                    }
 
-                    if (insSpeedAbs < 100) {
+                    // Update digits.
+                    const intSpeedAbs = Math.abs(intSpeed);
+                    let n0 = parseInt(intSpeedAbs % 10);
+                    let n1 = parseInt(parseInt(intSpeedAbs / 10) % 10);
+                    let n2 = parseInt(parseInt(intSpeedAbs / 100) % 10);
+
+                    if (intSpeedAbs < 100) {
                         n2 = NaN;
                     }
-                    if (insSpeedAbs < 10) {
+                    if (intSpeedAbs < 10) {
                         n1 = NaN;
                     }
 
@@ -225,11 +223,13 @@ function MotornoiseSimulatorWidgetSet(createHtmlElement) {
                         if (!isNaN(prevNums[i]) || !isNaN(nums[i])) {
                             if (prevNums[i] !== nums[i]) {
                                 if (!isNaN(prevNums[i])) {
-                                    digitsElt.querySelector('.d' + i).querySelector('.n' + prevNums[i]).style.display = 'none';
+                                    //digitsElt.querySelector('.d' + i).querySelector('.n' + prevNums[i]).style.visibility = 'hidden';
+                                    digitsElt.querySelector('.d' + i).querySelector('.n' + prevNums[i]).style.opacity = 0;
                                 } else {
                                 }
                                 if (!isNaN(nums[i])) {
-                                    digitsElt.querySelector('.d' + i).querySelector('.n' + nums[i]).style.display = 'block';
+                                    //digitsElt.querySelector('.d' + i).querySelector('.n' + nums[i]).style.visibility = 'visible';
+                                    digitsElt.querySelector('.d' + i).querySelector('.n' + nums[i]).style.opacity = 1;
                                 } else {
                                 }
 
@@ -238,10 +238,13 @@ function MotornoiseSimulatorWidgetSet(createHtmlElement) {
                         }
                     }
                 }
-
+            } else {
+                imgGaugeNeedle.style.transform = 'rotate(' + angle + 'deg)';
+                //imgGaugeNeedle.style.transform = 'rotate3d(0, 0, 1, ' + angle + 'deg)';
             }
         };
-
+        // Initialize gauge.
+        updateGauge(0);
 
         const motornoiseSimulator = new MotornoiseSimulator(new AudioContext(), url + '/', maxSpeed);
         motornoiseSimulators[id] = motornoiseSimulator;
@@ -252,6 +255,8 @@ function MotornoiseSimulatorWidgetSet(createHtmlElement) {
                 controls.style.display = 'block';
                 gauge.style.display = 'block';
                 title.style.display = 'block';
+
+                motornoiseSimulator.startMainLoop();
             }, function (loadCount, maxCount) {
                 message.innerText = 'Loading... (' + loadCount + ' / ' + maxCount + ')';
             });
@@ -269,8 +274,6 @@ function MotornoiseSimulatorWidgetSet(createHtmlElement) {
 
         const notchSpan = content.querySelector('.notch-span');
         const speedSpan = content.querySelector('.speed-span');
-
-        setInterval(function () { speedSpan.innerText = 'Speed: ' + motornoiseSimulator.speed.toFixed(1) + 'km/h' }, 20);
 
         const setNotchText = function () {
             const notch = motornoiseSimulator.notch;
@@ -327,10 +330,20 @@ function MotornoiseSimulatorWidgetSet(createHtmlElement) {
 
         motornoiseSimulatorDiv.appendChild(content);
 
-        motornoiseSimulator.ontick = updateGauge;
+        motornoiseSimulator.ontick = function (speed) {
+            if (true) {
+                speedSpan.textContent = 'Speed: ' + speed.toFixed(1) + 'km/h';
+                //speedSpan.innerText = 'Speed: ' + speed.toFixed(1) + 'km/h';
+            }
+            updateGauge(speed);
+        };
+
+        document.addEventListener('visibilitychange', function (event) {
+            motornoiseSimulator.handleVisibilitychange(event);
+        });
     }
 }
-MotornoiseSimulatorWidgetSet.prototype = {
+MotornoiseSimulatorWidgetInitializer.prototype = {
     /** @type {HTMLElement} */
     widgets: null,
     /** @type {AudioContextHandler} */
