@@ -1,0 +1,89 @@
+/* Common Style Configuration */
+
+.motornoise-simulator-widget .base {
+    border-width: 1px;
+    border-style: solid;
+    border-color: #888;
+    padding: 0px;
+    overflow: hidden;
+}
+
+.motornoise-simulator-widget .unsupported {
+    color: #000;
+    background: #fff;
+    padding: 5px;
+}
+
+.motornoise-simulator-widget .gauge {
+    width: 240px;
+    /* height: 240px; */
+    float: right;
+}
+
+.motornoise-simulator-widget .message {
+    padding: 10px;
+}
+
+.motornoise-simulator-widget .launcher {
+    padding: 10px;
+}
+
+.motornoise-simulator-widget .controls {
+    width: 398px;
+    float: left;
+}
+
+.motornoise-simulator-widget .title {
+    width: 398px;
+    float: left;
+    padding: 5px 5px 5px 5px;
+    box-sizing: border-box;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.motornoise-simulator-widget .info {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.motornoise-simulator-widget button {
+    border-radius: 3px;
+    border: solid 1px;
+    height: 28px;
+}
+
+
+@media screen and (max-width: 639px) {
+    .motornoise-simulator-widget .title {
+        width: 100%;
+        padding: 5px;
+        float: none;
+    }
+    .motornoise-simulator-widget .gauge {
+        width: 100%;
+        float: none;
+    }
+    .motornoise-simulator-widget .controls {
+        width: 100%;
+        float: none;
+    }
+    .motornoise-simulator-widget .info {
+        font-size: 16px;
+    }
+    .motornoise-simulator-widget button {
+        height: 36px;
+    }
+    .motornoise-simulator-widget .launch-button {
+        width: 100%;
+    }
+    .motornoise-simulator-widget .operation {
+        display: flex;
+    }
+    .motornoise-simulator-widget .operation button:not(:last-child) {
+        margin-right: 5px;
+    }
+    .motornoise-simulator-widget .operation button {
+        flex-grow: 3;
+    }
+}

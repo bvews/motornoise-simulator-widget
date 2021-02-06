@@ -1,0 +1,45 @@
+/* Multi Language Configuration */
+
+.motornoise-simulator-widget .launch-button:after {
+    content: "Launch Motornoise Simulator";
+}
+
+.motornoise-simulator-widget .launch-button:lang(ja):after {
+    content: "モータ音シミュレータの起動";
+}
+
+.motornoise-simulator-widget .unsupported:after {
+    content: "Your browser doesn't support Motornoise Simulator Widget. If you wish to use it, please open this page on Google Chrome instead.";
+}
+
+.motornoise-simulator-widget .unsupported:lang(ja):after {
+    content: "お使いのブラウザではMotornoise Simulator Widgetは動作しません。Motornoise Simulator Widgetを動作させたい場合は、Google Chromeで開いてください。";
+}
+
+.motornoise-simulator-widget .max-power-button:after {
+    content: "<<";
+}
+
+.motornoise-simulator-widget .set-power-button:after {
+    content: "Power";
+}
+
+.motornoise-simulator-widget .set-neutral-button:after {
+    content: "Neutral";
+}
+
+.motornoise-simulator-widget .set-brake-button:after {
+    content: "Brake";
+}
+
+.motornoise-simulator-widget .max-brake-button:after {
+    content: ">>";
+}
+
+/* .motornoise-simulator-widget .mute-button:after {
+    content: "Mute";
+} */
+
+.motornoise-simulator-widget .stop-button:after {
+    content: "Stop";
+}

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Motornoise Simulator Widget</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="Content-Style-Type" content="text/css">
+    <meta http-equiv="Content-Script-Type" content="text/javascript">
+    <meta http-equiv="imagetoolbar" content="no">
+    <link rel="stylesheet" href="common/common_res_new.css" type="text/css">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="common/common.js"></script>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta content="ja" http-equiv="Content-Language">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+</head>
+
+<body>
+    <div id="top">
+        <header>
+            <div id="title">
+                <a href="http://bvews.jpn.org/">BVE Workshop</a>
+            </div>
+            <div id="menu">
+                <ul>
+                    <li><a href="http://bvews.jpn.org/about/">ご案内</a></li>
+                    <li><a href="http://bvews.jpn.org/addons/">BVEアドオン</a></li>
+                    <li><a href="http:/bvews.jpn.org/materials/">素材・ツール</a></li>
+                    <li><a href="http://bvews.jpn.org/tutorials/">アドオン制作講座</a></li>
+                    <li><a href="http://bvews.jpn.org/links/">リンク</a></li>
+                </ul>
+            </div>
+        </header>
+        <nav>
+            <ul>
+                <li itemscope itemtype="http://data-vocabulary.org/Breadcrumb"><a href="../../" itemprop="url"><span
+                            itemprop="title">Top</span></a></li>
+                <li itemscope itemtype="http://data-vocabulary.org/Breadcrumb"><a href="../" itemprop="url"><span
+                            itemprop="title">素材・ツール</span></a></li>
+                <li itemscope itemtype="http://data-vocabulary.org/Breadcrumb"><a href="index.html" itemprop="url"><span
+                            itemprop="title">音声素材</span></a></li>
+            </ul>
+        </nav>
+        <div id="contents">
+            <div id="main">
+                <main>
+                    <article>
+                        <h1 itemprop="headline">Motornoise Simulator Widget</h1>
+                        <script src="../src/toggle-language.js"></script>
+                        <script src="../src/init.js"></script>
+
+                        <script src="../src/motornoise-simulator-widget-set.js"></script>
+                        <script src="../src/motornoise-simulator.js"></script>
+
+                        <script src="../src/audio-context-handler.js"></script>
+                        <script src="../src/audio-buffer-loader.js"></script>
+                        <script src="../src/browser-compatible.js"></script>
+                        <script src="../src/text-parser.js"></script>
+                        <script src="../src/linear-interpolation.js"></script>
+                        <script src="../src/generalized-acceleration-curve.js"></script>
+                        <script src="../src/get-vorbis-audio-length.js"></script>
+                        <script src="../src/svg-path-functions.js"></script>
+
+                        <link rel="stylesheet" href="msw-common-style.css" type="text/css">
+                        <link rel="stylesheet" href="msw-common-lang.css" type="text/css">
+                        <link rel="stylesheet" href="msw-color.css" type="text/css">
+                        <div itemprop="articleBody">
+                            <h2>阪急9300系モータ音データ</h2>
+                            <h3>モータ音の試聴</h3>
+                            <h4 class="lang-ja" lang="ja">モータ音シミュレータ</h4>
+                            <h4 class="lang-en" lang="en" style="display:none;">Motornoise Simulator</h4>
+                            <div id="msw-hankyu9300" lang="" class="motornoise-simulator-widget" data-url="assets/hankyu9300"
+                                data-max-speed="115" data-is-scale-digital="true" data-scale-color="#000"
+                                data-is-scale-digital="true" data-gauge-base="gauge-base.svg"
+                                data-scale-profile="0,-136;140,144" data-scale-division="2">
+                            </div>
+
+                            <h2>東急5000系モータ音データ</h2>
+                            <h3>モータ音の試聴</h3>
+                            <h4 class="lang-ja" lang="ja">モータ音シミュレータ</h4>
+                            <h4 class="lang-en" lang="en" style="display:none;">Motornoise Simulator</h4>
+                            <div id="msw-tokyu5000" class="motornoise-simulator-widget" data-url="assets/tokyu5000"
+                                data-max-speed="110" data-is-scale-digital="false" data-gauge-base="gauge-base.svg"
+                                data-gauge-needle="gauge-needle.svg" data-gauge-cover="gauge-cover.svg"
+                                data-scale-color="#0f0" data-scale-profile="0,-118.5;120,118.5" data-scale-division="2">
+                            </div>
+
+                            <h2>京急1500形（三菱IGBT-VVVF）モータ音データ</h2>
+                            <h3>モータ音の試聴</h3>
+                            <h4 class="lang-ja" lang="ja">モータ音シミュレータ</h4>
+                            <h4 class="lang-en" lang="en" style="display:none;">Motornoise Simulator</h4>
+                            <div id="msw-keikyu1500vmi" class="motornoise-simulator-widget" data-url="assets/keikyu1500vmi"
+                                data-max-speed="120" data-is-scale-digital="false" data-gauge-base="gauge-base.svg"
+                                data-gauge-needle="gauge-needle.svg" data-gauge-cover="gauge-cover.svg"
+                                data-scale-profile="0,-125;140,125"></div>
+
+                            <div id="about-motornoise-simulator">
+                                <div class="lang-ja" lang="ja">
+                                    <h2>モータ音シミュレータについて</h2>
+                                    <p>　ブラウザ上でマスコン操作によるモータ音変化をシミュレートし音声再生するウィジェットです。</p>
+                                    <h3>使い方</h3>
+                                    <p>
+                                        まず「モータ音シミュレータを起動する」ボタンをクリックします。この操作により、シミュレーションに必要な各種データのダウンロードが開始されます。</p>
+                                    <p>
+                                        データの取得が完了すると表示が切り替わり、モータ音のシミュレーションが可能な状態となります。</p>
+                                    <p>　上部には現在のノッチ位置と速度が表示されます。各ボタンに割り当てられている機能は、以下の表に示す通りです。</p>
+                                    <table>
+                                        <tr>
+                                            <th>表示</th>
+                                            <th>機能</th>
+                                        </tr>
+                                        <tr>
+                                            <td>&lt;&lt;</td>
+                                            <td>フルノッチ</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Power</td>
+                                            <td>マスコンを1段進める</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Neutral</td>
+                                            <td>マスコン中立</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Brake</td>
+                                            <td>マスコンを1段戻す</td>
+                                        </tr>
+                                        <tr>
+                                            <td>&gt;&gt;</td>
+                                            <td>フルブレーキ</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Mute / Unmute</td>
+                                            <td>ミュート / ミュート解除</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Stop</td>
+                                            <td>停止（速度0）</td>
+                                        </tr>
+                                    </table>
+                                    <h3>対応ブラウザ</h3>
+                                    <p>　Windows PC向けブラウザでは、FirefoxとGoogle Chromeで動作することを確認しております。IEは非対応です。
+                                    </p>
+                                    <p>　Androidスマホ向けブラウザでは、Google
+                                        Chromeで正常動作を確認しております。Firefoxでは、音声の再生自体は行われますがノイズが発生し正常な再生が行われません。
+                                    </p>
+                                    <p>　<del>Apple製の端末の標準ブラウザであるSafariは現状非対応ですが、今後対応の予定です。</del>Safariにも対応しましたが、動作保証は致しかねます。
+                                    </p>
+                                    <p>　音声再生APIの仕様により、ブラウザによってはプログラムは正常動作しつつも音声が再生が再生されない場合があります。その場合はMuteボタンを押すと音声再生が開始されるかもしれません。
+                                    </p>
+                                </div>
+                                <div class="lang-en" lang="en" style="display:none;">
+                                    <h2>About Motornoise Simulator</h2>
+                                    <p>The widget "Motornoise Simulator" provides very simple train operating
+                                        simulation on
+                                        web browsers. You can listen timulated motornoises
+                                        on your browser.</p>
+                                    <h3>Usage</h3>
+                                    <p>First, click/tap "Launch Motornoise Simulator" button. This action triggers data
+                                        download for the simulation. When
+                                        the loading process has done, you can start the motornoise simulation.</p>
+                                    <p>Each of functions of the buttons are listed below. </p>
+                                    <table>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Function</th>
+                                        </tr>
+                                        <tr>
+                                            <td>&lt;&lt;</td>
+                                            <td>Set lever to full power</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Power</td>
+                                            <td>Increase lever notch</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Neutral</td>
+                                            <td>Set lever to neutral</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Brake</td>
+                                            <td>Decrease lever notch</td>
+                                        </tr>
+                                        <tr>
+                                            <td>&gt;&gt;</td>
+                                            <td>Set lever to full brake</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Mute/Unmute</td>
+                                            <td>Mute or unmute sounds</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Stop</td>
+                                            <td>Stop (Set speed to zero)</td>
+                                        </tr>
+                                    </table>
+                                    <p>Lever: combined power/brake handle.</p>
+                                    <h3>Supported Browsers</h3>
+                                    <p>Motornoise Simulator have been tested on Firefox for Windows, Google Chrome for
+                                        Windows, and Google Chrome for
+                                        Android. It never works on Internet Explorer because of the lack of Web Audio
+                                        API
+                                        support. On Firefox for
+                                        Android, it works but sounds a little bit noisy. Motornoise Simulator may be
+                                        work
+                                        on Safari and Edge, however, It is not
+                                        guaranteed that whether the widget works on these browsers or not, because I
+                                        can't
+                                        use them.</p>
+                                    <p>Some browser may require a user action to wake up the API. If the widget seems
+                                        to
+                                        work well but is muted, try "Mute" button click/tap.</p>
+                                </div>
+                            </div>
+
+                            <style>
+                                /* ---------- SVG Canvas ---------- */
+
+                                #svg-div {
+                                    box-sizing: border-box;
+                                }
+
+                                .svg-container {
+                                    display: inline-block;
+                                    position: relative;
+                                    width: 100%;
+                                    padding-bottom: 100%;
+                                    vertical-align: middle;
+                                    overflow: hidden;
+                                }
+
+                                .svg-content {
+                                    display: inline-block;
+                                    position: absolute;
+                                    top: 0;
+                                    left: 0;
+                                }
+
+                                div .ui {
+                                    margin-bottom: 5px;
+                                }
+
+                                #svg-div img {
+                                    position: absolute;
+                                    display: none;
+                                }
+                            </style>
+
+                            <div id="template" style="display:none">
+                                <template id="motornoise-simulator">
+                                    <div class="base">
+                                        <div class="unsupported" style="display:none;"></div>
+                                        <div class="message" style="display:none;">
+                                        </div>
+                                        <div class="launcher" style="display:none;">
+                                            <button onclick="" class="launch-button"></button>
+                                        </div>
+                                        <div class="title" style="display:none;"></div>
+                                        <div class="gauge" style="display:none;">
+                                            <div style="width:100%;">
+                                                <div id="svg-div" class="svg-container">
+                                                    <img class="gauge-base">
+                                                    <svg id="gauge-canvas" class="svg-content"
+                                                        preserveAspectRatio="xMinYMin meet" viewBox="-320 -320 640 640"
+                                                        opacity="1" style="position:absolute"
+                                                        xmlns="https://www.w3.org/2000/svg">
+                                                        <path class="path-digital-gauge" stroke="rgb(0, 0, 0)"
+                                                            fill="none" />
+                                                    </svg>
+                                                    <img class="gauge-needle">
+                                                    <img class="gauge-cover">
+                                                    <div class="digits" style="display:none;">
+                                                        <div class="d0">
+                                                            <img class="n0" src="hankyu9300/0/0.svg"
+                                                                style="display:block;">
+                                                            <img class="n1" src="hankyu9300/0/1.svg"
+                                                                style="display:none;">
+                                                            <img class="n2" src="hankyu9300/0/2.svg"
+                                                                style="display:none;">
+                                                            <img class="n3" src="hankyu9300/0/3.svg"
+                                                                style="display:none;">
+                                                            <img class="n4" src="hankyu9300/0/4.svg"
+                                                                style="display:none;">
+                                                            <img class="n5" src="hankyu9300/0/5.svg"
+                                                                style="display:none;">
+                                                            <img class="n6" src="hankyu9300/0/6.svg"
+                                                                style="display:none;">
+                                                            <img class="n7" src="hankyu9300/0/7.svg"
+                                                                style="display:none;">
+                                                            <img class="n8" src="hankyu9300/0/8.svg"
+                                                                style="display:none;">
+                                                            <img class="n9" src="hankyu9300/0/9.svg"
+                                                                style="display:none;">
+                                                        </div>
+                                                        <div class="d1">
+                                                            <img class="n0" src="hankyu9300/1/0.svg"
+                                                                style="display:none;">
+                                                            <img class="n1" src="hankyu9300/1/1.svg"
+                                                                style="display:none;">
+                                                            <img class="n2" src="hankyu9300/1/2.svg"
+                                                                style="display:none;">
+                                                            <img class="n3" src="hankyu9300/1/3.svg"
+                                                                style="display:none;">
+                                                            <img class="n4" src="hankyu9300/1/4.svg"
+                                                                style="display:none;">
+                                                            <img class="n5" src="hankyu9300/1/5.svg"
+                                                                style="display:none;">
+                                                            <img class="n6" src="hankyu9300/1/6.svg"
+                                                                style="display:none;">
+                                                            <img class="n7" src="hankyu9300/1/7.svg"
+                                                                style="display:none;">
+                                                            <img class="n8" src="hankyu9300/1/8.svg"
+                                                                style="display:none;">
+                                                            <img class="n9" src="hankyu9300/1/9.svg"
+                                                                style="display:none;">
+                                                        </div>
+                                                        <div class="d2">
+                                                            <img class="n0" src="hankyu9300/2/0.svg"
+                                                                style="display:none;">
+                                                            <img class="n1" src="hankyu9300/2/1.svg"
+                                                                style="display:none;">
+                                                            <img class="n2" src="hankyu9300/2/2.svg"
+                                                                style="display:none;">
+                                                            <img class="n3" src="hankyu9300/2/3.svg"
+                                                                style="display:none;">
+                                                            <img class="n4" src="hankyu9300/2/4.svg"
+                                                                style="display:none;">
+                                                            <img class="n5" src="hankyu9300/2/5.svg"
+                                                                style="display:none;">
+                                                            <img class="n6" src="hankyu9300/2/6.svg"
+                                                                style="display:none;">
+                                                            <img class="n7" src="hankyu9300/2/7.svg"
+                                                                style="display:none;">
+                                                            <img class="n8" src="hankyu9300/2/8.svg"
+                                                                style="display:none;">
+                                                            <img class="n9" src="hankyu9300/2/9.svg"
+                                                                style="display:none;">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="controls" style="display:none;">
+                                            <div class="info" style="padding:5px;">
+                                                <span class="notch-span">Notch: N</span>,
+                                                <span class="speed-span">Speed: 0.0km/h</span>
+                                            </div>
+                                            <div class="separator" style="height:10px;margin-bottom:5px">
+                                            </div>
+                                            <div class="operation" style="padding:5px 5px 10px 5px;">
+                                                <button class="max-power-button"></button>
+                                                <button class="set-power-button"></button>
+                                                <button class="set-neutral-button"></button>
+                                                <button class="set-brake-button"></button>
+                                                <button class="max-brake-button"></button>
+                                            </div>
+                                            <div class="system" style="padding:5px;">
+                                                <button class="mute-button">Mute</button>
+                                                <button class="stop-button"></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </article>
+                </main>
+            </div>
+            <div id="sub">
+                <aside>
+                    <div class="section">
+                    </div>
+                </aside>
+                <!-- /#sub -->
+            </div>
+            <div id="pageTop">
+                <a href="#">Page Top</a>
+            </div>
+        </div>
+        <footer>
+            <div class="copyright" itemprop="author" itemscope itemtype="http://schema.org/Person">
+                Author : <span itemprop="name">BVE Workshop</span>
+            </div>
+        </footer>
+    </div>
+</body>
+
+</html>

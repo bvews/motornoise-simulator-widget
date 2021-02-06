@@ -1,0 +1,129 @@
+/* Hankyu 9300 Series */
+
+#msw-hankyu9300 {
+    --hue: -30;
+}
+
+#msw-hankyu9300 .title:after {
+    content: "Hankyu 9300 Series";
+}
+
+#msw-hankyu9300 .title:lang(ja):after {
+    content: "阪急9300系";
+}
+
+#msw-hankyu9300 .base {
+    color: #fff;
+    background: #603;
+    background: hsl(var(--hue), 100%, 20%);
+}
+
+#msw-hankyu9300 .gauge {
+    background: #444;
+}
+
+#msw-hankyu9300 .title {
+    color: hsl(var(--hue), 100%, 10%);
+    background: #fec;
+}
+
+#msw-hankyu9300 .info {
+    background: hsl(var(--hue), 100%, 15%);
+}
+
+#msw-hankyu9300 .separator {
+    background: hsl(var(--hue), 100%, 10%);
+}
+
+#msw-hankyu9300 button {
+    color: #fff;
+    background: linear-gradient(to bottom, hsl(var(--hue), 80%, 40%), hsl(var(--hue), 100%, 15%));
+    border-color: hsl(var(--hue), 100%, 10%);
+    box-shadow: 0px 0px 2px hsl(var(--hue), 100%, 80%) inset;
+}
+
+#msw-hankyu9300 button:active {
+    background: linear-gradient(to top, hsl(var(--hue), 80%, 30%), hsl(var(--hue), 100%, 25%));
+}
+
+/* Keikyu 1500 Series */
+
+#msw-keikyu1500vmi .title:after {
+    content: "Keikyu 1500 Series";
+}
+
+#msw-keikyu1500vmi .title:lang(ja):after {
+    content: "京急1500形";
+}
+
+#msw-keikyu1500vmi {
+    --hue: 352;
+}
+
+#msw-keikyu1500vmi .base {
+    color: #fff;
+    background: hsl(var(--hue), 95%, 35%);
+}
+
+#msw-keikyu1500vmi .gauge {
+    background: #333;
+}
+
+#msw-keikyu1500vmi .info {
+    color: #fff;
+    background: hsl(var(--hue), 100%, 25%);
+}
+
+#msw-keikyu1500vmi .separator {
+    background: #f8f8f8;
+}
+
+#msw-keikyu1500vmi button {
+    color: #fff;
+    background: linear-gradient(to bottom, hsl(var(--hue), 70%, 55%), hsl(var(--hue), 100%, 25%));
+    border-color: hsl(var(--hue), 100%, 20%);
+    box-shadow: 0px 0px 2px hsl(var(--hue), 100%, 85%)inset;
+}
+
+#msw-keikyu1500vmi button:active {
+    background: linear-gradient(to top, hsl(var(--hue), 80%, 40%), hsl(var(--hue), 80%, 36%));
+}
+
+/* Tokyu 5000 Series */
+
+#msw-tokyu5000 .title:after {
+    content: "Tokyu 5000 Series";
+}
+
+#msw-tokyu5000 .title:lang(ja):after {
+    content: "東急5000系";
+}
+
+#msw-tokyu5000 .base {
+    color: #000;
+    background: #eee;
+}
+
+#msw-tokyu5000 .gauge {
+    background: #222;
+}
+
+#msw-tokyu5000 .info {
+    color: #fff;
+    background: #d00;
+}
+
+#msw-tokyu5000 .separator {
+    background: #0db;
+}
+
+#msw-tokyu5000 button {
+    color: #000;
+    background: linear-gradient(to bottom, #eee, #aaa);
+    border-color: #888;
+    box-shadow: 0px 0px 2px #fff inset;
+}
+
+#msw-tokyu5000 button:active {
+    background: linear-gradient(to top, #ddd, #ccc);
+}

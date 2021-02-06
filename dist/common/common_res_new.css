@@ -1,0 +1,774 @@
+﻿@charset "UTF-8";
+
+blockquote {
+	background: #f4fff4;
+	border-width: 1px;
+	border-color: #bdb;
+	border-style:solid;
+	margin: 6px 0px;
+	padding: 10px 20px 1px 20px;
+}
+
+/* =-=-=-=-=- FOR SMART PHONE -=-=-=-=-= */
+@media screen and (max-width: 639px) {
+    /* ========BASIC======== */
+    html {
+        overflow-y: scroll;
+    }
+    body {
+        margin: 0;
+        padding: 0;
+        line-height: 1.6;
+        letter-spacing: 1px;
+        font-family: Verdana, Helvetica, sans-serif;
+        font-size: 14px;
+        color: #333;
+        background: #130;
+    }
+    br {
+        letter-spacing: normal;
+    }
+    a {
+        color: #263;
+        text-decoration: underline;
+    }
+    a:hover {
+        color: #263;
+        text-decoration: underline;
+    }
+    img {
+        border: 0;
+        vertical-align: bottom;
+        max-width: 100%;
+        height: auto;
+    }
+    h1, h2, h3, h4, h5, h6 {
+        margin: 0;
+    }
+
+    /* ========TEMPLATE LAYOUT======== */
+    #top {
+        width: 100%;
+        margin: 0px auto;
+        border: 0px;
+    }
+    header {
+        width: 100%;
+        background: #af8;
+    }
+    #menu {
+        display: none;
+        width: 100%;
+    }
+    nav {
+        /* display:none; */
+        width: 100%;
+    }
+    #contents {
+        background: #fff;
+        padding: 10px;
+    }
+    #main {
+        display: inline; /* for IE6 */
+        margin: 0px;
+        width: 100%;
+        padding: 0px;
+        background: #0f0;
+    }
+    #sub {
+        display: none;
+        width: 100%;
+        margin: 0px;
+        padding: 0;
+        background: #0ff;
+    }
+    #pageTop {
+        clear: both;
+        background: #fff;
+    }
+    footer {
+        clear: both;
+        background: #fff;
+    }
+
+    /* ========HEADER CUSTOMIZE======== */
+    header #title {
+        margin: 0;
+        padding: 8px 10px;
+        font-size: 18px;
+        font-weight: bold;
+    }
+    header #title a {
+        color: #263;
+        text-decoration: none;
+        color: #240;
+    }
+    header #pr p {
+        margin: 0;
+        padding: 15px;
+        font-size: 11px;
+    }
+
+    /* ========MENU CUSTOMIZE======== */
+    #menu ul {
+        margin: 0;
+        padding: 0;
+    }
+    #menu li {
+        color: #333;
+        text-align: left;
+        list-style-type: none;
+        border-bottom: 1px solid #fff;
+    }
+    #menu li a {
+        position: relative;
+        display: block;
+        color: #fff;
+        text-decoration: none;
+        background: #263;
+        padding: 15px 15px;
+    }
+    #menu .nolink {
+        display: block;
+        color: #131;
+        text-decoration: none;
+        background: #263;
+    }
+    #menu li:first-child {
+        border-left: none;
+    }
+    /*
+#menu li a.active {
+color:#fff;
+text-decoration:none;
+background:#384;
+}
+
+#menu li a:hover {
+color:#fff;
+text-decoration:none;
+background:#384;
+}
+    */
+    #menu ul li a::before, #menu ul li a::after {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        display: block;
+        content: '';
+        width: 12px;
+        height: 3px;
+        background-color: #fff;
+        border-radius: 4px;
+    }
+    #menu ul li a::before {
+        margin-top: -4px;
+        -webkit-transform: rotate(45deg);
+        transform: rotate(45deg);
+    }
+    #menu ul li a::after {
+        margin-top: 3px;
+        -webkit-transform: rotate(-45deg);
+        transform: rotate(-45deg);
+    }
+    /* ========TOPICPATH CUSTOMIZE======== */
+    nav {
+        box-sizing: border-box;
+        width: 100%;
+        padding: 0px 10px;
+        background: #efefef;
+    }
+    nav ul {
+        padding: 0px 0px;
+        margin: 0px;
+    }
+    nav li {
+        display: inline;
+        list-style-type: none;
+    }
+    nav li:before {
+        content: " > ";
+    }
+    nav li:first-child:before {
+        content: none;
+    }
+
+    /* ========MAIN CONTENTS CUSTOMIZE======== */
+    #main h1 {
+        margin-bottom: 5px;
+        padding: 5px 0;
+        font-size: 16px;
+        border-bottom: 3px double #999;
+    }
+    #main h2 {
+        margin-bottom: 5px;
+        padding: 5px;
+        font-size: 14px;
+        border-left: 5px solid #263;
+        border-bottom: 1px dotted #999;
+    }
+    #main h3 {
+        margin-bottom: 5px;
+        padding: 5px;
+        font-size: 13px;
+        color: #fff;
+        background: #263;
+    }
+    #main h4 {
+        margin-bottom: 5px;
+        font-size: 13px;
+        border-bottom: 1px dotted #999;
+    }
+    #main h5 {
+        margin-bottom: 5px;
+        font-size: 13px;
+    }
+    #main p {
+        margin: 0 0 1em 0;
+    }
+    #main dt {
+        margin-bottom: 3px;
+    }
+    #main dd {
+        padding: 0;
+        margin: 0 0 0.5em 1em;
+        padding: 3px;
+        background: #eee;
+    }
+
+    /* INFORMATION CUSTOMIZE */
+    * html body #main dl.information dd div {
+        display: inline-block;
+    }
+    #main dl.information dt {
+        float: left;
+        width: 8em;
+        margin: 0;
+        padding: 0;
+    }
+    #main dl.information dd {
+        margin: 0 0 0.5em 8em;
+        padding: 0;
+        background: transparent;
+    }
+    #main table {
+        /* width:100%; */
+        border-collapse: collapse;
+        margin: 0 0 1em 0;
+    }
+    #main table th {
+        padding: 5px;
+        font-size: 12px;
+        text-align: left;
+        border: 1px solid #aaa;
+        background: #f0f7fc;
+    }
+    #main table td {
+        padding: 5px;
+        font-size: 12px;
+        text-align: left;
+        border: 1px solid #aaa;
+    }
+
+    #main .pagination p {
+        background-color:#af8;
+        border-style:solid;
+        border-width:1px;
+        border-radius: 7px;
+        border-color:#263;
+        text-overflow: ellipsis;
+        white-space : nowrap;
+        overflow: hidden;
+    }
+    #main .pagination a {
+        display:block;
+        padding:8px; text-overflow: ellipsis;
+        overflow: hidden;
+        text-decoration:none;
+    }
+    #main .pagination a:active {
+        background-color: #fff;
+    }
+    #main .pagination p.prev {
+        float: left;
+    }
+    #main .pagination p.next {
+        float: right;
+        text-align: right;
+    }
+    #main .vis_pc {
+        display: none;
+    }
+    #main .vis_sp {
+        /* border:1px solid gray; */
+    }
+    /* ========SUBCONTENTS CUSTOMIZE======== */
+    #sub .header {
+        width: 100%;
+        background: #af8;
+        padding: 0px 0px;
+        font-size: 18px;
+        font-weight: bold;
+        margin: 0px;
+    }
+    #sub .section {
+        margin-bottom: 10px;
+    }
+    #sub h2 {
+        padding: 5px;
+        font-size: 13px;
+        font-weight: bold;
+        color: #fff;
+        text-align: center;
+        background: #374;
+    }
+    #sub h2 a {
+        padding: 5px;
+        font-size: 13px;
+        font-weight: bold;
+        color: #fff;
+        text-align: center;
+        background: #374;
+    }
+    #sub ul {
+        margin: 0;
+        padding: 0;
+        border: 1px solid #aaa;
+        border-top: none;
+        background: #fff;
+    }
+    #sub li {
+        width: 134px;
+        line-height: 1;
+        list-style: none;
+        border-top: 1px solid #aaa;
+    }
+    #sub li a { 
+                zoom: 1; /* for IE6 */
+                display: block;
+                padding: 5px 5px;
+                border-left: 5px solid #263;
+    }
+
+    /* ========PAGETOP CUSTOMIZE========= */
+    #pageTop {
+        margin-top: 10px;
+        padding: 5px;
+        text-align: right;
+    }
+    #pageTop a {
+        padding: 5px 5px 5px 17px;
+        background: url("../images/bg_pagetop.gif") 7px 50% no-repeat;
+        font-size: 11px;
+        outline: none;
+    }
+
+    /* ========FOOTER CUSTOMIZE======== */
+    .copyright {
+        clear: both;
+        padding: 10px 0;
+        font-style: normal;
+        font-size: 11px;
+        text-align: center;
+        border-top: 1px solid #ccc;
+    }
+        
+    /* ========ADDITIONAL CUSTOMIZE======== */
+	.dlButton {
+	    background: #3498db;
+	    background-image: -webkit-linear-gradient(top, #4ce673, #3bb359);
+	    background-image: -moz-linear-gradient(top, #4ce673, #3bb359);
+	    background-image: -ms-linear-gradient(top, #4ce673, #3bb359);
+	    background-image: -o-linear-gradient(top, #4ce673, #3bb359);
+	    background-image: linear-gradient(to bottom, #4ce673, #3bb359);
+	    -webkit-border-radius: 28;
+	    -moz-border-radius: 28;
+	    border-radius: 28px;
+	    text-shadow: 1px 1px 3px #444444;
+	    -webkit-box-shadow: 0px 3px 4px #888888;
+	    -moz-box-shadow: 0px 3px 4px #888888;
+	    box-shadow: 0px 3px 4px #888888;
+	    color: #ffffff;
+	    font-size: 14px;
+	    padding: 5px 20px 5px 20px;
+	    text-decoration: none;
+	}
+	
+	.dlButton:hover {
+	    background: #3cb0fd;
+	    background-image: -webkit-linear-gradient(top, #55ff80, #44cc66);
+	    background-image: -moz-linear-gradient(top, #55ff80, #44cc66);
+	    background-image: -ms-linear-gradient(top, #55ff80, #44cc66);
+	    background-image: -o-linear-gradient(top, #55ff80, #44cc66);
+	    background-image: linear-gradient(to bottom, #55ff80, #44cc66);
+	    text-shadow: 1px 1px 3px #666666;
+        color: #ffffff;
+	    text-decoration: none;
+	}
+	
+	.dlButton:active {
+	    -webkit-box-shadow: 0px 2px 4px #888888;
+	    -moz-box-shadow: 0px 2px 4px #888888;
+	    box-shadow: 0px 2px 4px #888888;
+	    position:relative;
+	    top:1px;
+	}
+}
+
+/* =-=-=-=-=- FOR PC -=-=-=-=-= */
+@media screen and (min-width: 640px) {
+    /* ========BASIC======== */
+    html {
+        overflow-y: scroll;
+    }
+    body {
+        margin: 0;
+        padding: 0;
+        line-height: 1.6;
+        letter-spacing: 1px;
+        font-family: Verdana, Helvetica, sans-serif;
+        font-size: 12px;
+        color: #333;
+        background: #130;
+    }
+    br {
+        letter-spacing: normal;
+    }
+    a {
+        color: #263;
+        text-decoration: none;
+    }
+    a:hover {
+        color: #263;
+        text-decoration: underline;
+    }
+    img {
+        border: 0;
+        vertical-align: bottom;
+    }
+    h1, h2, h3, h4, h5, h6 {
+        margin: 0;
+    }
+
+    /* ========TEMPLATE LAYOUT======== */
+    #top {
+        width: 824px;
+        margin: 10px auto;
+        border: 1px solid #666;
+    }
+    header {
+        width: 824px;
+        background: #af8;
+    }
+    #menu {
+        float: right;
+    }
+    nav {
+        float: right;
+    }
+    #contents {
+        background: #fff;
+    }
+    #main {
+        display: inline; /* for IE6 */
+        float: right;
+        width: 640px;
+        padding: 10px;
+        background: #fff;
+    }
+    #sub {
+        display: inline; /* for IE6 */
+        float: left;
+        width: 144px;
+        margin: 10px;
+        padding: 0;
+    }
+    #pageTop {
+        clear: both;
+        background: #fff;
+    }
+    footer {
+        clear: both;
+        background: #fff;
+    }
+
+    /* ========HEADER CUSTOMIZE======== */
+    header #title {
+        margin: 0;
+        padding: 10px;
+        font-size: 24px;
+        font-weight: bold;
+    }
+    header a {
+        color: #240;
+    }
+    header #pr p {
+        margin: 0;
+        padding: 15px;
+        font-size: 11px;
+    }
+
+    /* ========MENU CUSTOMIZE======== */
+    #menu ul {
+        margin: 0;
+        padding: 0;
+    }
+    #menu li {
+        float: left;
+        color: #333;
+        text-align: center;
+        list-style-type: none;
+        border-left: 1px solid #fff;
+    }
+    #menu li a {
+        display: block;
+        width: 164px;
+        color: #fff;
+        line-height: 25px;
+        text-decoration: none;
+        background: #263;
+    }
+    #menu .nolink {
+        display: block;
+        width: 164px;
+        color: #131;
+        line-height: 25px;
+        text-decoration: none;
+        background: #263;
+    }
+    #menu li:first-child {
+        border-left: none;
+    }
+    #menu li a.active {
+        color: #fff;
+        text-decoration: none;
+        background: #384;
+    }
+    #menu li a:hover {
+        color: #fff;
+        text-decoration: none;
+        background: #384;
+    }
+
+    /* ========TOPICPATH CUSTOMIZE======== */
+    nav {
+        width: 804px;
+        padding: 5px 10px;
+        background: #efefef;
+    }
+    nav ul {
+        padding: 0px 0px;
+        margin: 0px;
+    }
+    nav li {
+        display: inline;
+        list-style-type: none;
+    }
+    nav li:before {
+        content: " > ";
+    }
+    nav li:first-child:before {
+        content: none;
+    }
+
+    /* ========MAIN CONTENTS CUSTOMIZE======== */
+    #main h1 {
+        margin-bottom: 5px;
+        padding: 5px 0;
+        font-size: 16px;
+        border-bottom: 3px double #999;
+    }
+    #main h2 {
+        margin-bottom: 5px;
+        padding: 5px;
+        font-size: 14px;
+        border-left: 5px solid #263;
+        border-bottom: 1px dotted #999;
+    }
+    #main h3 {
+        margin-bottom: 5px;
+        padding: 5px;
+        font-size: 13px;
+        color: #fff;
+        background: #263;
+    }
+    #main h4 {
+        margin-bottom: 5px;
+        font-size: 13px;
+        border-bottom: 1px dotted #999;
+    }
+    #main h5 {
+        margin-bottom: 5px;
+        font-size: 13px;
+    }
+    #main p {
+        margin: 0 0 1em 0;
+    }
+    #main dt {
+        margin-bottom: 3px;
+    }
+    #main dd {
+        padding: 0;
+        margin: 0 0 0.5em 1em;
+        padding: 3px;
+        background: #eee;
+    }
+
+    /* INFORMATION CUSTOMIZE */
+    * html body #main dl.information dd div {
+        display: inline-block;
+    }
+    #main dl.information dt {
+        float: left;
+        width: 8em;
+        margin: 0;
+        padding: 0;
+    }
+    #main dl.information dd {
+        margin: 0 0 0.5em 8em;
+        padding: 0;
+        background: transparent;
+    }
+    #main table {
+        /* width:100%; */
+        border-collapse: collapse;
+        margin: 0 0 1em 0;
+    }
+    #main table th {
+        padding: 5px;
+        font-size: 12px;
+        text-align: left;
+        border: 1px solid #aaa;
+        background: #f0f7fc;
+    }
+    #main table td {
+        padding: 5px;
+        font-size: 12px;
+        text-align: left;
+        border: 1px solid #aaa;
+    }
+    #main .pagination p {
+    }
+    #main .pagination a {
+    }
+    #main .pagination a:active {
+    }
+    #main .pagination p.prev {
+        float: left;
+    }
+    #main .pagination p.next {
+        float: right;
+        text-align: right;
+    }
+    #main .vis_pc {
+        width:640px;
+        height:480px;
+        /* border:1px solid gray; */
+    }
+    #main .vis_sp {
+        display: none;
+    }
+    /* ========SUBCONTENTS CUSTOMIZE======== */
+    #sub .section {
+        margin-bottom: 10px;
+    }
+    #sub h2 {
+        padding: 5px;
+        font-size: 13px;
+        font-weight: bold;
+        color: #fff;
+        text-align: center;
+        background: #374;
+    }
+    #sub h2 a {
+        padding: 0px;
+        font-size: 13px;
+        font-weight: bold;
+        color: #fff;
+        text-align: center;
+        background: #374;
+    }
+    #sub ul {
+        margin: 0;
+        padding: 0;
+        border: 1px solid #aaa;
+        border-top: none;
+        background: #fff;
+    }
+    #sub li {
+        width: 143px;
+        line-height: 1.4;
+        list-style: none;
+        border-top: 1px solid #aaa;
+    }
+    #sub li a { 
+                zoom: 1; /* for IE6 */
+                display: block;
+                padding: 5px 5px;
+                border-left: 5px solid #263;
+    }
+
+    /* ========PAGETOP CUSTOMIZE========= */
+    #pageTop {
+        margin-top: 10px;
+        padding: 5px;
+        text-align: right;
+    }
+    #pageTop a {
+        padding: 5px 5px 5px 17px;
+        background: url("../images/bg_pagetop.gif") 7px 50% no-repeat;
+        font-size: 11px;
+        outline: none;
+    }
+
+    /* ========FOOTER CUSTOMIZE======== */
+    .copyright {
+        clear: both;
+        padding: 10px 0;
+        font-style: normal;
+        font-size: 11px;
+        text-align: center;
+        border-top: 1px solid #ccc;
+    }
+    
+    /* ========ADDITIONAL CUSTOMIZE======== */
+	.dlButton {
+	    background: #3498db;
+	    background-image: -webkit-linear-gradient(top, #4ce673, #3bb359);
+	    background-image: -moz-linear-gradient(top, #4ce673, #3bb359);
+	    background-image: -ms-linear-gradient(top, #4ce673, #3bb359);
+	    background-image: -o-linear-gradient(top, #4ce673, #3bb359);
+	    background-image: linear-gradient(to bottom, #4ce673, #3bb359);
+	    -webkit-border-radius: 28;
+	    -moz-border-radius: 28;
+	    border-radius: 28px;
+	    text-shadow: 1px 1px 3px #444444;
+	    -webkit-box-shadow: 0px 3px 4px #888888;
+	    -moz-box-shadow: 0px 3px 4px #888888;
+	    box-shadow: 0px 3px 4px #888888;
+	    color: #ffffff;
+	    font-size: 14px;
+	    padding: 5px 20px 5px 20px;
+	    text-decoration: none;
+	}
+	
+	.dlButton:hover {
+	    background: #3cb0fd;
+	    background-image: -webkit-linear-gradient(top, #55ff80, #44cc66);
+	    background-image: -moz-linear-gradient(top, #55ff80, #44cc66);
+	    background-image: -ms-linear-gradient(top, #55ff80, #44cc66);
+	    background-image: -o-linear-gradient(top, #55ff80, #44cc66);
+	    background-image: linear-gradient(to bottom, #55ff80, #44cc66);
+	    text-shadow: 1px 1px 3px #666666;
+        color: #ffffff;
+	    text-decoration: none;
+	}
+	
+	.dlButton:active {
+	    -webkit-box-shadow: 0px 2px 4px #888888;
+	    -moz-box-shadow: 0px 2px 4px #888888;
+	    box-shadow: 0px 2px 4px #888888;
+	    position:relative;
+	    top:1px;
+	}
+}
