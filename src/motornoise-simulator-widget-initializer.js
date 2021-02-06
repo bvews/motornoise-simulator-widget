@@ -67,6 +67,8 @@ function MotornoiseSimulatorWidgetInitializer(createHtmlElement) {
         const separator = content.querySelector('.separator');
         const operation = content.querySelector('.operation');
         const system = content.querySelector('.system');
+        const spectrogram = content.querySelector('.spectrogram');
+        const canvas = spectrogram.querySelector('canvas');
 
         launcher.style.display = '';
 
@@ -246,7 +248,7 @@ function MotornoiseSimulatorWidgetInitializer(createHtmlElement) {
         // Initialize gauge.
         updateGauge(0);
 
-        const motornoiseSimulator = new MotornoiseSimulator(new AudioContext(), url + '/', maxSpeed);
+        const motornoiseSimulator = new MotornoiseSimulator(new AudioContext(), url + '/', maxSpeed, canvas);
         motornoiseSimulators[id] = motornoiseSimulator;
 
         launchButton.onclick = function () {
@@ -280,11 +282,9 @@ function MotornoiseSimulatorWidgetInitializer(createHtmlElement) {
             let notchString = '';
             if (notch > 0) {
                 notchString = 'P' + notch;
-            }
-            else if (notch < 0) {
+            } else if (notch < 0) {
                 notchString = 'B' + -notch;
-            }
-            else {
+            } else {
                 notchString = 'N';
             }
             notchSpan.innerText = 'Notch: ' + notchString;
@@ -321,9 +321,21 @@ function MotornoiseSimulatorWidgetInitializer(createHtmlElement) {
                 function () { muteButton.innerText = 'Mute'; });
         };
 
+        const spectrogramButton = content.querySelector('.spectrogram-button');
+        spectrogramButton.onclick = function () {
+            motornoiseSimulator.toggleSpectrogram(function () {
+                spectrogramButton.innerText = 'Spectrogram ON';
+                spectrogram.style.display = 'none';
+            }, function () {
+                spectrogramButton.innerText = 'Spectrogram OFF';
+                spectrogram.style.display = 'block';
+            });
+        };
+
         content.querySelector('.stop-button').onclick = function () {
             motornoiseSimulator.setNotchNeutral();
             motornoiseSimulator.speed = 0;
+            motornoiseSimulator.clearSpectrogram();
             setNotchText();
             updateGauge(0);
         };

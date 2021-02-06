@@ -46,6 +46,12 @@
                 <main>
                     <article>
                         <h1 itemprop="headline">Motornoise Simulator Widget</h1>
+                        <script src="../src/load-text-funcs.js"></script>
+                        <script src="../src/load-media-funcs.js"></script>
+                        <script src="../src/linear-interpolation.js"></script>
+                        <script src="../src/motornoise-track.js"></script>
+                        <script src="../src/spectrogram.js"></script>
+
                         <script src="../src/toggle-language.js"></script>
                         <script src="../src/init.js"></script>
 
@@ -65,6 +71,16 @@
                         <link rel="stylesheet" href="msw-common-lang.css" type="text/css">
                         <link rel="stylesheet" href="msw-color.css" type="text/css">
                         <div itemprop="articleBody">
+                            <h2 id="tokyu8500h">東急8500系モータ音データ</h2>
+                            <h3>モータ音の試聴</h3>
+                            <h4 class="lang-ja" lang="ja">モータ音シミュレータ</h4>
+                            <h4 class="lang-en" lang="en" style="display:none;">Motornoise Simulator</h4>
+                            <div id="msw-tokyu8500" class="motornoise-simulator-widget" data-url="assets/tokyu8500h"
+                                data-max-speed="110" data-is-scale-digital="false" data-gauge-base="gauge-base.svg"
+                                data-gauge-needle="gauge-needle.svg" data-gauge-cover="gauge-cover.svg"
+                                data-scale-color="#0f0" data-scale-profile="0,-118.5;120,118.5" data-scale-division="2">
+                            </div>
+
                             <h2>阪急9300系モータ音データ</h2>
                             <h3>モータ音の試聴</h3>
                             <h4 class="lang-ja" lang="ja">モータ音シミュレータ</h4>
@@ -137,6 +153,10 @@
                                             <td>Stop</td>
                                             <td>停止（速度0）</td>
                                         </tr>
+                                        <tr>
+                                            <td>Spectrogram ON / Spectrogram OFF</td>
+                                            <td>スペクトログラム表示/非表示</td>
+                                        </tr>
                                     </table>
                                     <h3>対応ブラウザ</h3>
                                     <p>　Windows PC向けブラウザでは、FirefoxとGoogle Chromeで動作することを確認しております。IEは非対応です。
@@ -192,6 +212,10 @@
                                         <tr>
                                             <td>Stop</td>
                                             <td>Stop (Set speed to zero)</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Spectrogram ON / Spectrogram OFF</td>
+                                            <td>Toggle spectrogram view</td>
                                         </tr>
                                     </table>
                                     <p>Lever: combined power/brake handle.</p>
@@ -281,7 +305,8 @@
                                                     <img class="gauge-cover">
                                                     <div class="digits" style="display:none;">
                                                         <div class="d0" style="position:relative;">
-                                                            <img class="n0" src="assets/hankyu9300/0/0.svg" style="opacity:1;">
+                                                            <img class="n0" src="assets/hankyu9300/0/0.svg"
+                                                                style="opacity:1;">
                                                             <img class="n1" src="assets/hankyu9300/0/1.svg">
                                                             <img class="n2" src="assets/hankyu9300/0/2.svg">
                                                             <img class="n3" src="assets/hankyu9300/0/3.svg">
@@ -342,7 +367,11 @@
                                             <div class="system" style="padding:5px;">
                                                 <button class="mute-button">Mute</button>
                                                 <button class="stop-button"></button>
+                                                <button class="spectrogram-button">Spectrogram ON</button>
                                             </div>
+                                            </div>
+                                        <div class="spectrogram" style="display:none;">
+                                            <canvas width="638" height="238" style="display:table;"></canvas>
                                         </div>
                                     </div>
                                 </template>

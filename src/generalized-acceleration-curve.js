@@ -19,30 +19,23 @@ function GeneralizedAccelerationCurve(a0, a1, v0, v1, e) {
         if (speed < v0) {
             if (v0 === 0) {
                 return a1;
-            }
-            else if (a0 === a1) {
+            } else if (a0 === a1) {
                 return a1;
-            }
-            else {
+            } else {
                 return a0 + (a1 - a0) * (speed / v0);
             }
-        }
-        else if (speed < v1) {
+        } else if (speed < v1) {
             if (speed === 0) {
                 return 0;
-            }
-            else {
+            } else {
                 return a1 * v0 / speed;
             }
-        }
-        else {
+        } else {
             if (speed === 0) {
                 return 0;
-            }
-            else if (v1 === 0) {
+            } else if (v1 === 0) {
                 return a1 * v0 / speed;
-            }
-            else {
+            } else {
                 return a1 * v0 / v1 * Math.pow(v1 / speed, e);
             }
         }

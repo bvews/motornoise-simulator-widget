@@ -1,3 +1,42 @@
+/* Tokyu 8500 Series */
+
+#msw-tokyu8500 .title:after {
+    content: "Tokyu 8500 Series";
+}
+
+#msw-tokyu8500 .title:lang(ja):after {
+    content: "東急8500系";
+}
+
+#msw-tokyu8500 .base {
+    color: #000;
+    background: #eee;
+}
+
+#msw-tokyu8500 .gauge {
+    background: #222;
+}
+
+#msw-tokyu8500 .info {
+    color: #fff;
+    background: #d00;
+}
+
+#msw-tokyu8500 .separator {
+    background: #aaa;
+}
+
+#msw-tokyu8500 button {
+    color: #000;
+    background: linear-gradient(to bottom, #eee, #aaa);
+    border-color: #888;
+    box-shadow: 0px 0px 2px #fff inset;
+}
+
+#msw-tokyu8500 button:active {
+    background: linear-gradient(to top, #ddd, #ccc);
+}
+
 /* Hankyu 9300 Series */
 
 #msw-hankyu9300 {

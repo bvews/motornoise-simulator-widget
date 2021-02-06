@@ -66,7 +66,7 @@ BufferLoader.prototype.loadBuffer = function (url, index) {
                     console.error('error decoding file data: ' + url);
                     return;
                 }
-                
+
                 loader.bufferList[index] = buffer;
                 loader.durationList[index] = duration;
                 loader.loadCount++;
@@ -92,4 +92,65 @@ BufferLoader.prototype.loadBuffer = function (url, index) {
 
     request.setRequestHeader('Cache-Control', 'no-cache');
     request.send();
+}
+
+function audioBufferLoader(audioContext, audioEntries, onload, onupdate) {
+    let loadCount = 0;
+    const audioCount = audioEntries.length;
+    onupdate(loadCount, audioCount);
+
+    audioEntries.forEach(function (entry) {
+        // Load buffer asynchronously
+        const request = new XMLHttpRequest();
+        request.open('GET', entry.url, true);
+        request.responseType = 'arraybuffer';
+        request.onload = function () {
+            // Asynchronously decode the audio file data from arrayBufferrequest.response
+            audioContext.decodeAudioData(request.response, function (buffer) {
+                loadCount++;
+
+                if (!buffer) {
+                    console.error('Error decoding file data: ' + entry.url);
+                    entry.buffer = null;
+                } else {
+                    entry.buffer = buffer;
+                }
+
+                if (onupdate) {
+                    // Report progress.
+                    onupdate(loadCount, audioCount);
+                }
+                if (loadCount >= audioCount) {
+                    onload(audioEntries);
+                }
+            }, function (error) {
+                loadCount++;
+                entry.buffer = null;
+                console.error('decodeAudioData error', error);
+
+                if (onupdate) {
+                    // Report progress.
+                    onupdate(loadCount, audioCount);
+                }
+                if (loadCount >= audioCount) {
+                    onload(audioEntries);
+                }
+            });
+        }
+        request.onerror = function () {
+            loadCount++;
+            entry.buffer = null;
+            console.error('BufferLoader: XHR error');
+            
+            if (onupdate) {
+                // Report progress.
+                onupdate(loadCount, audioCount);
+            }
+            if (loadCount >= audioCount) {
+                onload(audioEntries);
+            }
+        }
+        request.setRequestHeader('Cache-Control', 'no-cache');
+        request.send();
+    });
 }
