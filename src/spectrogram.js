@@ -149,7 +149,7 @@ class Spectrogram {
             return;
         }
         
-        context = this._canvas.getContext('2d');
+        const context = this._canvas.getContext('2d');
         context.drawImage(this._canvasTemp, 0, 0);
 
         context.save();
