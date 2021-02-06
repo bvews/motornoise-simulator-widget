@@ -25,8 +25,8 @@ class LinearInterpolation {
             // TODO: Resolve 'x' duplication.
 
             // Sort by 'x'.
-            points.sort(({x}, {x}) => {
-                return x - x;
+            points.sort((a, b) => {
+                return a.x - b.x;
             });
 
             for (let i = 0; i < points.length; i++) {
