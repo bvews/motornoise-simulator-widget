@@ -1,3 +1,5 @@
+import { MotornoiseSimulatorWidgetInitializer } from './motornoise-simulator-widget-initializer.js';
+
 (() => {
     document.addEventListener('DOMContentLoaded', () => {
         new MotornoiseSimulatorWidgetInitializer(() => {

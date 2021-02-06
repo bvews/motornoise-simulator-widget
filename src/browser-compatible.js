@@ -1,4 +1,4 @@
-class BrowserCompatible {
+export class BrowserCompatible {
     constructor() {
         /** @type {string} */
         this.browser = undefined;

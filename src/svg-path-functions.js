@@ -3,7 +3,7 @@ function bveDegToRad(degree) {
     return (degree + 270) / 180.0 * Math.PI;
 }
 
-function generateArcPath(radius, minAngle, maxAngle) {
+export function generateArcPath(radius, minAngle, maxAngle) {
     radius = parseFloat(radius);
     minAngle = parseFloat(minAngle);
     maxAngle = parseFloat(maxAngle);

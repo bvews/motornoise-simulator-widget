@@ -1,4 +1,4 @@
-function loadImages(imageEntries, onload, onupdate) {
+export function loadImages(imageEntries, onload, onupdate) {
     if (!imageEntries) {
         if (onload) {
             onload();
@@ -38,7 +38,7 @@ function loadImages(imageEntries, onload, onupdate) {
     });
 }
 
-function loadAudios(audioContext, audioEntries, onload, onupdate) {
+export function loadAudios(audioContext, audioEntries, onload, onupdate) {
     if (!audioContext || !audioEntries) {
         if (onload) {
             onload();
@@ -111,7 +111,7 @@ function loadAudios(audioContext, audioEntries, onload, onupdate) {
  * @param {Array} imageEntries 
  * @param {callback} onupdate 
  */
-async function loadImagesModern(imageEntries, onupdate) {
+export async function loadImagesModern(imageEntries, onupdate) {
     if (!imageEntries) {
         return;
     }
@@ -153,7 +153,7 @@ async function loadImagesModern(imageEntries, onupdate) {
  * @param {AudioEntry[]} audioEntries 
  * @param {callback} onupdate 
  */
-async function loadAudiosModern(audioContext, audioEntries, onupdate) {
+export async function loadAudiosModern(audioContext, audioEntries, onupdate) {
     if (!audioContext || !audioEntries) {
         return;
     }

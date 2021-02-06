@@ -1,8 +1,10 @@
+import { LinearInterpolation } from './linear-interpolation.js';
+
 function AudioEntry(audioContext, path) {
     this.buffer = audioContext.createBufferSource();
 }
 
-class MotornoiseTrack {
+export class MotornoiseTrack {
     constructor(
         audioContext,
         audioEntry,
@@ -104,7 +106,7 @@ class MotornoiseTrack {
                 this._bufferNode.loopEnd = this._audioEntry.leeway + this._audioEntry.length;
                 this._bufferNode.playbackRate.value = 1;
                 this._bufferNode.connect(this._gainNode);
-                
+
                 this._gainNode.gain.value = 0;
                 //this._gainNode.connect(this._audioContext.destination);
 

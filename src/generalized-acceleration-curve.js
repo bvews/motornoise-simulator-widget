@@ -6,7 +6,7 @@
  * @param {number} [v1] 
  * @param {number} [e] 
  */
-class GeneralizedAccelerationCurve {
+export class GeneralizedAccelerationCurve {
     constructor(a0, a1, v0, v1, e) {
         this.a0 = a0;
         this.a1 = !isNaN(a1) ? a1 : a0;

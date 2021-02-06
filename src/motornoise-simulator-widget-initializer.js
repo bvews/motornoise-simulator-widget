@@ -1,3 +1,7 @@
+import { MotornoiseSimulator } from './motornoise-simulator.js';
+import { AudioContextHandler } from './audio-context-handler.js';
+import { generateArcPath } from './svg-path-functions.js';
+
 /**
  *
  * @callback createHtmlElement
@@ -7,7 +11,7 @@
  * 
  * @param {createHtmlElement} createHtmlElement 
  */
-class MotornoiseSimulatorWidgetInitializer {
+export class MotornoiseSimulatorWidgetInitializer {
     constructor(createHtmlElement) {
         /** @type {HTMLElement} */
         this.widgets = null;

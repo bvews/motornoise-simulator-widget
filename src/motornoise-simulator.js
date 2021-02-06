@@ -1,3 +1,10 @@
+import { MotornoiseTrack } from './motornoise-track.js';
+import { Spectrogram } from './spectrogram.js';
+import { GeneralizedAccelerationCurve } from './generalized-acceleration-curve.js';
+import { loadVehicle } from './load-text-funcs.js';
+import { loadImages, loadAudios } from './load-media-funcs.js';
+import { BrowserCompatible } from './browser-compatible.js';
+
 /**
  * Motornoise data.
  * @typedef {Object} MotornoiseData
@@ -14,7 +21,7 @@
  * @param {string} relativeUrl 
  * @param {number} [maxSpeed=100]
  */
-class MotornoiseSimulator {
+export class MotornoiseSimulator {
     constructor(audioContext, relativeUrl, maxSpeed, canvas) {
         /** @type {number} */
         this.intervalMillisec = 20;
@@ -67,7 +74,6 @@ class MotornoiseSimulator {
      *
      * @callback callback
      */
-
     /**
      * 
      * @param {callback} onAllFileLoaded 
@@ -134,7 +140,7 @@ class MotornoiseSimulator {
 
     _setupSpectrogram(audioContext, audioTracks) {
         const analyserNode = audioContext.createAnalyser();
-        audioTracks.forEach(({gainNode}) => {
+        audioTracks.forEach(({ gainNode }) => {
             gainNode.connect(analyserNode);
         });
         this._spectrogram.setAnalyser(analyserNode);

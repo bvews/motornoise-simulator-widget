@@ -1,4 +1,4 @@
-class Spectrogram {
+export class Spectrogram {
     constructor(canvas) {
         this._canvas = canvas;
         this._canvasTemp = document.createElement('canvas');

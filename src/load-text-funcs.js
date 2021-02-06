@@ -1,4 +1,4 @@
-function loadVehicle(relativeUrl, onload) {
+export function loadVehicle(relativeUrl, onload) {
     const files = {
         sound: { url: 'Sound.txt' },
         parameters: { url: 'Parameters.txt' },
@@ -39,7 +39,7 @@ function loadVehicle(relativeUrl, onload) {
     }
 }
 
-function fetchText(url, onload) {
+export function fetchText(url, onload) {
     const xhr = new XMLHttpRequest();
 
     xhr.addEventListener('load', event => {
@@ -63,7 +63,7 @@ function fetchText(url, onload) {
  * @param {string} text
  * @returns {Object.<string, Object.<string, string>>}
  */
-function parseIni(text) {
+export function parseIni(text) {
     const result = {};
 
     text = text.replace('\r', '');
@@ -106,7 +106,7 @@ function parseIni(text) {
  * @param {string} text
  * @returns {Point[]}
  */
-function parseCsv(text) {
+export function parseCsv(text) {
     const result = [];
 
     text = text.replace('\r', '');
@@ -129,7 +129,7 @@ function parseCsv(text) {
     return result;
 }
 
-function parseSound(text, relativeUrl) {
+export function parseSound(text, relativeUrl) {
     const iniData = parseIni(text);
     const result = {
         motor: [],
@@ -151,7 +151,7 @@ function parseSound(text, relativeUrl) {
     return result;
 }
 
-function createAudioEntry(text) {
+export function createAudioEntry(text) {
     const items = text.split(',');
 
     const userAgent = window.navigator.userAgent.toLowerCase();
@@ -194,7 +194,7 @@ function createAudioEntry(text) {
     };
 }
 
-function parseParameters(text) {
+export function parseParameters(text) {
     const iniData = parseIni(text);
     const result = {
         mainCircuit: {},
@@ -244,7 +244,7 @@ function parseParameters(text) {
     return result;
 }
 
-function parseTrainDat(text) {
+export function parseTrainDat(text) {
     const lines = text.split(/\r?\n/);
 
     const acceleration = [];

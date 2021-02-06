@@ -1,4 +1,4 @@
-class AudioContextHandler {
+export class AudioContextHandler {
     constructor() {
         try {
             // Fix up prefixing

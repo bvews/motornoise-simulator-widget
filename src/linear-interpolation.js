@@ -8,7 +8,7 @@
  * 
  * @param {Point[]} points 
  */
-class LinearInterpolation {
+export class LinearInterpolation {
     constructor(points) {
         /** @type {number[]} */
         this.x = [];
