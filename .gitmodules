@@ -1,0 +1,3 @@
+[submodule "dist/assets"]
+	path = dist/assets
+	url = https://github.com/bvews/motornoise-simulator-widget-assets
