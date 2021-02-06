@@ -1,7 +1,6 @@
-(function () {
-    document.addEventListener('DOMContentLoaded', function () {
-        'use strict';
-        new MotornoiseSimulatorWidgetInitializer(function () {
+(() => {
+    document.addEventListener('DOMContentLoaded', () => {
+        new MotornoiseSimulatorWidgetInitializer(() => {
             if (document.getElementById('motornoise-simulator').content) {
                 return document.importNode(document.getElementById('motornoise-simulator').content, true);
             } else {

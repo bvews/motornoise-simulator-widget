@@ -1,15 +1,14 @@
 function fetchText(url, onload) {
-    'use strict';
     const xhr = new XMLHttpRequest();
-    
-    xhr.addEventListener('load', function (event) {
+
+    xhr.addEventListener('load', event => {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
                 onload(xhr.responseText);
             }
         }
     }, false);
-    xhr.addEventListener('error', function (event) {
+    xhr.addEventListener('error', event => {
         onload(null);
     }, false);
 

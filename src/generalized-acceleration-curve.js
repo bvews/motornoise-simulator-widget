@@ -7,15 +7,13 @@
  * @param {number} [e] 
  */
 function GeneralizedAccelerationCurve(a0, a1, v0, v1, e) {
-    'use strict';
     a0 = a0;
     a1 = !isNaN(a1) ? a1 : a0;
     v0 = !isNaN(v0) ? v0 : 1000;
     v1 = !isNaN(v1) ? v1 : 1000;
     e = !isNaN(e) ? e : 2;
 
-    this.getAcceleration = function (speed) {
-        'use strict';
+    this.getAcceleration = speed => {
         if (speed < v0) {
             if (v0 === 0) {
                 return a1;
@@ -36,7 +34,7 @@ function GeneralizedAccelerationCurve(a0, a1, v0, v1, e) {
             } else if (v1 === 0) {
                 return a1 * v0 / speed;
             } else {
-                return a1 * v0 / v1 * Math.pow(v1 / speed, e);
+                return a1 * v0 / v1 * (v1 / speed) ** e;
             }
         }
     }

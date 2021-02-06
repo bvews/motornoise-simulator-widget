@@ -76,14 +76,12 @@ function MotornoiseSimulatorWidgetInitializer(createHtmlElement) {
         //gauge.style.display = 'none';
         title.style.display = 'none';
 
-        const sanitize = function (str) {
-            return str.replace(/&lt;/g, '<')
-                .replace(/&gt;/g, '>')
-                .replace(/&quot;/g, '"')
-                .replace(/&#39;/g, '\'')
-                .replace(/&amp;/g, '&');
-        };
-        const setTitle = function (element, title, lang) {
+        const sanitize = str => str.replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&#39;/g, '\'')
+            .replace(/&amp;/g, '&');
+        const setTitle = (element, title, lang) => {
             if (!element || !title) {
                 return;
             }
@@ -101,7 +99,7 @@ function MotornoiseSimulatorWidgetInitializer(createHtmlElement) {
 
         // Check touch event implement on browsers.
         // https://www.yoheim.net/blog.php?q=20140206
-        const hasTapEvent = function () {
+        const hasTapEvent = () => {
             const iframe = document.createElement('iframe');
             document.body.appendChild(iframe);
             const result = ('ontouchstart' in iframe.contentWindow);
@@ -116,10 +114,10 @@ function MotornoiseSimulatorWidgetInitializer(createHtmlElement) {
          * @param {AudioContext} audioContext 
          * @param {HTMLElement} element 
          */
-        const wakeupAudioContext = function (audioContext, element) {
+        const wakeupAudioContext = (audioContext, element) => {
             // For Safari
             if (true) {
-                const initAudioContextSafari = function () {
+                const initAudioContextSafari = () => {
                     element.removeEventListener('touchstart', initAudioContextSafari);
                     // Wake up AudioContext
                     const emptySource = audioContext.createBufferSource();
@@ -131,7 +129,7 @@ function MotornoiseSimulatorWidgetInitializer(createHtmlElement) {
 
             // For Google Chrome
             const eventName = typeof document.ontouchend !== 'undefined' ? 'touchend' : 'mouseup';
-            const initAudioContextChrome = function () {
+            const initAudioContextChrome = () => {
                 element.removeEventListener(eventName, initAudioContextChrome);
                 // Wake up AudioContext
                 audioContext.resume();
@@ -139,9 +137,9 @@ function MotornoiseSimulatorWidgetInitializer(createHtmlElement) {
             element.addEventListener(eventName, initAudioContextChrome);
         };
 
-        const gaugeBaseUrl = dataset.gaugeBase ? url + '/' + dataset.gaugeBase : undefined;
-        const gaugeNeedleUrl = dataset.gaugeNeedle ? url + '/' + dataset.gaugeNeedle : undefined;
-        const gaugeCoverUrl = dataset.gaugeCover ? url + '/' + dataset.gaugeCover : undefined;
+        const gaugeBaseUrl = dataset.gaugeBase ? `${url}/${dataset.gaugeBase}` : undefined;
+        const gaugeNeedleUrl = dataset.gaugeNeedle ? `${url}/${dataset.gaugeNeedle}` : undefined;
+        const gaugeCoverUrl = dataset.gaugeCover ? `${url}/${dataset.gaugeCover}` : undefined;
 
 
         const scaleProfile = dataset.scaleProfile || '0,-120;120,120';
@@ -153,7 +151,7 @@ function MotornoiseSimulatorWidgetInitializer(createHtmlElement) {
         const maxValue = parseFloat(max.split(',')[0]);
         const maxAngle = parseFloat(max.split(',')[1]);
 
-        const setImgSrc = function (element, query, value) {
+        const setImgSrc = (element, query, value) => {
             const elt = element.querySelector(query);
             if (elt && value) {
                 elt.src = value;
@@ -184,7 +182,7 @@ function MotornoiseSimulatorWidgetInitializer(createHtmlElement) {
 
         const width = 42;
         pathElt.setAttribute('stroke-width', width);
-        const updateGauge = function (speed) {
+        const updateGauge = speed => {
             // const minValue = 0;
             // const maxValue = 140;
             // const minAngle = -136;
@@ -226,12 +224,12 @@ function MotornoiseSimulatorWidgetInitializer(createHtmlElement) {
                             if (prevNums[i] !== nums[i]) {
                                 if (!isNaN(prevNums[i])) {
                                     //digitsElt.querySelector('.d' + i).querySelector('.n' + prevNums[i]).style.visibility = 'hidden';
-                                    digitsElt.querySelector('.d' + i).querySelector('.n' + prevNums[i]).style.opacity = 0;
+                                    digitsElt.querySelector(`.d${i}`).querySelector(`.n${prevNums[i]}`).style.opacity = 0;
                                 } else {
                                 }
                                 if (!isNaN(nums[i])) {
                                     //digitsElt.querySelector('.d' + i).querySelector('.n' + nums[i]).style.visibility = 'visible';
-                                    digitsElt.querySelector('.d' + i).querySelector('.n' + nums[i]).style.opacity = 1;
+                                    digitsElt.querySelector(`.d${i}`).querySelector(`.n${nums[i]}`).style.opacity = 1;
                                 } else {
                                 }
 
@@ -241,26 +239,26 @@ function MotornoiseSimulatorWidgetInitializer(createHtmlElement) {
                     }
                 }
             } else {
-                imgGaugeNeedle.style.transform = 'rotate(' + angle + 'deg)';
+                imgGaugeNeedle.style.transform = `rotate(${angle}deg)`;
                 //imgGaugeNeedle.style.transform = 'rotate3d(0, 0, 1, ' + angle + 'deg)';
             }
         };
         // Initialize gauge.
         updateGauge(0);
 
-        const motornoiseSimulator = new MotornoiseSimulator(new AudioContext(), url + '/', maxSpeed, canvas);
+        const motornoiseSimulator = new MotornoiseSimulator(new AudioContext(), `${url}/`, maxSpeed, canvas);
         motornoiseSimulators[id] = motornoiseSimulator;
 
-        launchButton.onclick = function () {
-            motornoiseSimulators[id].load(function () {
+        launchButton.onclick = () => {
+            motornoiseSimulators[id].load(() => {
                 message.style.display = 'none';
                 controls.style.display = 'block';
                 gauge.style.display = 'block';
                 title.style.display = 'block';
 
                 motornoiseSimulator.startMainLoop();
-            }, function (loadCount, maxCount) {
-                message.innerText = 'Loading... (' + loadCount + ' / ' + maxCount + ')';
+            }, (loadCount, maxCount) => {
+                message.innerText = `Loading... (${loadCount} / ${maxCount})`;
             });
 
             message.innerText = 'Loading...';
@@ -277,62 +275,62 @@ function MotornoiseSimulatorWidgetInitializer(createHtmlElement) {
         const notchSpan = content.querySelector('.notch-span');
         const speedSpan = content.querySelector('.speed-span');
 
-        const setNotchText = function () {
+        const setNotchText = () => {
             const notch = motornoiseSimulator.notch;
             let notchString = '';
             if (notch > 0) {
-                notchString = 'P' + notch;
+                notchString = `P${notch}`;
             } else if (notch < 0) {
-                notchString = 'B' + -notch;
+                notchString = `B${-notch}`;
             } else {
                 notchString = 'N';
             }
-            notchSpan.innerText = 'Notch: ' + notchString;
+            notchSpan.innerText = `Notch: ${notchString}`;
         };
 
-        content.querySelector('.max-power-button').onclick = function () {
+        content.querySelector('.max-power-button').onclick = () => {
             motornoiseSimulator.setNotchFullPower();
             setNotchText();
         };
 
-        content.querySelector('.set-power-button').onclick = function () {
+        content.querySelector('.set-power-button').onclick = () => {
             motornoiseSimulator.setNotchIncrement();
             setNotchText();
         };
 
-        content.querySelector('.set-neutral-button').onclick = function () {
+        content.querySelector('.set-neutral-button').onclick = () => {
             motornoiseSimulator.setNotchNeutral();
             setNotchText();
         };
 
-        content.querySelector('.set-brake-button').onclick = function () {
+        content.querySelector('.set-brake-button').onclick = () => {
             motornoiseSimulator.setNotchDecrement();
             setNotchText();
         };
 
-        content.querySelector('.max-brake-button').onclick = function () {
+        content.querySelector('.max-brake-button').onclick = () => {
             motornoiseSimulator.setNotchFullBrake();
             setNotchText();
         };
 
         const muteButton = content.querySelector('.mute-button');
-        muteButton.onclick = function () {
-            motornoiseSimulator.toggleMute(function () { muteButton.innerText = 'Unmute'; },
-                function () { muteButton.innerText = 'Mute'; });
+        muteButton.onclick = () => {
+            motornoiseSimulator.toggleMute(() => { muteButton.innerText = 'Unmute'; },
+                () => { muteButton.innerText = 'Mute'; });
         };
 
         const spectrogramButton = content.querySelector('.spectrogram-button');
-        spectrogramButton.onclick = function () {
-            motornoiseSimulator.toggleSpectrogram(function () {
+        spectrogramButton.onclick = () => {
+            motornoiseSimulator.toggleSpectrogram(() => {
                 spectrogramButton.innerText = 'Spectrogram ON';
                 spectrogram.style.display = 'none';
-            }, function () {
+            }, () => {
                 spectrogramButton.innerText = 'Spectrogram OFF';
                 spectrogram.style.display = 'block';
             });
         };
 
-        content.querySelector('.stop-button').onclick = function () {
+        content.querySelector('.stop-button').onclick = () => {
             motornoiseSimulator.setNotchNeutral();
             motornoiseSimulator.speed = 0;
             motornoiseSimulator.clearSpectrogram();
@@ -342,15 +340,15 @@ function MotornoiseSimulatorWidgetInitializer(createHtmlElement) {
 
         motornoiseSimulatorDiv.appendChild(content);
 
-        motornoiseSimulator.ontick = function (speed) {
+        motornoiseSimulator.ontick = speed => {
             if (true) {
-                speedSpan.textContent = 'Speed: ' + speed.toFixed(1) + 'km/h';
+                speedSpan.textContent = `Speed: ${speed.toFixed(1)}km/h`;
                 //speedSpan.innerText = 'Speed: ' + speed.toFixed(1) + 'km/h';
             }
             updateGauge(speed);
         };
 
-        document.addEventListener('visibilitychange', function (event) {
+        document.addEventListener('visibilitychange', event => {
             motornoiseSimulator.handleVisibilitychange(event);
         });
     }

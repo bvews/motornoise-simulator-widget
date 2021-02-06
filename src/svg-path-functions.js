@@ -1,11 +1,9 @@
 
 function bveDegToRad(degree) {
-    'use strict';
     return (degree + 270) / 180.0 * Math.PI;
 }
 
 function generateArcPath(radius, minAngle, maxAngle) {
-    'use strict';
     radius = parseFloat(radius);
     minAngle = parseFloat(minAngle);
     maxAngle = parseFloat(maxAngle);
@@ -56,13 +54,12 @@ function generateArcPath(radius, minAngle, maxAngle) {
 }
 
 function generateLinePath(rMin, rMax, innerWidth, outerWidth, angle) {
-    'use strict';
     angle = bveDegToRad(angle);
 
-    var cos = Math.cos(angle);
-    var sin = Math.sin(angle);
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
 
-    var values = [];
+    const values = [];
     values[0] = "M";
 
     values[1] = rMin * cos - innerWidth / 2 * sin;
@@ -82,13 +79,12 @@ function generateLinePath(rMin, rMax, innerWidth, outerWidth, angle) {
 }
 
 function generateNeedlePath(rMin, rMid, rMax, innerWidth, middleWidth, outerWidth, angle) {
-    'use strict';
     angle = bveDegToRad(angle);
 
-    var cos = Math.cos(angle);
-    var sin = Math.sin(angle);
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
 
-    var values = [];
+    const values = [];
     values[0] = "M";
 
     values[1] = rMin * cos - innerWidth / 2 * sin;

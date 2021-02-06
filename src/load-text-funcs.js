@@ -15,7 +15,7 @@ function loadVehicle(relativeUrl, onload) {
 
     for (let key in files) {
         const file = files[key];
-        fetchText(relativeUrl + file.url, function (text) {
+        fetchText(relativeUrl + file.url, text => {
             file.text = text;
             loadCount++;
             if (loadCount >= fileCount) {
@@ -40,17 +40,16 @@ function loadVehicle(relativeUrl, onload) {
 }
 
 function fetchText(url, onload) {
-    'use strict';
     const xhr = new XMLHttpRequest();
 
-    xhr.addEventListener('load', function (event) {
+    xhr.addEventListener('load', event => {
         if (xhr.readyState === 4 && xhr.status === 200) {
             onload(xhr.responseText);
         } else {
             onload('');
         }
     }, false);
-    xhr.addEventListener('error', function (event) {
+    xhr.addEventListener('error', event => {
         onload('');
     }, false);
 
@@ -65,25 +64,24 @@ function fetchText(url, onload) {
  * @returns {Object.<string, Object.<string, string>>}
  */
 function parseIni(text) {
-    'use strict';
-    var result = {};
+    const result = {};
 
     text = text.replace('\r', '');
-    var lines = text.split('\n');
-    var section = '';
+    const lines = text.split('\n');
+    let section = '';
 
-    for (var i = 0; i < lines.length; i++) {
-        var line = lines[i];
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
 
         if (line.match(/^\[(.+)\]/)) {
             section = line.match(/^\[(.+)\]/)[1].toLowerCase();
             continue;
         }
 
-        var match = line.match(/^(.+?)\s*?=\s*(.+)/);
+        const match = line.match(/^(.+?)\s*?=\s*(.+)/);
         if (match) {
-            var key = match[1].toLowerCase();
-            var value = match[2];
+            const key = match[1].toLowerCase();
+            const value = match[2];
 
             if (section !== '' && key !== '' && value !== '') {
                 if (!result[section]) {
@@ -109,17 +107,16 @@ function parseIni(text) {
  * @returns {Point[]}
  */
 function parseCsv(text) {
-    'use strict';
     const result = [];
 
     text = text.replace('\r', '');
     const lines = text.split('\n');
 
-    for (var i = 0; i < lines.length; i++) {
-        var elements = lines[i].split(',');
-        for (var j = 0; j < elements.length - 1; j++) {
-            var x = parseFloat(elements[0]);
-            var y = parseFloat(elements[j + 1]);
+    for (let i = 0; i < lines.length; i++) {
+        const elements = lines[i].split(',');
+        for (let j = 0; j < elements.length - 1; j++) {
+            const x = parseFloat(elements[0]);
+            const y = parseFloat(elements[j + 1]);
             if (!isNaN(x) && !isNaN(y)) {
                 if (!result[j]) {
                     result[j] = [];
@@ -140,8 +137,8 @@ function parseSound(text, relativeUrl) {
     };
 
     if (iniData['motor']) {
-        var urlList = [];
-        for (var key in iniData['motor']) {
+        const urlList = [];
+        for (const key in iniData['motor']) {
             if (!isNaN(key)) {
                 result.motor[parseInt(key)] = createAudioEntry(relativeUrl + iniData['motor'][key]);
             }
@@ -159,17 +156,17 @@ function createAudioEntry(text) {
 
     const userAgent = window.navigator.userAgent.toLowerCase();
     let browser;
-    if (userAgent.indexOf('msie') != -1 || userAgent.indexOf('trident') != -1) {
+    if (userAgent.includes('msie') || userAgent.includes('trident')) {
         browser = 'msif';
-    } else if (userAgent.indexOf('edge') != -1) {
+    } else if (userAgent.includes('edge')) {
         browser = 'edge';
-    } else if (userAgent.indexOf('chrome') != -1) {
+    } else if (userAgent.includes('chrome')) {
         browser = 'chrome';
-    } else if (userAgent.indexOf('safari') != -1) {
+    } else if (userAgent.includes('safari')) {
         browser = 'safari';
-    } else if (userAgent.indexOf('firefox') != -1) {
+    } else if (userAgent.includes('firefox')) {
         browser = 'firefox';
-    } else if (userAgent.indexOf('opera') != -1) {
+    } else if (userAgent.includes('opera')) {
         browser = 'opera';
     } else {
         browser = undefined;
@@ -191,9 +188,9 @@ function createAudioEntry(text) {
     //const leeway = (items[2] > 0 && extension === '.mp4') ? Number(items[2]) : 0;
 
     return {
-        url: url,
-        length: length,
-        leeway: leeway
+        url,
+        length,
+        leeway
     };
 }
 
@@ -253,7 +250,7 @@ function parseTrainDat(text) {
     const acceleration = [];
     for (let i = 2; i < 2 + 8; i++) {
         if (lines[i]) {
-            const values = lines[i].split(',').map(function (value) { return parseFloat(value); });
+            const values = lines[i].split(',').map(value => parseFloat(value));
             acceleration.push({
                 a0: values[0],
                 a1: values[1],
@@ -265,7 +262,7 @@ function parseTrainDat(text) {
     }
 
     const result = {
-        acceleration: acceleration,
+        acceleration,
         performance: {
             deceleration: parseFloat(lines[11]) || 3.5
         }

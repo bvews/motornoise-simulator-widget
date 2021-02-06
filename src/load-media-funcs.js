@@ -10,9 +10,9 @@ function loadImages(imageEntries, onload, onupdate) {
     const imageCount = imageEntries.length;
     onupdate(loadCount, imageCount);
 
-    imageEntries.forEach(function (entry) {
+    imageEntries.forEach(entry => {
         const image = new Image();
-        image.onload = function () {
+        image.onload = () => {
             entry.image = image;
 
             loadCount++;
@@ -23,7 +23,7 @@ function loadImages(imageEntries, onload, onupdate) {
                 onload(imageEntries);
             }
         };
-        image.onerror = function () {
+        image.onerror = () => {
             entry.image = null;
 
             loadCount++;
@@ -50,18 +50,18 @@ function loadAudios(audioContext, audioEntries, onload, onupdate) {
     const audioCount = audioEntries.length;
     onupdate(loadCount, audioCount);
 
-    audioEntries.forEach(function (entry) {
+    audioEntries.forEach(entry => {
         // Load buffer asynchronously
         const request = new XMLHttpRequest();
         request.open('GET', entry.url, true);
         request.responseType = 'arraybuffer';
-        request.onload = function () {
+        request.onload = () => {
             // Asynchronously decode the audio file data from arrayBufferrequest.response
-            audioContext.decodeAudioData(request.response, function (buffer) {
+            audioContext.decodeAudioData(request.response, buffer => {
                 loadCount++;
 
                 if (!buffer) {
-                    console.error('Error decoding file data: ' + entry.url);
+                    console.error(`Error decoding file data: ${entry.url}`);
                     entry.buffer = null;
                 } else {
                     entry.buffer = buffer;
@@ -74,7 +74,7 @@ function loadAudios(audioContext, audioEntries, onload, onupdate) {
                 if (loadCount >= audioCount) {
                     onload(audioEntries);
                 }
-            }, function (error) {
+            }, error => {
                 loadCount++;
                 entry.buffer = null;
                 console.error('decodeAudioData error', error);
@@ -88,7 +88,7 @@ function loadAudios(audioContext, audioEntries, onload, onupdate) {
                 }
             });
         }
-        request.onerror = function () {
+        request.onerror = () => {
             loadCount++;
             entry.buffer = null;
             console.error('BufferLoader: XHR error');

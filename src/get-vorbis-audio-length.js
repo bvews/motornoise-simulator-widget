@@ -4,7 +4,6 @@
  * @returns {number} - Audio duration [sec].
  */
 function getVorbisAudioLength(arrayBuffer) {
-    'use strict';
     const dataView = new DataView(arrayBuffer);
     const byteLength = dataView.byteLength;
 
@@ -16,8 +15,8 @@ function getVorbisAudioLength(arrayBuffer) {
      * @param {string[]} query
      * @returns {boolean} 
      */
-    const findIndex = function (dataView, byteLength, pos, query) {
-        for (var i = 0; i < query.length; i++) {
+    const findIndex = (dataView, byteLength, pos, query) => {
+        for (let i = 0; i < query.length; i++) {
             if (pos + i >= byteLength || dataView.getUint8(pos + i) !== query[i]) {
                 return false;
             }
@@ -30,7 +29,7 @@ function getVorbisAudioLength(arrayBuffer) {
 
     let posVorbis = -1;
     let posOggs = -1;
-    for (var i = 0; i < byteLength; i++) {
+    for (let i = 0; i < byteLength; i++) {
         if (findIndex(dataView, byteLength, i, queryVorbis)) {
             posVorbis = i;
         }

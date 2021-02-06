@@ -14,355 +14,340 @@
  * @param {string} relativeUrl 
  * @param {number} [maxSpeed=100]
  */
-function MotornoiseSimulator(audioContext, relativeUrl, maxSpeed, canvas) {
-    'use strict';
-    /** @type {number} */
-    this.intervalMillisec = 20;
-    /** @type {number} */
-    this.maxSpeed = maxSpeed > 0 ? Number(maxSpeed) : 100;
+class MotornoiseSimulator {
+    constructor(audioContext, relativeUrl, maxSpeed, canvas) {
+        /** @type {number} */
+        this.intervalMillisec = 20;
+        /** @type {number} */
+        this.maxSpeed = maxSpeed > 0 ? Number(maxSpeed) : 100;
 
-    /** @type {AudioContext} */
-    this.audioContext = audioContext;
-    /** @type {string} */
-    this.relativeUrl = relativeUrl;
-    /** @type {BufferLoader} */
-    this.bufferLoader;
+        /** @type {AudioContext} */
+        this.audioContext = audioContext;
+        /** @type {string} */
+        this.relativeUrl = relativeUrl;
+        /** @type {BufferLoader} */
+        this.bufferLoader;
 
-    /** @type {number} */
-    this.notch = 0;
+        /** @type {number} */
+        this.notch = 0;
 
-    /** @type {MotornoiseData} */
-    this.powerMotornoiseData;
-    /** @type {MotornoiseData} */
-    this.brakeMotornoiseData;
-    /** @type {MotornoiseData} */
-    this.runningnoiseData;
+        /** @type {MotornoiseData} */
+        this.powerMotornoiseData;
+        /** @type {MotornoiseData} */
+        this.brakeMotornoiseData;
+        /** @type {MotornoiseData} */
+        this.runningnoiseData;
 
-    this._audioTracks = [];
+        this._audioTracks = [];
 
-    this._spectrogram = new Spectrogram(canvas, null);
-    this._spectrogram.clear();
+        this._spectrogram = new Spectrogram(canvas, null);
+        this._spectrogram.clear();
 
-    this.runningResistanceSimulator;
-    this.accelerationSimulator;
+        this.runningResistanceSimulator;
+        this.accelerationSimulator;
 
-    /** @type {number} */
-    this.speed = 0;
-    /** @type {number} */
-    this.regenerationLimit = 0;
-    /** @type {number} */
-    this.runningNoiseIndex;
-    /** @type {boolean} */
-    this.isAllFileLoaded = false;
-    /** @type {boolean} */
-    this.isMuted = false;
+        /** @type {number} */
+        this.speed = 0;
+        /** @type {number} */
+        this.regenerationLimit = 0;
+        /** @type {number} */
+        this.runningNoiseIndex;
+        /** @type {boolean} */
+        this.isAllFileLoaded = false;
+        /** @type {boolean} */
+        this.isMuted = false;
 
-    /** @type {BrowserCompatible} */
-    this.browserCompatible = new BrowserCompatible();
+        /** @type {BrowserCompatible} */
+        this.browserCompatible = new BrowserCompatible();
 
-    this.ontick;
-}
+        this.ontick;
+    }
 
-/**
- *
- * @callback callback
- */
+    /**
+     *
+     * @callback callback
+     */
 
-/**
- * 
- * @param {callback} onAllFileLoaded 
- */
-MotornoiseSimulator.prototype.load = function (onAllFileLoaded, onupdate) {
-    'use strict';
-    const audioContext = this.audioContext;
-    const self = this;
-    loadVehicle(this.relativeUrl, function (vehicle) {
-        // Create running resistance simulator.
-        self.runningResistanceSimulator = new RunningResistanceSimulator(vehicle.parameters);
+    /**
+     * 
+     * @param {callback} onAllFileLoaded 
+     */
+    load(onAllFileLoaded, onupdate) {
+        const audioContext = this.audioContext;
+        const self = this;
+        loadVehicle(this.relativeUrl, vehicle => {
+            // Create running resistance simulator.
+            self.runningResistanceSimulator = new RunningResistanceSimulator(vehicle.parameters);
 
-        // Create train acceleration simulator.
-        self.accelerationSimulator = new AccelerationSimulator(vehicle.trainDat, vehicle.parameters);
+            // Create train acceleration simulator.
+            self.accelerationSimulator = new AccelerationSimulator(vehicle.trainDat, vehicle.parameters);
 
-        loadImages(null, function (images) {
-            const audioEntries = vehicle.sound.motor.concat(vehicle.sound.run)
-                .filter(function (entry) { return entry; });
-            loadAudios(audioContext, audioEntries, function () {
-                self._audioTracks = self.createAudioTracks(audioContext, vehicle);
-                self._setupSpectrogram(audioContext, self._audioTracks);
-                onAllFileLoaded();
-                self.isAllFileLoaded = true;
-            }, onupdate);
+            loadImages(null, images => {
+                const audioEntries = vehicle.sound.motor.concat(vehicle.sound.run)
+                    .filter(entry => entry);
+                loadAudios(audioContext, audioEntries, () => {
+                    self._audioTracks = self.createAudioTracks(audioContext, vehicle);
+                    self._setupSpectrogram(audioContext, self._audioTracks);
+                    onAllFileLoaded();
+                    self.isAllFileLoaded = true;
+                }, onupdate);
+            });
         });
-    });
-};
+    }
 
-MotornoiseSimulator.prototype.createAudioTracks = function (audioContext, vehicle) {
-    'use strict';
-    const motorNoise = vehicle.motorNoise;
+    createAudioTracks(audioContext, vehicle) {
+        const motorNoise = vehicle.motorNoise;
 
-    let trackCount = 0;
-    trackCount = Math.max(trackCount, vehicle.sound.motor.length);
-    trackCount = Math.max(trackCount, motorNoise.power.frequency.length);
-    trackCount = Math.max(trackCount, motorNoise.power.volume.length);
-    trackCount = Math.max(trackCount, motorNoise.brake.frequency.length);
-    trackCount = Math.max(trackCount, motorNoise.brake.volume.length);
+        let trackCount = 0;
+        trackCount = Math.max(trackCount, vehicle.sound.motor.length);
+        trackCount = Math.max(trackCount, motorNoise.power.frequency.length);
+        trackCount = Math.max(trackCount, motorNoise.power.volume.length);
+        trackCount = Math.max(trackCount, motorNoise.brake.frequency.length);
+        trackCount = Math.max(trackCount, motorNoise.brake.volume.length);
 
-    const audioTracks = [];
-    for (let i = 0; i < trackCount; i++) {
+        const audioTracks = [];
+        for (let i = 0; i < trackCount; i++) {
+            audioTracks.push(new MotornoiseTrack(
+                audioContext,
+                vehicle.sound.motor[i],
+                motorNoise.power.frequency[i],
+                motorNoise.power.volume[i],
+                motorNoise.brake.frequency[i],
+                motorNoise.brake.volume[i],
+                vehicle.parameters.mainCircuit.regenerationLimit,
+                false));
+        }
+        const runVolume = [{ 'x': 0, 'y': 0.001 }, { 'x': 90, 'y': 1 }, { 'x': 1000, 'y': 1 }];
+        const runFrequency = [{ 'x': 0, 'y': 0.001 }, { 'x': 90, 'y': 1 }];
         audioTracks.push(new MotornoiseTrack(
             audioContext,
-            vehicle.sound.motor[i],
-            motorNoise.power.frequency[i],
-            motorNoise.power.volume[i],
-            motorNoise.brake.frequency[i],
-            motorNoise.brake.volume[i],
+            vehicle.sound.run[0],
+            runFrequency,
+            runVolume,
+            runFrequency,
+            runVolume,
             vehicle.parameters.mainCircuit.regenerationLimit,
-            false));
+            true));
+
+        return audioTracks;
     }
-    const runVolume = [{ 'x': 0, 'y': 0.001 }, { 'x': 90, 'y': 1 }, { 'x': 1000, 'y': 1 }];
-    const runFrequency = [{ 'x': 0, 'y': 0.001 }, { 'x': 90, 'y': 1 }];
-    audioTracks.push(new MotornoiseTrack(
-        audioContext,
-        vehicle.sound.run[0],
-        runFrequency,
-        runVolume,
-        runFrequency,
-        runVolume,
-        vehicle.parameters.mainCircuit.regenerationLimit,
-        true));
 
-    return audioTracks;
-};
+    _setupSpectrogram(audioContext, audioTracks) {
+        const analyserNode = audioContext.createAnalyser();
+        audioTracks.forEach(({gainNode}) => {
+            gainNode.connect(analyserNode);
+        });
+        this._spectrogram.setAnalyser(analyserNode);
+        analyserNode.connect(audioContext.destination);
 
-MotornoiseSimulator.prototype._setupSpectrogram = function (audioContext, audioTracks) {
-    const analyserNode = audioContext.createAnalyser();
-    audioTracks.forEach(function (track) {
-        track.gainNode.connect(analyserNode);
-    });
-    this._spectrogram.setAnalyser(analyserNode);
-    analyserNode.connect(audioContext.destination);
+        this._spectrogram.setAnalyser(analyserNode);
+        this._spectrogram.setDecibelsRange(-100, -30);
+        this._spectrogram.setFftSize(4096, true);
+    }
 
-    this._spectrogram.setAnalyser(analyserNode);
-    this._spectrogram.setDecibelsRange(-100, -30);
-    this._spectrogram.setFftSize(4096, true);
-};
-
-MotornoiseSimulator.prototype.handleVisibilitychange = function (event) {
-    if (this.audioContext) {
-        if (document.hidden) {
-            if (this.audioContext.state === 'running') {
-                this._isMuted = false;
+    handleVisibilitychange(event) {
+        if (this.audioContext) {
+            if (document.hidden) {
+                if (this.audioContext.state === 'running') {
+                    this._isMuted = false;
+                } else {
+                    this._isMuted = true;
+                }
+                this.audioContext.suspend();
+                this._hidden = true;
             } else {
-                this._isMuted = true;
-            }
-            this.audioContext.suspend();
-            this._hidden = true;
-        } else {
-            if (!this._isMuted) {
-                this.audioContext.resume();
+                if (!this._isMuted) {
+                    this.audioContext.resume();
+                }
             }
         }
     }
-}
 
-MotornoiseSimulator.prototype.startMainLoop = function (intervalMillisec) {
-    'use strict';
-    if (!this._isRunning) {
-        this._isRunning = true;
+    startMainLoop(intervalMillisec) {
+        if (!this._isRunning) {
+            this._isRunning = true;
+
+            const self = this;
+            requestAnimationFrame(function mainLoop(timeStamp) {
+                if (self._isRunning) {
+                    if (!self._prevTimeStamp) {
+                        self._prevTimeStamp = timeStamp;
+                    } else {
+                        const timeElapsed = timeStamp - self._prevTimeStamp;
+                        self._prevTimeStamp = timeStamp;
+
+                        if (!self._hidden) {
+                            self.update(timeElapsed);
+                        }
+
+                        if (!document.hidden && self._hidden) {
+                            self._hidden = false;
+                        }
+                    }
+
+                    requestAnimationFrame(mainLoop);
+                } else {
+                    self._prevTimeStamp = NaN;
+                }
+            });
+        }
+
+        if (!this._isMuted) {
+            this.audioContext.resume();
+        }
+    }
+
+    stopMainLoop() {
+        this._isRunning = false;
 
         const self = this;
-        requestAnimationFrame(function mainLoop(timeStamp) {
-            if (self._isRunning) {
-                if (!self._prevTimeStamp) {
-                    self._prevTimeStamp = timeStamp;
+
+        // Defer audio context suspension for preventing noise on resume.
+        setTimeout(() => {
+            if (!self._isRunning) {
+                if (self.audioContext.state === 'running') {
+                    self._isMuted = false;
                 } else {
-                    const timeElapsed = timeStamp - self._prevTimeStamp;
-                    self._prevTimeStamp = timeStamp;
-
-                    if (!self._hidden) {
-                        self.update(timeElapsed);
-                    }
-
-                    if (!document.hidden && self._hidden) {
-                        self._hidden = false;
-                    }
+                    self._isMuted = true;
                 }
-
-                requestAnimationFrame(mainLoop);
-            } else {
-                self._prevTimeStamp = NaN;
+                self.audioContext.suspend();
             }
-        });
+        }, 100);
     }
 
-    if (!this._isMuted) {
-        this.audioContext.resume();
-    }
-}
+    update(intervalMillisec) {
+        // Check motornoise simulate preparation.
+        if (!this.isAllFileLoaded && this.isAllFileLoaded === false) {
+            return;
+        }
 
-MotornoiseSimulator.prototype.stopMainLoop = function () {
-    'use strict';
-    this._isRunning = false;
+        const notch = this.notch;
 
-    const self = this;
+        // Calc current speed.
+        let speed = this.speed;
+        const ar = this.runningResistanceSimulator.getAcceleration(speed);
+        const accelerationValue = this.accelerationSimulator.getAcceleration(speed, notch);
 
-    // Defer audio context suspension for preventing noise on resume.
-    setTimeout(function () {
-        if (!self._isRunning) {
-            if (self.audioContext.state === 'running') {
-                self._isMuted = false;
-            } else {
-                self._isMuted = true;
+        speed += (accelerationValue + ar) * intervalMillisec / 1000;
+        if (speed > this.maxSpeed) {
+            speed = this.maxSpeed;
+        } else if (speed < 0) {
+            speed = 0;
+        }
+        this.speed = speed;
+
+        // Update gauge.
+        if (this.ontick) {
+            this.ontick(speed);
+        }
+
+        if (this.isMuted) {
+            return;
+        }
+
+        const audioContext = this.audioContext;
+
+        if (speed === 0) {
+            //this.setAllVolumeZero();
+            this._audioTracks.forEach(track => {
+                track.stop();
+            });
+
+            // Suspend simulation for CPU load reducing.
+            if (this._isRunning === true) {
+                this.stopMainLoop();
             }
-            self.audioContext.suspend();
-        }
-    }, 100);
-}
-
-MotornoiseSimulator.prototype.update = function (intervalMillisec) {
-    'use strict';
-    // Check motornoise simulate preparation.
-    if (!this.isAllFileLoaded && this.isAllFileLoaded === false) {
-        return;
-    }
-
-    const notch = this.notch;
-
-    // Calc current speed.
-    let speed = this.speed;
-    const ar = this.runningResistanceSimulator.getAcceleration(speed);
-    const accelerationValue = this.accelerationSimulator.getAcceleration(speed, notch);
-
-    speed += (accelerationValue + ar) * intervalMillisec / 1000;
-    if (speed > this.maxSpeed) {
-        speed = this.maxSpeed;
-    } else if (speed < 0) {
-        speed = 0;
-    }
-    this.speed = speed;
-
-    // Update gauge.
-    if (this.ontick) {
-        this.ontick(speed);
-    }
-
-    if (this.isMuted) {
-        return;
-    }
-
-    const audioContext = this.audioContext;
-
-    if (speed === 0) {
-        //this.setAllVolumeZero();
-        this._audioTracks.forEach(function (track) {
-            track.stop();
-        });
-
-        // Suspend simulation for CPU load reducing.
-        if (this._isRunning === true) {
-            this.stopMainLoop();
-        }
-        return;
-    } else {
-        if (audioContext.state === 'suspended') {
-            audioContext.resume();
-        }
-    }
-
-    // Update motornoise and runningnoise.
-    this._audioTracks.forEach(function (track) {
-        track.update(speed, notch);
-    });
-
-    if (this._isEnabledSpectrogram) {
-        this._spectrogram.update();
-    }
-};
-
-MotornoiseSimulator.prototype.setNotchIncrement = function () {
-    'use strict';
-    this._setNotch(this.notch + 1);
-};
-
-MotornoiseSimulator.prototype.setNotchDecrement = function () {
-    'use strict';
-    this._setNotch(this.notch - 1);
-};
-
-MotornoiseSimulator.prototype.setNotchFullPower = function () {
-    'use strict';
-    this._setNotch(Number.POSITIVE_INFINITY);
-};
-
-MotornoiseSimulator.prototype.setNotchFullBrake = function () {
-    'use strict';
-    this._setNotch(Number.NEGATIVE_INFINITY);
-};
-
-MotornoiseSimulator.prototype.setNotchNeutral = function () {
-    'use strict';
-    this._setNotch(0);
-};
-
-MotornoiseSimulator.prototype._setNotch = function (notch) {
-    'use strict';
-    this.startMainLoop();
-
-    const as = this.accelerationSimulator;
-    if (isNaN(notch) || notch === 0) {
-        this.notch = 0;
-    } else if (as) {
-        if (notch > 0) {
-            this.notch = notch > as.maxPowerNotch ? as.maxPowerNotch : notch;
+            return;
         } else {
-            this.notch = notch < -as.maxBrakeNotch ? -as.maxBrakeNotch : notch;
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+        }
+
+        // Update motornoise and runningnoise.
+        this._audioTracks.forEach(track => {
+            track.update(speed, notch);
+        });
+
+        if (this._isEnabledSpectrogram) {
+            this._spectrogram.update();
         }
     }
-};
 
-MotornoiseSimulator.prototype.toggleMute = function (onMuted, onUnmuted) {
-    'use strict';
-    const audioContext = this.audioContext;
-    const self = this;
-
-    if (audioContext.state === 'running') {
-        audioContext.suspend().then(function () {
-            onMuted();
-            self.isMuted = true;
-        });
+    setNotchIncrement() {
+        this._setNotch(this.notch + 1);
     }
-    else if (audioContext.state === 'suspended') {
-        audioContext.resume().then(function () {
-            onUnmuted();
-            self.isMuted = false;
-        });
+
+    setNotchDecrement() {
+        this._setNotch(this.notch - 1);
     }
-};
 
-MotornoiseSimulator.prototype.toggleSpectrogram = function (callbackOnHide, callbackOnShow) {
-    'use strict';
-
-    if (this._isEnabledSpectrogram) {
-        this._isEnabledSpectrogram = false;
-        callbackOnHide();
-    } else {
-        this._isEnabledSpectrogram = true;
-        this.clearSpectrogram();
-        callbackOnShow();
+    setNotchFullPower() {
+        this._setNotch(Number.POSITIVE_INFINITY);
     }
-};
 
-MotornoiseSimulator.prototype.clearSpectrogram = function () {
-    this._spectrogram.clear();
-};
+    setNotchFullBrake() {
+        this._setNotch(Number.NEGATIVE_INFINITY);
+    }
+
+    setNotchNeutral() {
+        this._setNotch(0);
+    }
+
+    _setNotch(notch) {
+        this.startMainLoop();
+
+        const as = this.accelerationSimulator;
+        if (isNaN(notch) || notch === 0) {
+            this.notch = 0;
+        } else if (as) {
+            if (notch > 0) {
+                this.notch = notch > as.maxPowerNotch ? as.maxPowerNotch : notch;
+            } else {
+                this.notch = notch < -as.maxBrakeNotch ? -as.maxBrakeNotch : notch;
+            }
+        }
+    }
+
+    toggleMute(onMuted, onUnmuted) {
+        const audioContext = this.audioContext;
+        const self = this;
+
+        if (audioContext.state === 'running') {
+            audioContext.suspend().then(() => {
+                onMuted();
+                self.isMuted = true;
+            });
+        }
+        else if (audioContext.state === 'suspended') {
+            audioContext.resume().then(() => {
+                onUnmuted();
+                self.isMuted = false;
+            });
+        }
+    }
+
+    toggleSpectrogram(callbackOnHide, callbackOnShow) {
+        if (this._isEnabledSpectrogram) {
+            this._isEnabledSpectrogram = false;
+            callbackOnHide();
+        } else {
+            this._isEnabledSpectrogram = true;
+            this.clearSpectrogram();
+            callbackOnShow();
+        }
+    }
+
+    clearSpectrogram() {
+        this._spectrogram.clear();
+    }
+}
 
 function AccelerationSimulator(trainDat, parameters) {
-    'use strict';
-
     const accelerationCurves = [];
     const decelerationCurves = [];
 
-    this.getAcceleration = function (speed, notch) {
+    this.getAcceleration = (speed, notch) => {
         if (notch > 0 && accelerationCurves[notch - 1]) {
             return accelerationCurves[notch - 1].getAcceleration(speed);
         }
@@ -411,7 +396,7 @@ function AccelerationSimulator(trainDat, parameters) {
             this.maxPowerNotch = maxPowerNotch;
             this.maxBrakeNotch = maxBrakeNotch;
 
-            trainDat.acceleration.forEach(function (a) {
+            trainDat.acceleration.forEach(a => {
                 accelerationCurves.push(new GeneralizedAccelerationCurve(a.a0, a.a1, a.v1, a.v2, a.e));
             });
 
@@ -423,7 +408,6 @@ function AccelerationSimulator(trainDat, parameters) {
 }
 
 function RunningResistanceSimulator(parameters, mw, tw, mc, tc, mif, tif, a, b, c) {
-    'use strict';
     if (parameters && parameters['dynamics']) {
         const dynamics = parameters['dynamics'];
 
@@ -446,11 +430,9 @@ function RunningResistanceSimulator(parameters, mw, tw, mc, tc, mif, tif, a, b, 
     const coefficientB = isNaN(b) ? 0.000242 * motorcarCount * motorcarWeight + 0.0000275 * trailerCount * trailerWeight : b;
     const coefficientC = isNaN(c) ? 0.0162 * motorcarCount * motorcarWeight + 0.00765 * trailerCount * trailerWeight : c;
 
-    this.getForce = function (speed) {
-        return coefficientA * speed * speed + coefficientB * speed + coefficientC;
-    };
+    this.getForce = speed => coefficientA * speed * speed + coefficientB * speed + coefficientC;
 
-    this.getAcceleration = function (speed) {
+    this.getAcceleration = speed => {
         const resistanceForce = coefficientA * speed * speed + coefficientB * speed + coefficientC;
         return -3.6 * resistanceForce / (motorcarCount * motorcarWeight * (motorcarInertiaFactor + 1) + trailerCount * trailerWeight * (trailerInertiaFactor + 1));
     };
