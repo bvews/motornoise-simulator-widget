@@ -1,3 +1,161 @@
+/* Meitetsu 5300 Series */
+
+#msw-meitetsu5300 .title:after {
+    content: "Meitetsu 5300 Series";
+}
+
+#msw-meitetsu5300 .title:lang(ja):after {
+    content: "名鉄5300系";
+}
+
+#msw-meitetsu5300 .base {
+    color: #fff;
+    background: #c00;
+}
+
+#msw-meitetsu5300 .gauge {
+    background: #222;
+}
+
+#msw-meitetsu5300 .info {
+    color: #fff;
+    background: #800;
+}
+
+#msw-meitetsu5300 .separator {
+    background: #ddd;
+}
+
+#msw-meitetsu5300 button {
+    color: #fff;
+    background: linear-gradient(to bottom, #e00, #a00);
+    border-color: #800;
+    box-shadow: 0px 0px 2px #fff inset;
+}
+
+#msw-meitetsu5300 button:active {
+    background: linear-gradient(to top, #e00, #a00);
+}
+
+/* Meitetsu 1700 Series (Toshiba) */
+
+#msw-meitetsu1700s .title:after {
+    content: "Meitetsu 1700 Series (Toshiba)";
+}
+
+#msw-meitetsu1700s .title:lang(ja):after {
+    content: "名鉄1700系（東芝）";
+}
+
+#msw-meitetsu1700s .base {
+    color: #000000;
+    background: #fff;
+}
+
+#msw-meitetsu1700s .gauge {
+    background: #222;
+}
+
+#msw-meitetsu1700s .info {
+    color: #fff;
+    background: #111;
+}
+
+#msw-meitetsu1700s .separator {
+    background: #c00;
+}
+
+#msw-meitetsu1700s button {
+    color: #fff;
+    background: linear-gradient(to bottom, #e00, #a00);
+    border-color: #800;
+    box-shadow: 0px 0px 2px #fff inset;
+}
+
+#msw-meitetsu1700s button:active {
+    background: linear-gradient(to top, #e00, #a00);
+}
+
+/* Semboku 7020 Series */
+
+#msw-semboku7020 .title:after {
+    content: "Semboku 7020 Series";
+}
+
+#msw-semboku7020 .title:lang(ja):after {
+    content: "泉北7020系";
+}
+
+#msw-semboku7020 .base {
+    color: #000;
+    background: #fff;
+}
+
+#msw-semboku7020 .gauge {
+    background: #222;
+}
+
+#msw-semboku7020 .info {
+    color: #fff;
+    background: #04a;
+}
+
+#msw-semboku7020 .separator {
+    background: #8ff;
+}
+
+#msw-semboku7020 button {
+    color: #000;
+    background: linear-gradient(to bottom, #fff, #bbb);
+    border-color: #888;
+    box-shadow: 0px 0px 2px #fff inset;
+}
+
+#msw-semboku7020 button:active {
+    background: linear-gradient(to top, #eee, #ddd);
+}
+
+/* Semboku 5000 Series */
+
+#msw-semboku5000 .title:after {
+    content: "Semboku 5000 Series";
+}
+
+#msw-semboku5000 .title:lang(ja):after {
+    content: "泉北5000系";
+}
+
+#msw-semboku5000 .base {
+    color: #000;
+    background: #fff;
+}
+
+#msw-semboku5000 .gauge {
+    background: #222;
+}
+
+#msw-semboku5000 .info {
+    color: #fff;
+    background: #04a;
+}
+
+#msw-semboku5000 .separator {
+    background: #8ff;
+}
+
+#msw-semboku5000 button {
+    color: #000;
+    background: linear-gradient(to bottom, #fff, #bbb);
+    border-color: #888;
+    box-shadow: 0px 0px 2px #fff inset;
+}
+
+#msw-semboku5000 button:active {
+    background: linear-gradient(to top, #eee, #ddd);
+}
+
+/* Hankyu 9300 Series */
+
 /* Tokyu 8500 Series */
 
 #msw-tokyu8500 .title:after {

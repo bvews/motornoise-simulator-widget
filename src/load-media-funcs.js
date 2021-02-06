@@ -45,7 +45,7 @@ function loadAudios(audioContext, audioEntries, onload, onupdate) {
         }
         return;
     }
-    
+
     let loadCount = 0;
     const audioCount = audioEntries.length;
     onupdate(loadCount, audioCount);
@@ -104,4 +104,81 @@ function loadAudios(audioContext, audioEntries, onload, onupdate) {
         request.setRequestHeader('Cache-Control', 'no-cache');
         request.send();
     });
+}
+
+/**
+ * 
+ * @param {Array} imageEntries 
+ * @param {callback} onupdate 
+ */
+async function loadImagesModern(imageEntries, onupdate) {
+    if (!imageEntries) {
+        return;
+    }
+    if (typeof onupdate !== 'function') {
+        onupdate = () => { };
+    }
+
+    const length = audioEntries.length;
+    onupdate(0, length);
+    await Promise.all(imageEntries.map(async (entry, i) => {
+        try {
+            entry.image = await loadImage(entry.url);
+        } catch (e) {
+            entry.image = null;
+            console.error(`Failed to load "${entry.url}".`);
+        }
+        onupdate(i + 1, length);
+    }));
+
+    function loadImage(url) {
+        return new Promise((resolve, reject) => {
+            const image = new Image();
+            image.addEventListener('error', function handleError() {
+                reject();
+            });
+            image.addEventListener('load', function handleLoad() {
+                image.removeEventListener('load', handleLoad);
+                image.removeEventListener('error', handleError);
+                resolve(image);
+            });
+            image.src = url;
+        }, reject => reject(image));
+    };
+}
+
+/**
+ * 
+ * @param {AudioContext} audioContext 
+ * @param {AudioEntry[]} audioEntries 
+ * @param {callback} onupdate 
+ */
+async function loadAudiosModern(audioContext, audioEntries, onupdate) {
+    if (!audioContext || !audioEntries) {
+        return;
+    }
+    if (typeof onupdate !== 'function') {
+        onupdate = () => { };
+    }
+
+    const length = audioEntries.length;
+    onupdate(0, length);
+    await Promise.all(audioEntries.map(async (entry, i) => {
+        try {
+            const response = await fetch(entry.url);
+            const arrayBuffer = await response.arrayBuffer();
+            const audioBuffer = await decodeAudioData(audioContext, arrayBuffer);
+            entry.buffer = audioBuffer;
+        } catch (e) {
+            entry.buffer = null;
+            console.error(`Failed to load "${entry.url}".`);
+        }
+        onupdate(i + 1, length);
+    }));
+
+    function decodeAudioData(audioContext, arrayBuffer) {
+        return new Promise((resolve, reject) => {
+            audioContext.decodeAudioData(arrayBuffer, audioBuffer => resolve(audioBuffer), () => reject());
+        }, null);
+    };
 }

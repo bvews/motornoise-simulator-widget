@@ -156,13 +156,32 @@ function parseSound(text, relativeUrl) {
 
 function createAudioEntry(text) {
     const items = text.split(',');
+
     const userAgent = window.navigator.userAgent.toLowerCase();
-    const isSafari = userAgent.indexOf('safari') != -1;
+    let browser;
+    if (userAgent.indexOf('msie') != -1 || userAgent.indexOf('trident') != -1) {
+        browser = 'msif';
+    } else if (userAgent.indexOf('edge') != -1) {
+        browser = 'edge';
+    } else if (userAgent.indexOf('chrome') != -1) {
+        browser = 'chrome';
+    } else if (userAgent.indexOf('safari') != -1) {
+        browser = 'safari';
+    } else if (userAgent.indexOf('firefox') != -1) {
+        browser = 'firefox';
+    } else if (userAgent.indexOf('opera') != -1) {
+        browser = 'opera';
+    } else {
+        browser = undefined;
+    }
+
+    const isSafari = browser === 'safari';
     let extension;
     if (isSafari) {
         extension = '.mp4';
     } else {
-        extension = '.ogg';
+        // extension = '.ogg';
+        extension = '.mp4';
     }
 
     const url = items[0].trim() + extension;

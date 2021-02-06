@@ -94,11 +94,11 @@ MotornoiseTrack.prototype._updateSound = function (pitch, volume) {
             this._bufferNode.loopEnd = this._audioEntry.leeway + this._audioEntry.length;
             this._bufferNode.playbackRate.value = 1;
             this._bufferNode.connect(this._gainNode);
-
+            
             this._gainNode.gain.value = 0;
             //this._gainNode.connect(this._audioContext.destination);
 
-            this._bufferNode.start();
+            this._bufferNode.start(0, this._audioEntry.leeway);
         }
 
         this._bufferNode.playbackRate.value = pitch;
