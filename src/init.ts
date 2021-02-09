@@ -1,10 +1,11 @@
-import { MotornoiseSimulatorWidgetInitializer } from './motornoise-simulator-widget-initializer.js';
+import { MotornoiseSimulatorWidgetInitializer } from './motornoise-simulator-widget-initializer';
 
 (() => {
     document.addEventListener('DOMContentLoaded', () => {
         new MotornoiseSimulatorWidgetInitializer(() => {
-            if (document.getElementById('motornoise-simulator').content) {
-                return document.importNode(document.getElementById('motornoise-simulator').content, true);
+            const el = document.getElementById('motornoise-simulator');
+            if (el && el instanceof HTMLTemplateElement) {
+                return document.importNode(el.content, true);
             } else {
                 return document.createElement('div');
             }

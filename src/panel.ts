@@ -1,20 +1,26 @@
 // Element: needle, cover, digital numbers, etc.
 // Component: gauge, LCD, etc.
 class PanelElement {
-    constructor(vehicleState) {
+    private layer: number = 0;
+
+    constructor(vehicleState: any) {
         this.layer = 0;
     }
 
-    render(canvas, vehicleState) {
+    render(canvas: HTMLCanvasElement, vehicleState: any) {
     }
 }
 
 class Panel {
-    constructor(canvas, vehicleState, panelElements) {
+    private canvas: HTMLCanvasElement;
+    private vehicleState: any;
+    private panelElements: any[];
+
+    constructor(canvas: HTMLCanvasElement, vehicleState: any, panelElements: any[]) {
         this.canvas = canvas;
         this.vehicleState = vehicleState;
 
-        this.panelElements = panelElements.sort(({layer}, {layer}) => layer - layer);
+        this.panelElements = panelElements.sort((a, b) => a.layer - b.layer);
     }
 
     render() {

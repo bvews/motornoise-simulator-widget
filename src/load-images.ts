@@ -1,4 +1,4 @@
-function loadImages(imageEntries, onload, onupdate) {
+function loadImages(imageEntries: any[], onload: (imageEntries?: any[]) => void, onupdate: (loadCount: number, imageCount: number) => void) {
     let loadCount = 0;
     const imageCount = imageEntries.length;
     onupdate(loadCount, imageCount);

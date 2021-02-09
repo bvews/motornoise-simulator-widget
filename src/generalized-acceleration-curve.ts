@@ -1,21 +1,27 @@
 /**
  * 
- * @param {number} a0 
- * @param {number} [a1]
- * @param {number} [v0] 
- * @param {number} [v1] 
- * @param {number} [e] 
+ * @param a0 
+ * @param a1
+ * @param v0 
+ * @param v1 
+ * @param e 
  */
 export class GeneralizedAccelerationCurve {
-    constructor(a0, a1, v0, v1, e) {
+    private a0: number = 0;
+    private a1: number = 0;
+    private v0: number = 1000;
+    private v1: number = 1000;
+    private e: number = 2;
+
+    constructor(a0: number, a1?: number, v0?: number, v1?: number, e?: number) {
         this.a0 = a0;
-        this.a1 = !isNaN(a1) ? a1 : a0;
-        this.v0 = !isNaN(v0) ? v0 : 1000;
-        this.v1 = !isNaN(v1) ? v1 : 1000;
-        this.e = !isNaN(e) ? e : 2;
+        this.a1 = a1 != undefined ? a1 : a0;
+        this.v0 = v0 != undefined ? v0 : 1000;
+        this.v1 = v1 != undefined ? v1 : 1000;
+        this.e = e != undefined ? e : 2;
     }
 
-    getAcceleration(speed) {
+    getAcceleration(speed: number): number {
         const a0 = this.a0;
         const a1 = this.a1;
         const v0 = this.v0;

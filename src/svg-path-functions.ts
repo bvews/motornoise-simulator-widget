@@ -1,12 +1,12 @@
 
-function bveDegToRad(degree) {
+function bveDegToRad(degree: number): number {
     return (degree + 270) / 180.0 * Math.PI;
 }
 
-export function generateArcPath(radius, minAngle, maxAngle) {
-    radius = parseFloat(radius);
-    minAngle = parseFloat(minAngle);
-    maxAngle = parseFloat(maxAngle);
+export function generateArcPath(radius: number | string, minAngle: number | string, maxAngle: number | string): string {
+    radius = typeof radius === 'string' ? parseFloat(radius) : radius;
+    minAngle = typeof minAngle === 'string' ? parseFloat(minAngle) : minAngle;
+    maxAngle = typeof maxAngle === 'string' ? parseFloat(maxAngle) : maxAngle;
 
     if (minAngle === maxAngle) {
         var minCos = Math.cos(bveDegToRad(minAngle));
@@ -53,7 +53,7 @@ export function generateArcPath(radius, minAngle, maxAngle) {
     return values.join(' ');
 }
 
-function generateLinePath(rMin, rMax, innerWidth, outerWidth, angle) {
+function generateLinePath(rMin: number, rMax: number, innerWidth: number, outerWidth: number, angle: number): string {
     angle = bveDegToRad(angle);
 
     const cos = Math.cos(angle);
@@ -78,7 +78,7 @@ function generateLinePath(rMin, rMax, innerWidth, outerWidth, angle) {
     return values.join(' ');
 }
 
-function generateNeedlePath(rMin, rMid, rMax, innerWidth, middleWidth, outerWidth, angle) {
+function generateNeedlePath(rMin: number, rMid: number, rMax: number, innerWidth: number, middleWidth: number, outerWidth: number, angle: number): string {
     angle = bveDegToRad(angle);
 
     const cos = Math.cos(angle);
