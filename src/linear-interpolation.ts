@@ -1,26 +1,20 @@
-/**
- * @typedef {Object} Point
- * @property {number} x
- * @property {number} y
- */
+export interface Point {
+    x: number;
+    y: number;
+}
 
 /**
  * 
- * @param {Point[]} points 
+ * @param points 
  */
 export class LinearInterpolation {
-    constructor(points) {
-        /** @type {number[]} */
-        this.x = [];
-        /** @type {number[]} */
-        this.y = [];
-        /** @type {number} */
-        this.slope = 0;
-        /** @type {number} */
-        this.intercept = 0;
-        /** @type {number} */
-        this.prevIndex = null;
+    private x: number[] = [];
+    private y: number[] = [];
+    private slope: number = 0;
+    private intercept: number = 0;
+    private prevIndex: number = NaN;
 
+    constructor(points: Point[]) {
         if (points) {
             // TODO: Resolve 'x' duplication.
 
@@ -39,10 +33,10 @@ export class LinearInterpolation {
 
     /**
      * 
-     * @param {number[]} array 
-     * @param {number} value 
+     * @param array
+     * @param value
      */
-    binarySearch(array, value) {
+    binarySearch(array: number[], value: number): number {
         let min = 0;
         let max = array.length - 1;
         let mid;
@@ -61,9 +55,9 @@ export class LinearInterpolation {
 
     /**
      * 
-     * @param {number} value 
+     * @param value 
      */
-    interpolate(value) {
+    interpolate(value: number): number {
         const x = this.x;
         const y = this.y;
 

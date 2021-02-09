@@ -1,5 +1,12 @@
 export class Spectrogram {
-    constructor(canvas) {
+    private _canvas: HTMLCanvasElement;
+    private _canvasTemp: HTMLCanvasElement;
+    private _analyserNode: AnalyserNode | undefined;
+    private _frequencies: number[] = [];
+    private pixelPerFreq: number = 0;
+    private _colors: number[][] = [];
+
+    constructor(canvas: HTMLCanvasElement) {
         this._canvas = canvas;
         this._canvasTemp = document.createElement('canvas');
         this._canvasTemp.width = canvas.width;
@@ -52,7 +59,7 @@ export class Spectrogram {
         this._frequencies = [];
     }
 
-    generateColorMap(colorStops) {
+    generateColorMap(colorStops: number[][]): void {
         const dark = [0, 0, 255];
         const light = [0, 255, 255];
 
@@ -102,7 +109,7 @@ export class Spectrogram {
         }
     }
 
-    setFrequencyListText(text) {
+    setFrequencyListText(text: string): void {
         this._frequencies = text.split(/[\n, ]/)
             .map(frequency => parseFloat(frequency))
             .filter(frequency => !isNaN(frequency));
@@ -110,7 +117,7 @@ export class Spectrogram {
         this._drawFrequencyMarkers();
     }
 
-    update() {
+    update(): void {
         if (!this._analyserNode) {
             return;
         }
@@ -118,89 +125,96 @@ export class Spectrogram {
         const fftData = new Uint8Array(this._analyserNode.frequencyBinCount);
         this._analyserNode.getByteFrequencyData(fftData);
 
-        let context;
+        let context: CanvasRenderingContext2D | null;
 
         context = this._canvasTemp.getContext('2d');
-        context.drawImage(this._canvasTemp, -1, 0);
+        if (context) {
+            context.drawImage(this._canvasTemp, -1, 0);
 
-        const imageData = context.createImageData(1, this._canvasTemp.height);
-        const data = imageData.data;
+            const imageData = context.createImageData(1, this._canvasTemp.height);
+            const data = imageData.data;
 
-        for (let i = 0; i < data.length; i += 4) {
-            const pos = Math.floor((data.length - i) / 4) - 1;
-            let color = [0, 0, 0];
-            if (pos >= 0 && pos < fftData.length) {
-                color = this._colors[fftData[pos]];
+            for (let i = 0; i < data.length; i += 4) {
+                const pos = Math.floor((data.length - i) / 4) - 1;
+                let color = [0, 0, 0];
+                if (pos >= 0 && pos < fftData.length) {
+                    color = this._colors[fftData[pos]];
+                }
+
+                data[i + 0] = color[0];
+                data[i + 1] = color[1];
+                data[i + 2] = color[2];
+                data[i + 3] = 255;
             }
 
-            data[i + 0] = color[0];
-            data[i + 1] = color[1];
-            data[i + 2] = color[2];
-            data[i + 3] = 255;
+            context.putImageData(imageData, this._canvas.width - 1, 0);
         }
-
-        context.putImageData(imageData, this._canvas.width - 1, 0);
 
         this._drawFrequencyMarkers();
     }
 
-    _drawFrequencyMarkers() {
-        if(!this._analyserNode) {
+    private _drawFrequencyMarkers(): void {
+        if (!this._analyserNode) {
             return;
         }
-        
+
         const context = this._canvas.getContext('2d');
-        context.drawImage(this._canvasTemp, 0, 0);
+        if (context) {
+            context.drawImage(this._canvasTemp, 0, 0);
 
-        context.save();
+            context.save();
 
-        context.translate(0, 0.5);
-        context.globalCompositeOperation = 'difference';
-        context.strokeStyle = 'white';
-        //context.setLineDash([1, 1]);
+            context.translate(0, 0.5);
+            context.globalCompositeOperation = 'difference';
+            context.strokeStyle = 'white';
+            //context.setLineDash([1, 1]);
 
-        context.font = '14px Arial';
-        context.textBaseline = 'bottom';
-        context.textAlign = 'left';
-        context.fillStyle = 'white';
+            context.font = '14px Arial';
+            context.textBaseline = 'bottom';
+            context.textAlign = 'left';
+            context.fillStyle = 'white';
 
-        context.beginPath();
+            context.beginPath();
 
-        const fftSize = this._analyserNode.fftSize;
-        const sampleRate = this._analyserNode.context.sampleRate;
-        const pixelPerFreq = fftSize / sampleRate;
-        const width = this._canvas.width;
-        const height = this._canvas.height;
-        this.pixelPerFreq = pixelPerFreq;
 
-        this._frequencies.forEach(frequency => {
-            const y = height - 1 - Math.floor(frequency * pixelPerFreq);
-            if (y >= 0) {
-                context.moveTo(0, y);
-                context.lineTo(width, y);
+            const fftSize = this._analyserNode.fftSize;
+            const sampleRate = this._analyserNode.context.sampleRate;
+            const pixelPerFreq = fftSize / sampleRate;
+            const width = this._canvas.width;
+            const height = this._canvas.height;
+            this.pixelPerFreq = pixelPerFreq;
 
-                context.fillText(frequency, 0, y);
-            }
-        });
+            this._frequencies.forEach(frequency => {
+                const y = height - 1 - Math.floor(frequency * pixelPerFreq);
+                if (y >= 0) {
+                    context.moveTo(0, y);
+                    context.lineTo(width, y);
 
-        context.stroke();
+                    context.fillText(frequency.toString(), 0, y);
+                }
+            });
 
-        context.restore();
+            context.stroke();
+
+            context.restore();
+        }
     }
 
-    clear() {
+    clear(): void {
         this._clear(this._canvasTemp);
         this._drawFrequencyMarkers();
     }
 
-    _clear(canvas) {
+    private _clear(canvas: HTMLCanvasElement): void {
         const context = canvas.getContext('2d');
         const colorStyleText = `rgb(${this._colors[0].join(',')})`;
-        context.fillStyle = colorStyleText;
-        context.fillRect(0, 0, canvas.width, canvas.height);
+        if (context) {
+            context.fillStyle = colorStyleText;
+            context.fillRect(0, 0, canvas.width, canvas.height);
+        }
     }
 
-    setAnalyser(analyserNode) {
+    setAnalyser(analyserNode: AnalyserNode): void {
         analyserNode.smoothingTimeConstant = 0;
         this._analyserNode = analyserNode;
 
@@ -208,7 +222,7 @@ export class Spectrogram {
         // this.setFftSize(8192);
     }
 
-    setDecibelsRange(min, max) {
+    setDecibelsRange(min: number, max: number): void {
         if (this._analyserNode) {
             const oldMax = this._analyserNode.maxDecibels;
             const oldMin = this._analyserNode.minDecibels;
@@ -223,7 +237,7 @@ export class Spectrogram {
         }
     }
 
-    setFftSize(fftSize, isAdjust) {
+    setFftSize(fftSize: number, isAdjust: boolean): void {
         if (this._analyserNode) {
             const analyserNode = this._analyserNode;
 

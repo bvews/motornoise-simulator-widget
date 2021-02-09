@@ -1,4 +1,6 @@
-export function loadImages(imageEntries, onload, onupdate) {
+import { AudioEntry } from './motornoise-track';
+
+export function loadImages(imageEntries: any[] | undefined, onload: (imageEntries?: any[]) => void, onupdate?: (loadCount: number, entryCount: number) => void) {
     if (!imageEntries) {
         if (onload) {
             onload();
@@ -8,7 +10,7 @@ export function loadImages(imageEntries, onload, onupdate) {
 
     let loadCount = 0;
     const imageCount = imageEntries.length;
-    onupdate(loadCount, imageCount);
+    onupdate?.(loadCount, imageCount);
 
     imageEntries.forEach(entry => {
         const image = new Image();
@@ -38,7 +40,7 @@ export function loadImages(imageEntries, onload, onupdate) {
     });
 }
 
-export function loadAudios(audioContext, audioEntries, onload, onupdate) {
+export function loadAudios(audioContext: AudioContext, audioEntries: AudioEntry[], onload: (entries?: AudioEntry[]) => void, onupdate: (loadCount: number, entryCount: number) => void): void {
     if (!audioContext || !audioEntries) {
         if (onload) {
             onload();
@@ -62,7 +64,7 @@ export function loadAudios(audioContext, audioEntries, onload, onupdate) {
 
                 if (!buffer) {
                     console.error(`Error decoding file data: ${entry.url}`);
-                    entry.buffer = null;
+                    entry.buffer = undefined;
                 } else {
                     entry.buffer = buffer;
                 }
@@ -76,7 +78,7 @@ export function loadAudios(audioContext, audioEntries, onload, onupdate) {
                 }
             }, error => {
                 loadCount++;
-                entry.buffer = null;
+                entry.buffer = undefined;
                 console.error('decodeAudioData error', error);
 
                 if (onupdate) {
@@ -90,7 +92,7 @@ export function loadAudios(audioContext, audioEntries, onload, onupdate) {
         }
         request.onerror = () => {
             loadCount++;
-            entry.buffer = null;
+            entry.buffer = undefined;
             console.error('BufferLoader: XHR error');
 
             if (onupdate) {
@@ -108,10 +110,10 @@ export function loadAudios(audioContext, audioEntries, onload, onupdate) {
 
 /**
  * 
- * @param {Array} imageEntries 
- * @param {callback} onupdate 
+ * @param imageEntries 
+ * @param onupdate 
  */
-export async function loadImagesModern(imageEntries, onupdate) {
+export async function loadImagesModern(imageEntries: any[], onupdate: (loadCount: number, entryCount: number) => void): Promise<undefined> {
     if (!imageEntries) {
         return;
     }
@@ -119,7 +121,7 @@ export async function loadImagesModern(imageEntries, onupdate) {
         onupdate = () => { };
     }
 
-    const length = audioEntries.length;
+    const length = imageEntries.length;
     onupdate(0, length);
     await Promise.all(imageEntries.map(async (entry, i) => {
         try {
@@ -131,29 +133,29 @@ export async function loadImagesModern(imageEntries, onupdate) {
         onupdate(i + 1, length);
     }));
 
-    function loadImage(url) {
-        return new Promise((resolve, reject) => {
+    function loadImage(url: string): Promise<HTMLImageElement> {
+        return new Promise<HTMLImageElement>((resolve, reject) => {
             const image = new Image();
             image.addEventListener('error', function handleError() {
                 reject();
             });
             image.addEventListener('load', function handleLoad() {
                 image.removeEventListener('load', handleLoad);
-                image.removeEventListener('error', handleError);
+                // image.removeEventListener('error', handleError);
                 resolve(image);
             });
             image.src = url;
-        }, reject => reject(image));
+        });
     };
 }
 
 /**
  * 
- * @param {AudioContext} audioContext 
- * @param {AudioEntry[]} audioEntries 
- * @param {callback} onupdate 
+ * @param audioContext 
+ * @param audioEntries 
+ * @param onupdate 
  */
-export async function loadAudiosModern(audioContext, audioEntries, onupdate) {
+export async function loadAudiosModern(audioContext: AudioContext, audioEntries: AudioEntry[], onupdate: (loadCount: number, entryCount: number) => void): Promise<undefined> {
     if (!audioContext || !audioEntries) {
         return;
     }
@@ -170,15 +172,15 @@ export async function loadAudiosModern(audioContext, audioEntries, onupdate) {
             const audioBuffer = await decodeAudioData(audioContext, arrayBuffer);
             entry.buffer = audioBuffer;
         } catch (e) {
-            entry.buffer = null;
+            entry.buffer = undefined;
             console.error(`Failed to load "${entry.url}".`);
         }
         onupdate(i + 1, length);
     }));
 
-    function decodeAudioData(audioContext, arrayBuffer) {
-        return new Promise((resolve, reject) => {
+    function decodeAudioData(audioContext: AudioContext, arrayBuffer: ArrayBuffer): Promise<AudioBuffer> {
+        return new Promise<AudioBuffer>((resolve, reject) => {
             audioContext.decodeAudioData(arrayBuffer, audioBuffer => resolve(audioBuffer), () => reject());
-        }, null);
+        });
     };
 }

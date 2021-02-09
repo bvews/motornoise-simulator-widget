@@ -1,22 +1,28 @@
-/**
- * 
- * @param {AudioContext} context 
- * @param {string[]} urlList 
- * @param {EventListener} callback 
- */
+import { AudioEntry } from './motornoise-track';
+
 class BufferLoader {
-    constructor(context, urlList, callback, extention) {
-        /** @type {AudioContext} */
+    private context: AudioContext;
+    private urlList: string[] = [];
+    private onload: (bufferList?: AudioBuffer[]) => void;
+    private bufferList: AudioBuffer[] = [];
+    private durationList: number[] = [];
+    private loadCount: number = 0;
+    private soundParams: string = '';
+    private onupdate: (loadCount: number, entryCount: number) => void = (loadCount, entryCount) => { };
+
+    /**
+     * 
+     * @param context 
+     * @param urlList 
+     * @param callback 
+     * @param extention
+     */
+    constructor(context: AudioContext, urlList: string[], callback: (bufferList?: AudioBuffer[]) => void, extention: string) {
         this.context = context;
-        /** @type {string[]} */
         this.urlList = urlList;
-        /** @type {EventListener} */
         this.onload = callback;
-        /** @type {AudioBuffer[]} */
-        this.bufferList = new Array();
-        /** @type {number[]} */
-        this.durationList = new Array();
-        /** @type {number} */
+        this.bufferList = [];
+        this.durationList = [];
         this.loadCount = 0;
 
         this.soundParams = '';
@@ -24,7 +30,7 @@ class BufferLoader {
 
     // -------------------- Public methods.
 
-    load() {
+    load(): void {
         for (let i = 0; i < this.urlList.length; ++i) {
             this.loadBuffer(this.urlList[i], i);
         }
@@ -34,10 +40,10 @@ class BufferLoader {
 
     /**
      * 
-     * @param {string} url 
-     * @param {number} index 
+     * @param url 
+     * @param index 
      */
-    loadBuffer(url, index) {
+    loadBuffer(url: string, index: number): void {
         const duration = parseFloat(url.split(',')[1]) || 0;
         url = url.split(',')[0];
 
@@ -93,7 +99,7 @@ class BufferLoader {
     }
 }
 
-function audioBufferLoader(audioContext, audioEntries, onload, onupdate) {
+function audioBufferLoader(audioContext: AudioContext, audioEntries: AudioEntry[], onload: (entries?: AudioEntry[]) => void, onupdate: (loadCount: number, entryCount: number) => void): void {
     let loadCount = 0;
     const audioCount = audioEntries.length;
     onupdate(loadCount, audioCount);
@@ -110,7 +116,7 @@ function audioBufferLoader(audioContext, audioEntries, onload, onupdate) {
 
                 if (!buffer) {
                     console.error(`Error decoding file data: ${entry.url}`);
-                    entry.buffer = null;
+                    entry.buffer = undefined;
                 } else {
                     entry.buffer = buffer;
                 }
@@ -124,7 +130,7 @@ function audioBufferLoader(audioContext, audioEntries, onload, onupdate) {
                 }
             }, error => {
                 loadCount++;
-                entry.buffer = null;
+                entry.buffer = undefined;
                 console.error('decodeAudioData error', error);
 
                 if (onupdate) {
@@ -138,9 +144,9 @@ function audioBufferLoader(audioContext, audioEntries, onload, onupdate) {
         }
         request.onerror = () => {
             loadCount++;
-            entry.buffer = null;
+            entry.buffer = undefined;
             console.error('BufferLoader: XHR error');
-            
+
             if (onupdate) {
                 // Report progress.
                 onupdate(loadCount, audioCount);

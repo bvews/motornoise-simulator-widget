@@ -1,19 +1,36 @@
-import { LinearInterpolation } from './linear-interpolation.js';
+import { LinearInterpolation, Point } from './linear-interpolation';
 
-function AudioEntry(audioContext, path) {
-    this.buffer = audioContext.createBufferSource();
+export interface AudioEntry {
+    url: string;
+    length: number;
+    leeway: number;
+    buffer?: AudioBuffer;
 }
 
 export class MotornoiseTrack {
+    private _audioContext: AudioContext;
+    private _audioEntry: AudioEntry;
+    private _powerFrequency: LinearInterpolation;
+    private _powerVolume: LinearInterpolation;
+    private _brakeFrequency: LinearInterpolation;
+    private _brakeVolume: LinearInterpolation;
+    private _regenerationLimit: number;
+    private _isRunningNoise: boolean;
+    private _gainNode: GainNode;
+    public gainNode: GainNode;
+    private _bufferNode?: AudioBufferSourceNode;
+    private _volumePrev: number = 0;
+    private _pitchPrev: number = 1;
+
     constructor(
-        audioContext,
-        audioEntry,
-        powerFrequency,
-        powerVolume,
-        brakeFrequency,
-        brakeVolume,
-        regenerationLimit,
-        isRunningNoise
+        audioContext: AudioContext,
+        audioEntry: AudioEntry,
+        powerFrequency: Point[],
+        powerVolume: Point[],
+        brakeFrequency: Point[],
+        brakeVolume: Point[],
+        regenerationLimit: number,
+        isRunningNoise: boolean
     ) {
         this._audioContext = audioContext;
         this._audioEntry = audioEntry;
@@ -21,7 +38,7 @@ export class MotornoiseTrack {
         // Create gain node.
         this._gainNode = audioContext.createGain();
         this._gainNode.gain.value = 0;
-        this._bufferNode = null;
+        this._bufferNode = undefined;
 
         this._powerFrequency = new LinearInterpolation(powerFrequency);
         this._powerVolume = new LinearInterpolation(powerVolume);
@@ -33,17 +50,14 @@ export class MotornoiseTrack {
 
         this.gainNode = this._gainNode;
         //this._gainNode.connect(this._audioContext.destination);
-
-        this._volumePrev = 0;
-        this._pitchPrev = 1;
     }
 
     /**
      * 
-     * @param {number} speed - Current train speed
-     * @param {number} acceleration - Current motor traction acceleration
+     * @param speed - Current train speed
+     * @param acceleration - Current motor traction acceleration
      */
-    update(speed, acceleration) {
+    update(speed: number, acceleration: number): void {
         if (!this._audioContext || !this._audioEntry || !this._audioEntry.buffer) {
             return;
         }
@@ -76,7 +90,7 @@ export class MotornoiseTrack {
         this._updateSound(pitch, volume);
     }
 
-    stop() {
+    stop(): void {
         if (!this._audioContext || !this._audioEntry || !this._audioEntry.buffer) {
             return;
         }
@@ -84,23 +98,23 @@ export class MotornoiseTrack {
         this._updateSound(1, 0);
     }
 
-    _updateSound(pitch, volume) {
+    private _updateSound(pitch: number, volume: number) {
         volume = volume > 1 ? 1 : volume;
         if (volume <= 0) {
-            if (this._bufferNode !== null) {
+            if (this._bufferNode !== undefined) {
                 // Dispose AudioBufferSourceNode.
                 this._bufferNode.stop();
 
                 this._bufferNode.disconnect();
                 //this._gainNode.disconnect();
 
-                this._bufferNode = null;
+                this._bufferNode = undefined;
             }
         } else {
-            if (this._bufferNode === null) {
+            if (this._bufferNode === undefined) {
                 // Create and connect AudioBufferSourceNode.
                 this._bufferNode = this._audioContext.createBufferSource();
-                this._bufferNode.buffer = this._audioEntry.buffer;
+                this._bufferNode.buffer = this._audioEntry.buffer ?? null;
                 this._bufferNode.loop = true;
                 this._bufferNode.loopStart = this._audioEntry.leeway;
                 this._bufferNode.loopEnd = this._audioEntry.leeway + this._audioEntry.length;

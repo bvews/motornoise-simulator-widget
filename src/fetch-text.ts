@@ -1,4 +1,4 @@
-function fetchText(url, onload) {
+function fetchText(url: string, onload: (text?: string) => void): void {
     const xhr = new XMLHttpRequest();
 
     xhr.addEventListener('load', event => {
@@ -9,7 +9,7 @@ function fetchText(url, onload) {
         }
     }, false);
     xhr.addEventListener('error', event => {
-        onload(null);
+        onload(undefined);
     }, false);
 
     xhr.open('GET', url, true);

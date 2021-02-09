@@ -1,21 +1,21 @@
 /**
  * 
- * @param {ArrayBuffer} arrayBuffer
- * @returns {number} - Audio duration [sec].
+ * @param arrayBuffer
+ * @returns - Audio duration [sec].
  */
-function getVorbisAudioLength(arrayBuffer) {
+export function getVorbisAudioLength(arrayBuffer: ArrayBuffer): number {
     const dataView = new DataView(arrayBuffer);
     const byteLength = dataView.byteLength;
 
     /**
      * 
-     * @param {DataView} dataView 
-     * @param {number} byteLength 
-     * @param {number} pos 
-     * @param {string[]} query
-     * @returns {boolean} 
+     * @param dataView 
+     * @param byteLength 
+     * @param pos 
+     * @param query
+     * @returns 
      */
-    const findIndex = (dataView, byteLength, pos, query) => {
+    const findIndex = (dataView: DataView, byteLength: number, pos: number, query: number[]): boolean => {
         for (let i = 0; i < query.length; i++) {
             if (pos + i >= byteLength || dataView.getUint8(pos + i) !== query[i]) {
                 return false;

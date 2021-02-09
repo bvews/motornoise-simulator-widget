@@ -1,9 +1,9 @@
 export class BrowserCompatible {
+    private browser: string | undefined;
+    private audioFileExtention: string | undefined;
     constructor() {
-        /** @type {string} */
         this.browser = undefined;
-        /** @type {string} */
-        this.audioFileExtention = null;
+        this.audioFileExtention = undefined;
 
         const userAgent = window.navigator.userAgent.toLowerCase();
         if (userAgent.includes('msie') || userAgent.includes('trident')) {
@@ -40,8 +40,8 @@ export class BrowserCompatible {
 
     /**
      * 
-     * @param {AudioBufferSourceNode} sourceNode
-     * @param {number} duration 
+     * @param sourceNode
+     * @param duration 
      */
-    setSpan(sourceNode, duration) { }
+    setSpan(sourceNode: AudioBufferSourceNode, duration: number): void { }
 }
