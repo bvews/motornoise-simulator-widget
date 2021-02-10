@@ -2,10 +2,11 @@ import { MotornoiseTrack } from './motornoise-track';
 import { Spectrogram } from './spectrogram';
 import { GeneralizedAccelerationCurve } from './generalized-acceleration-curve';
 import { LinearInterpolation } from './linear-interpolation';
+import { RunningResistanceSimulator } from './running-resistance-simulator';
+import { AccelerationSimulator } from './acceleration-simulator';
 import { loadVehicle, Vehicle, Parameters, TrainDat } from './load-text-funcs';
 import { loadImages, loadAudios } from './load-media-funcs';
 import { BrowserCompatible } from './browser-compatible';
-
 
 interface MotornoiseData {
     urls: string[];
@@ -357,109 +358,4 @@ export class MotornoiseSimulator {
     }
 }
 
-class AccelerationSimulator {
-    private accelerationCurves: GeneralizedAccelerationCurve[] = [];
-    private decelerationCurves: GeneralizedAccelerationCurve[] = [];
-    public maxPowerNotch = 5;
-    public maxBrakeNotch = 7;
-
-    constructor(trainDat: TrainDat | undefined, parameters: Parameters | undefined) {
-        if (!trainDat) {
-            return;
-        } else {
-            if (!parameters) {
-                // const maxDeceleration = Number(trainDat[11]);
-                // const maxPowerNotch = parseInt(trainDat[38]);
-                // const maxBrakeNotch = parseInt(trainDat[39]);
-
-                // this.maxPowerNotch = maxPowerNotch;
-                // this.maxBrakeNotch = maxBrakeNotch;
-
-                // for (let i = 0; i < maxPowerNotch; i++) {
-                //     const accelerationParams = trainDat[i + 2].split(',');
-                //     const a0 = Number(accelerationParams[0]);
-                //     const a1 = Number(accelerationParams[1]);
-                //     const v0 = Number(accelerationParams[2]);
-                //     const v1 = Number(accelerationParams[3]);
-                //     const e = Number(accelerationParams[4]);
-                //     accelerationCurves[i] = new GeneralizedAccelerationCurve(a0, a1, v0, v1, e);
-                // }
-
-                // for (let i = 0; i < maxBrakeNotch; i++) {
-                //     decelerationCurves[i] = new GeneralizedAccelerationCurve(-maxDeceleration / maxBrakeNotch * (i + 1));
-                // }
-            } else {
-                const maxDeceleration = trainDat.performance.deceleration;
-                const cab = parameters.cab || parameters.oneLeverCab;
-                if (cab) {
-                    this.maxPowerNotch = cab.powerNotchCount;
-                    this.maxBrakeNotch = cab.brakeNotchCount;
-                }
-
-                trainDat.acceleration.forEach((a: any) => {
-                    this.accelerationCurves.push(new GeneralizedAccelerationCurve(a.a0, a.a1, a.v1, a.v2, a.e));
-                });
-
-                for (let i = 0; i < this.maxBrakeNotch; i++) {
-                    this.decelerationCurves[i] = new GeneralizedAccelerationCurve(-maxDeceleration / this.maxBrakeNotch * (i + 1));
-                }
-            }
-        }
-    }
-
-    getAcceleration(speed: number, notch: number): number {
-        if (notch > 0 && this.accelerationCurves[notch - 1]) {
-            return this.accelerationCurves[notch - 1].getAcceleration(speed);
-        } else if (notch < 0 && this.decelerationCurves[-notch - 1]) {
-            return this.decelerationCurves[-notch - 1].getAcceleration(speed);
-        } else {
-            return 0;
-        }
-    }
-}
-
-class RunningResistanceSimulator {
-    private motorcarWeight: number;
-    private trailerWeight: number;
-    private motorcarCount: number;
-    private trailerCount: number;
-    private motorcarInertiaFactor: number;
-    private trailerInertiaFactor: number;
-
-    private coefficientA: number;
-    private coefficientB: number;
-    private coefficientC: number;
-
-    constructor(parameters: Parameters, mw = 31500, tw = 31500, mc = 1, tc = 1, mif = 0.01, tif = 0.05, a?: number, b?: number, c?: number) {
-        if (parameters && parameters.dynamics) {
-            const dynamics = parameters.dynamics;
-
-            mw = mw ? mw : dynamics.motorcarWeight;
-            tw = tw ? tw : dynamics.trailerWeight;
-            mc = mc ? mc : dynamics.motorcarCount;
-            tc = tc ? tc : dynamics.trailerCount;
-            mif = mif ? mif : dynamics.motorcarInertiaFactor;
-            tif = tif ? tif : dynamics.trailerInertiaFactor;
-        }
-
-        this.motorcarWeight = isNaN(mw) ? 31500 : Number(mw);
-        this.trailerWeight = isNaN(tw) ? 31500 : Number(tw);
-        this.motorcarCount = isNaN(mc) ? 1 : Number(mc);
-        this.trailerCount = isNaN(tc) ? 1 : Number(tc);
-        this.motorcarInertiaFactor = isNaN(mif) ? 0.01 : Number(mif);
-        this.trailerInertiaFactor = isNaN(tif) ? 0.05 : Number(tif);
-
-        this.coefficientA = a == undefined ? 0.275 + 0.076 * (this.motorcarCount + this.trailerCount - 1) : a;
-        this.coefficientB = b == undefined ? 0.000242 * this.motorcarCount * this.motorcarWeight + 0.0000275 * this.trailerCount * this.trailerWeight : b;
-        this.coefficientC = c == undefined ? 0.0162 * this.motorcarCount * this.motorcarWeight + 0.00765 * this.trailerCount * this.trailerWeight : c;
-    }
-    getForce(speed: number): number {
-        return this.coefficientA * speed * speed + this.coefficientB * speed + this.coefficientC;
-    }
-
-    getAcceleration(speed: number): number {
-        const resistanceForce = this.coefficientA * speed * speed + this.coefficientB * speed + this.coefficientC;
-        return -3.6 * resistanceForce / (this.motorcarCount * this.motorcarWeight * (this.motorcarInertiaFactor + 1) + this.trailerCount * this.trailerWeight * (this.trailerInertiaFactor + 1));
-    }
-}
 

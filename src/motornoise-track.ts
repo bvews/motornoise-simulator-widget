@@ -1,11 +1,6 @@
-import { LinearInterpolation, Point } from './linear-interpolation';
-
-export interface AudioEntry {
-    url: string;
-    length: number;
-    leeway: number;
-    buffer?: AudioBuffer;
-}
+import { LinearInterpolation } from './linear-interpolation';
+import { Point } from './point';
+import { AudioEntry } from './audio-entry';
 
 export class MotornoiseTrack {
     private _audioContext: AudioContext;

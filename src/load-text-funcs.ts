@@ -1,5 +1,5 @@
-import { Point } from './linear-interpolation';
-import { AudioEntry } from './motornoise-track';
+import { Point } from './point';
+import { AudioEntry } from './audio-entry';
 
 export interface Vehicle {
     parameters: Parameters;

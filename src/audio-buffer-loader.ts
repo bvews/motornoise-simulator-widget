@@ -1,4 +1,4 @@
-import { AudioEntry } from './motornoise-track';
+import { AudioEntry } from './audio-entry';
 
 class BufferLoader {
     private context: AudioContext;
