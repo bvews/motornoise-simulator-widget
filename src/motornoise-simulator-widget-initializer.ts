@@ -6,11 +6,11 @@ import { BrowserCompatible } from './browser-compatible.js';
 /**
  *
  * @callback createHtmlElement
- * @returns 
+ * @returns
  */
 /**
- * 
- * @param createHtmlElement 
+ *
+ * @param createHtmlElement
  */
 export class MotornoiseSimulatorWidgetInitializer {
     private widgets?: HTMLElement;
@@ -96,11 +96,13 @@ export class MotornoiseSimulatorWidgetInitializer {
                 title.style.display = 'none';
             }
 
-            const sanitize = (str: string) => str.replace(/&lt;/g, '<')
-                .replace(/&gt;/g, '>')
-                .replace(/&quot;/g, '"')
-                .replace(/&#39;/g, '\'')
-                .replace(/&amp;/g, '&');
+            const sanitize = (str: string) =>
+                str
+                    .replace(/&lt;/g, '<')
+                    .replace(/&gt;/g, '>')
+                    .replace(/&quot;/g, '"')
+                    .replace(/&#39;/g, "'")
+                    .replace(/&amp;/g, '&');
             const setTitle = (element: HTMLElement | null, title: string | undefined, lang: string): void => {
                 if (!element || !title) {
                     return;
@@ -127,14 +129,14 @@ export class MotornoiseSimulatorWidgetInitializer {
                 const result = !!(iframe.contentWindow && 'ontouchstart' in iframe.contentWindow);
                 iframe.remove();
                 return result;
-            }
+            };
 
             // Wake up AudioContext by user action.
             // https://qiita.com/zprodev/items/7fcd8335d7e8e613a01f
             /**
-             * 
-             * @param audioContext 
-             * @param element 
+             *
+             * @param audioContext
+             * @param element
              */
             const wakeupAudioContext = (audioContext: AudioContext, element: HTMLElement | null | undefined): void => {
                 const browserCompatible = new BrowserCompatible();
@@ -163,7 +165,6 @@ export class MotornoiseSimulatorWidgetInitializer {
             const gaugeBaseUrl = dataset.gaugeBase ? `${url}/${dataset.gaugeBase}` : undefined;
             const gaugeNeedleUrl = dataset.gaugeNeedle ? `${url}/${dataset.gaugeNeedle}` : undefined;
             const gaugeCoverUrl = dataset.gaugeCover ? `${url}/${dataset.gaugeCover}` : undefined;
-
 
             const scaleProfile = dataset.scaleProfile || '0,-120;120,120';
             const min = scaleProfile.split(';')[0];
@@ -213,10 +214,10 @@ export class MotornoiseSimulatorWidgetInitializer {
                 const radius = 225;
                 const step = 2;
 
-                const angle = speed * (maxAngle - minAngle) / (maxValue - minValue) + minAngle;
-                const angleD = (speed - step / 2) * (maxAngle - minAngle) / (maxValue - minValue) + minAngle;
+                const angle = (speed * (maxAngle - minAngle)) / (maxValue - minValue) + minAngle;
+                const angleD = ((speed - step / 2) * (maxAngle - minAngle)) / (maxValue - minValue) + minAngle;
 
-                const angleStep = (maxAngle - minAngle) / (maxValue - minValue) * step;
+                const angleStep = ((maxAngle - minAngle) / (maxValue - minValue)) * step;
                 const digitalAngle = minAngle + Math.floor((angleD - minAngle) / angleStep) * angleStep - angleStep / 2;
 
                 if (isScaleDigital === 'true') {
@@ -274,18 +275,21 @@ export class MotornoiseSimulatorWidgetInitializer {
 
             if (launchButton && launchButton instanceof HTMLElement) {
                 launchButton.onclick = () => {
-                    motornoiseSimulators[id].load(() => {
-                        message?.style?.setProperty('display', 'none');
-                        controls?.style?.setProperty('display', 'block');
-                        gauge?.style?.setProperty('display', 'block');
-                        title?.style?.setProperty('display', 'block');
+                    motornoiseSimulators[id].load(
+                        () => {
+                            message?.style?.setProperty('display', 'none');
+                            controls?.style?.setProperty('display', 'block');
+                            gauge?.style?.setProperty('display', 'block');
+                            title?.style?.setProperty('display', 'block');
 
-                        motornoiseSimulator.startMainLoop();
-                    }, (loadCount: number, maxCount: number) => {
-                        if (message) {
-                            message.innerText = `Loading... (${loadCount} / ${maxCount})`;
+                            motornoiseSimulator.startMainLoop();
+                        },
+                        (loadCount: number, maxCount: number) => {
+                            if (message) {
+                                message.innerText = `Loading... (${loadCount} / ${maxCount})`;
+                            }
                         }
-                    });
+                    );
 
                     if (message) {
                         message.innerText = 'Loading...';
@@ -347,21 +351,30 @@ export class MotornoiseSimulatorWidgetInitializer {
             const muteButton = content.querySelector<HTMLElement>('.mute-button');
             if (muteButton) {
                 muteButton.onclick = () => {
-                    motornoiseSimulator.toggleMute(() => { muteButton.innerText = 'Unmute'; },
-                        () => { muteButton.innerText = 'Mute'; });
+                    motornoiseSimulator.toggleMute(
+                        () => {
+                            muteButton.innerText = 'Unmute';
+                        },
+                        () => {
+                            muteButton.innerText = 'Mute';
+                        }
+                    );
                 };
             }
 
             const spectrogramButton = content.querySelector<HTMLElement>('.spectrogram-button');
             if (spectrogramButton) {
                 spectrogramButton.onclick = () => {
-                    motornoiseSimulator.toggleSpectrogram(() => {
-                        spectrogramButton.innerText = 'Spectrogram ON';
-                        spectrogram?.style?.setProperty('display', 'none');
-                    }, () => {
-                        spectrogramButton.innerText = 'Spectrogram OFF';
-                        spectrogram?.style?.setProperty('display', 'block');
-                    });
+                    motornoiseSimulator.toggleSpectrogram(
+                        () => {
+                            spectrogramButton.innerText = 'Spectrogram ON';
+                            spectrogram?.style?.setProperty('display', 'none');
+                        },
+                        () => {
+                            spectrogramButton.innerText = 'Spectrogram OFF';
+                            spectrogram?.style?.setProperty('display', 'block');
+                        }
+                    );
                 };
             }
 
@@ -383,7 +396,7 @@ export class MotornoiseSimulatorWidgetInitializer {
                 updateGauge(speed);
             };
 
-            document.addEventListener('visibilitychange', event => {
+            document.addEventListener('visibilitychange', (event) => {
                 motornoiseSimulator.handleVisibilitychange(event);
             });
         }

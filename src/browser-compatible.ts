@@ -40,12 +40,12 @@ export class BrowserCompatible {
     }
 
     /**
-     * 
+     *
      * @param sourceNode
-     * @param duration 
+     * @param duration
      */
-    setSpan(sourceNode: AudioBufferSourceNode, duration: number): void { }
-    
+    setSpan(sourceNode: AudioBufferSourceNode, duration: number): void {}
+
     public get browser(): Browser {
         return this._browser;
     }

@@ -1,10 +1,10 @@
 /**
- * 
- * @param a0 
+ *
+ * @param a0
  * @param a1
- * @param v0 
- * @param v1 
- * @param e 
+ * @param v0
+ * @param v1
+ * @param e
  */
 export class GeneralizedAccelerationCurve {
     private a0 = 0;
@@ -39,15 +39,15 @@ export class GeneralizedAccelerationCurve {
             if (speed === 0) {
                 return 0;
             } else {
-                return a1 * v0 / speed;
+                return (a1 * v0) / speed;
             }
         } else {
             if (speed === 0) {
                 return 0;
             } else if (v1 === 0) {
-                return a1 * v0 / speed;
+                return (a1 * v0) / speed;
             } else {
-                return a1 * v0 / v1 * (v1 / speed) ** e;
+                return ((a1 * v0) / v1) * (v1 / speed) ** e;
             }
         }
     }

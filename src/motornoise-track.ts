@@ -17,16 +17,7 @@ export class MotornoiseTrack {
     private _volumePrev = 0;
     private _pitchPrev = 1;
 
-    constructor(
-        audioContext: AudioContext,
-        audioEntry: AudioEntry,
-        powerFrequency: Point[],
-        powerVolume: Point[],
-        brakeFrequency: Point[],
-        brakeVolume: Point[],
-        regenerationLimit: number,
-        isRunningNoise: boolean
-    ) {
+    constructor(audioContext: AudioContext, audioEntry: AudioEntry, powerFrequency: Point[], powerVolume: Point[], brakeFrequency: Point[], brakeVolume: Point[], regenerationLimit: number, isRunningNoise: boolean) {
         this._audioContext = audioContext;
         this._audioEntry = audioEntry;
 
@@ -48,7 +39,7 @@ export class MotornoiseTrack {
     }
 
     /**
-     * 
+     *
      * @param speed - Current train speed
      * @param acceleration - Current motor traction acceleration
      */

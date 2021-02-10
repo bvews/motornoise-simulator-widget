@@ -15,10 +15,8 @@ export class AccelerationSimulator {
                 // const maxDeceleration = Number(trainDat[11]);
                 // const maxPowerNotch = parseInt(trainDat[38]);
                 // const maxBrakeNotch = parseInt(trainDat[39]);
-
                 // this.maxPowerNotch = maxPowerNotch;
                 // this.maxBrakeNotch = maxBrakeNotch;
-
                 // for (let i = 0; i < maxPowerNotch; i++) {
                 //     const accelerationParams = trainDat[i + 2].split(',');
                 //     const a0 = Number(accelerationParams[0]);
@@ -28,7 +26,6 @@ export class AccelerationSimulator {
                 //     const e = Number(accelerationParams[4]);
                 //     accelerationCurves[i] = new GeneralizedAccelerationCurve(a0, a1, v0, v1, e);
                 // }
-
                 // for (let i = 0; i < maxBrakeNotch; i++) {
                 //     decelerationCurves[i] = new GeneralizedAccelerationCurve(-maxDeceleration / maxBrakeNotch * (i + 1));
                 // }
@@ -45,7 +42,7 @@ export class AccelerationSimulator {
                 });
 
                 for (let i = 0; i < this.maxBrakeNotch; i++) {
-                    this.decelerationCurves[i] = new GeneralizedAccelerationCurve(-maxDeceleration / this.maxBrakeNotch * (i + 1));
+                    this.decelerationCurves[i] = new GeneralizedAccelerationCurve((-maxDeceleration / this.maxBrakeNotch) * (i + 1));
                 }
             }
         }

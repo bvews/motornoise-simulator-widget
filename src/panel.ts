@@ -7,8 +7,7 @@ class PanelElement {
         this.layer = 0;
     }
 
-    render(canvas: HTMLCanvasElement, vehicleState: any) {
-    }
+    render(canvas: HTMLCanvasElement, vehicleState: any) {}
 }
 
 class Panel {
@@ -29,7 +28,7 @@ class Panel {
 
         // Clear canvas
 
-        this.panelElements.forEach(element => {
+        this.panelElements.forEach((element) => {
             element.render(canvas, state);
         });
     }

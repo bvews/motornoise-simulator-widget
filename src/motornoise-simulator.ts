@@ -30,7 +30,6 @@ export class MotornoiseSimulator {
     private relativeUrl: string;
     // private bufferLoader: BufferLoader;
 
-
     private powerMotornoiseData?: MotornoiseData;
     private brakeMotornoiseData?: MotornoiseData;
     private runningnoiseData?: MotornoiseData;
@@ -55,11 +54,11 @@ export class MotornoiseSimulator {
     private _hidden = false;
 
     /**
-     * 
-     * @param audioContext 
-     * @param relativeUrl 
-     * @param maxSpeed 
-     * @param canvas 
+     *
+     * @param audioContext
+     * @param relativeUrl
+     * @param maxSpeed
+     * @param canvas
      */
     constructor(audioContext: AudioContext, relativeUrl: string, maxSpeed: number, canvas: HTMLCanvasElement | null | undefined) {
         this.maxSpeed = maxSpeed > 0 ? Number(maxSpeed) : 100;
@@ -79,13 +78,13 @@ export class MotornoiseSimulator {
     }
 
     /**
-     * 
-     * @param onAllFileLoaded 
+     *
+     * @param onAllFileLoaded
      */
     load(onAllFileLoaded: () => void, onupdate: (loadCount: number, entryCount: number) => void): void {
         const audioContext = this.audioContext;
         const self = this;
-        loadVehicle(this.relativeUrl, vehicle => {
+        loadVehicle(this.relativeUrl, (vehicle) => {
             // Create running resistance simulator.
             self.runningResistanceSimulator = new RunningResistanceSimulator(vehicle.parameters);
 
@@ -93,14 +92,18 @@ export class MotornoiseSimulator {
             self.accelerationSimulator = new AccelerationSimulator(vehicle.trainDat, vehicle.parameters);
 
             loadImages(undefined, (images: any) => {
-                const audioEntries = vehicle.sound.motor.concat(vehicle.sound.run)
-                    .filter((entry: any) => entry);
-                loadAudios(audioContext, audioEntries, () => {
-                    self._audioTracks = self.createAudioTracks(audioContext, vehicle);
-                    self._setupSpectrogram(audioContext, self._audioTracks);
-                    onAllFileLoaded();
-                    self.isAllFileLoaded = true;
-                }, onupdate);
+                const audioEntries = vehicle.sound.motor.concat(vehicle.sound.run).filter((entry: any) => entry);
+                loadAudios(
+                    audioContext,
+                    audioEntries,
+                    () => {
+                        self._audioTracks = self.createAudioTracks(audioContext, vehicle);
+                        self._setupSpectrogram(audioContext, self._audioTracks);
+                        onAllFileLoaded();
+                        self.isAllFileLoaded = true;
+                    },
+                    onupdate
+                );
             });
         });
     }
@@ -117,27 +120,18 @@ export class MotornoiseSimulator {
 
         const audioTracks = [];
         for (let i = 0; i < trackCount; i++) {
-            audioTracks.push(new MotornoiseTrack(
-                audioContext,
-                vehicle.sound.motor[i],
-                motorNoise.power.frequency[i],
-                motorNoise.power.volume[i],
-                motorNoise.brake.frequency[i],
-                motorNoise.brake.volume[i],
-                vehicle.parameters.mainCircuit.regenerationLimit,
-                false));
+            audioTracks.push(new MotornoiseTrack(audioContext, vehicle.sound.motor[i], motorNoise.power.frequency[i], motorNoise.power.volume[i], motorNoise.brake.frequency[i], motorNoise.brake.volume[i], vehicle.parameters.mainCircuit.regenerationLimit, false));
         }
-        const runVolume = [{ 'x': 0, 'y': 0.001 }, { 'x': 90, 'y': 1 }, { 'x': 1000, 'y': 1 }];
-        const runFrequency = [{ 'x': 0, 'y': 0.001 }, { 'x': 90, 'y': 1 }];
-        audioTracks.push(new MotornoiseTrack(
-            audioContext,
-            vehicle.sound.run[0],
-            runFrequency,
-            runVolume,
-            runFrequency,
-            runVolume,
-            vehicle.parameters.mainCircuit.regenerationLimit,
-            true));
+        const runVolume = [
+            { x: 0, y: 0.001 },
+            { x: 90, y: 1 },
+            { x: 1000, y: 1 },
+        ];
+        const runFrequency = [
+            { x: 0, y: 0.001 },
+            { x: 90, y: 1 },
+        ];
+        audioTracks.push(new MotornoiseTrack(audioContext, vehicle.sound.run[0], runFrequency, runVolume, runFrequency, runVolume, vehicle.parameters.mainCircuit.regenerationLimit, true));
 
         return audioTracks;
     }
@@ -229,7 +223,7 @@ export class MotornoiseSimulator {
         const ar = this.runningResistanceSimulator.getAcceleration(speed);
         const accelerationValue = this.accelerationSimulator.getAcceleration(speed, notch);
 
-        speed += (accelerationValue + ar) * intervalMillisec / 1000;
+        speed += ((accelerationValue + ar) * intervalMillisec) / 1000;
         if (speed > this.maxSpeed) {
             speed = this.maxSpeed;
         } else if (speed < 0) {
@@ -250,7 +244,7 @@ export class MotornoiseSimulator {
 
         if (speed === 0) {
             //this.setAllVolumeZero();
-            this._audioTracks.forEach(track => {
+            this._audioTracks.forEach((track) => {
                 track.stop();
             });
 
@@ -266,7 +260,7 @@ export class MotornoiseSimulator {
         }
 
         // Update motornoise and runningnoise.
-        this._audioTracks.forEach(track => {
+        this._audioTracks.forEach((track) => {
             track.update(speed, notch);
         });
 
@@ -304,8 +298,7 @@ export class MotornoiseSimulator {
                 onMuted();
                 self.isMuted = true;
             });
-        }
-        else if (audioContext.state === 'suspended') {
+        } else if (audioContext.state === 'suspended') {
             audioContext.resume().then(() => {
                 onUnmuted();
                 self.isMuted = false;
@@ -327,8 +320,8 @@ export class MotornoiseSimulator {
     clearSpectrogram(): void {
         this._spectrogram?.clear();
     }
-    
-    public ontick: (speed: number) => void = speed => { };
+
+    public ontick: (speed: number) => void = (speed) => {};
 
     private _setupSpectrogram(audioContext: AudioContext, audioTracks: MotornoiseTrack[]): void {
         const analyserNode = audioContext.createAnalyser();
@@ -358,5 +351,3 @@ export class MotornoiseSimulator {
         }
     }
 }
-
-

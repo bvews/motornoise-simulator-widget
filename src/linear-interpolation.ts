@@ -1,8 +1,8 @@
 import { Point } from './point.js';
 
 /**
- * 
- * @param points 
+ *
+ * @param points
  */
 export class LinearInterpolation {
     private x: number[] = [];
@@ -29,7 +29,7 @@ export class LinearInterpolation {
     }
 
     /**
-     * 
+     *
      * @param array
      * @param value
      */
@@ -42,8 +42,7 @@ export class LinearInterpolation {
             mid = Math.floor((min + max) / 2);
             if (array[mid] <= value) {
                 min = mid;
-            }
-            else {
+            } else {
                 max = mid;
             }
         }
@@ -51,8 +50,8 @@ export class LinearInterpolation {
     }
 
     /**
-     * 
-     * @param value 
+     *
+     * @param value
      */
     interpolate(value: number): number {
         const x = this.x;
@@ -60,11 +59,9 @@ export class LinearInterpolation {
 
         if (x.length == 0) {
             return 0;
-        }
-        else if (x.length == 1) {
+        } else if (x.length == 1) {
             return y[0];
-        }
-        else {
+        } else {
             if (this.prevIndex !== null && value > x[this.prevIndex] && value <= x[this.prevIndex + 1]) {
                 return this.slope * value + this.intercept;
             }
@@ -72,11 +69,9 @@ export class LinearInterpolation {
             let index;
             if (value <= x[0]) {
                 index = 0;
-            }
-            else if (value > x[x.length - 1]) {
+            } else if (value > x[x.length - 1]) {
                 index = x.length - 2;
-            }
-            else {
+            } else {
                 index = this.binarySearch(x, value);
             }
 

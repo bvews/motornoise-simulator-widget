@@ -57,7 +57,7 @@ export interface TrainDat {
 }
 
 export function loadVehicle(relativeUrl: string, onload: (vehicle: Vehicle) => void): void {
-    const files: { [key: string]: { url: string, text: string } } = {
+    const files: { [key: string]: { url: string; text: string } } = {
         sound: { url: 'Sound.txt', text: '' },
         parameters: { url: 'Parameters.txt', text: '' },
         trainDat: { url: 'Train.dat', text: '' },
@@ -67,13 +67,12 @@ export function loadVehicle(relativeUrl: string, onload: (vehicle: Vehicle) => v
         brakeVolume: { url: 'BrakeVol.csv', text: '' },
     };
 
-
     const fileCount = Object.keys(files).length;
     let loadCount = 0;
 
     for (const key in files) {
         const file = files[key];
-        fetchText(relativeUrl + file.url, text => {
+        fetchText(relativeUrl + file.url, (text) => {
             file.text = text;
             loadCount++;
             if (loadCount >= fileCount) {
@@ -83,14 +82,14 @@ export function loadVehicle(relativeUrl: string, onload: (vehicle: Vehicle) => v
                     motorNoise: {
                         power: {
                             volume: parseCsv(files.powerVolume.text),
-                            frequency: parseCsv(files.powerFrequency.text)
+                            frequency: parseCsv(files.powerFrequency.text),
                         },
                         brake: {
                             volume: parseCsv(files.brakeVolume.text),
-                            frequency: parseCsv(files.brakeFrequency.text)
-                        }
+                            frequency: parseCsv(files.brakeFrequency.text),
+                        },
                     },
-                    trainDat: parseTrainDat(files.trainDat.text)
+                    trainDat: parseTrainDat(files.trainDat.text),
                 });
             }
         });
@@ -100,16 +99,24 @@ export function loadVehicle(relativeUrl: string, onload: (vehicle: Vehicle) => v
 export function fetchText(url: string, onload: (text: string) => void): void {
     const xhr = new XMLHttpRequest();
 
-    xhr.addEventListener('load', event => {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            onload(xhr.responseText);
-        } else {
+    xhr.addEventListener(
+        'load',
+        (event) => {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                onload(xhr.responseText);
+            } else {
+                onload('');
+            }
+        },
+        false
+    );
+    xhr.addEventListener(
+        'error',
+        (event) => {
             onload('');
-        }
-    }, false);
-    xhr.addEventListener('error', event => {
-        onload('');
-    }, false);
+        },
+        false
+    );
 
     xhr.open('GET', url, true);
     xhr.setRequestHeader('Cache-Control', 'no-cache');
@@ -117,7 +124,7 @@ export function fetchText(url: string, onload: (text: string) => void): void {
 }
 
 /**
- * 
+ *
  * @param text
  * @returns
  */
@@ -155,7 +162,7 @@ export function parseIni(text: string): { [section: string]: { [key: string]: st
 }
 
 /**
- * 
+ *
  * @param text
  * @returns
  */
@@ -182,11 +189,11 @@ export function parseCsv(text: string): Point[][] {
     return result;
 }
 
-export function parseSound(text: string, relativeUrl: string): { motor: AudioEntry[], run: AudioEntry[] } {
+export function parseSound(text: string, relativeUrl: string): { motor: AudioEntry[]; run: AudioEntry[] } {
     const iniData = parseIni(text);
-    const result: { motor: AudioEntry[], run: AudioEntry[] } = {
+    const result: { motor: AudioEntry[]; run: AudioEntry[] } = {
         motor: [],
-        run: []
+        run: [],
     };
 
     if (iniData['motor']) {
@@ -243,7 +250,7 @@ export function createAudioEntry(text: string): AudioEntry {
     return {
         url,
         length,
-        leeway
+        leeway,
     };
 }
 
@@ -251,7 +258,7 @@ export function parseParameters(text: string): Parameters {
     const iniData = parseIni(text);
     const result: Parameters = {
         mainCircuit: {
-            regenerationLimit: 5
+            regenerationLimit: 5,
         },
         dynamics: {
             motorcarWeight: 31500,
@@ -260,27 +267,27 @@ export function parseParameters(text: string): Parameters {
             trailerCount: 5,
             motorcarInertiaFactor: 0.1,
             trailerInertiaFactor: 0.05,
-            carLength: 20
+            carLength: 20,
         },
         oneLeverCab: undefined,
-        cab: undefined
+        cab: undefined,
     };
 
     if (iniData['cab']) {
         result.cab = {
             powerNotchCount: isNaN(Number(iniData['cab']['powernotchcount'])) ? 5 : parseInt(iniData['cab']['powernotchcount']),
-            brakeNotchCount: isNaN(Number(iniData['cab']['brakenotchcount'])) ? 7 : parseInt(iniData['cab']['brakenotchcount'])
+            brakeNotchCount: isNaN(Number(iniData['cab']['brakenotchcount'])) ? 7 : parseInt(iniData['cab']['brakenotchcount']),
         };
     }
     if (iniData['onelevercab']) {
         result.oneLeverCab = {
             powerNotchCount: isNaN(Number(iniData['onelevercab']['powernotchcount'])) ? 5 : parseInt(iniData['onelevercab']['powernotchcount']),
-            brakeNotchCount: isNaN(Number(iniData['onelevercab']['brakenotchcount'])) ? 7 : parseInt(iniData['onelevercab']['brakenotchcount'])
+            brakeNotchCount: isNaN(Number(iniData['onelevercab']['brakenotchcount'])) ? 7 : parseInt(iniData['onelevercab']['brakenotchcount']),
         };
     }
     if (iniData['maincircuit']) {
         result.mainCircuit = {
-            regenerationLimit: isNaN(Number(iniData['maincircuit']['regenerationlimit'])) ? 5 : parseFloat(iniData['maincircuit']['regenerationlimit'])
+            regenerationLimit: isNaN(Number(iniData['maincircuit']['regenerationlimit'])) ? 5 : parseFloat(iniData['maincircuit']['regenerationlimit']),
         };
     }
     result.dynamics = parseSection(iniData, 'dynamics', {
@@ -290,7 +297,7 @@ export function parseParameters(text: string): Parameters {
         trailerCount: 5,
         motorcarInertiaFactor: 0.1,
         trailerInertiaFactor: 0.05,
-        carLength: 20
+        carLength: 20,
     });
 
     function parseSection<T extends any>(iniData: { [section: string]: { [key: string]: string } }, sectionName: string, keys: T): T {
@@ -315,13 +322,13 @@ export function parseTrainDat(text: string): TrainDat {
     const acceleration = [];
     for (let i = 2; i < 2 + 8; i++) {
         if (lines[i]) {
-            const values = lines[i].split(',').map(value => parseFloat(value));
+            const values = lines[i].split(',').map((value) => parseFloat(value));
             acceleration.push({
                 a0: values[0],
                 a1: values[1],
                 v1: values[2],
                 v2: values[3],
-                e: values[4]
+                e: values[4],
             });
         }
     }
@@ -329,8 +336,8 @@ export function parseTrainDat(text: string): TrainDat {
     const result = {
         acceleration,
         performance: {
-            deceleration: parseFloat(lines[11]) || 3.5
-        }
+            deceleration: parseFloat(lines[11]) || 3.5,
+        },
     };
 
     return result;
