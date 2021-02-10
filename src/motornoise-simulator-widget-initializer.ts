@@ -360,7 +360,7 @@ export class MotornoiseSimulatorWidgetInitializer {
                         spectrogram?.style?.setProperty('display', 'none');
                     }, () => {
                         spectrogramButton.innerText = 'Spectrogram OFF';
-                        spectrogram?.style?.setProperty('display', 'none');
+                        spectrogram?.style?.setProperty('display', 'block');
                     });
                 };
             }
