@@ -1,9 +1,9 @@
 type Browser = 'msie' | 'edge' | 'chrome' | 'safari' | 'firefox' | 'opera' | 'unknown';
-type AudioExtention = '.ogg' | '.mp4';
+type AudioExtension = '.ogg' | '.mp4';
 
 export class BrowserCompatible {
     private _browser: Browser;
-    private _audioFileExtension: AudioExtention;
+    private _audioFileExtension: AudioExtension;
 
     constructor() {
         const userAgent = window.navigator.userAgent.toLowerCase();
@@ -49,7 +49,7 @@ export class BrowserCompatible {
     public get browser(): Browser {
         return this._browser;
     }
-    public get audioFileExtension(): AudioExtention {
+    public get audioFileExtension(): AudioExtension {
         return this._audioFileExtension;
     }
 }
