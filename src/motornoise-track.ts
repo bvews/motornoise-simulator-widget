@@ -19,8 +19,8 @@ export class MotornoiseTrack {
     private _gainNode: GainNode;
     public gainNode: GainNode;
     private _bufferNode?: AudioBufferSourceNode;
-    private _volumePrev: number = 0;
-    private _pitchPrev: number = 1;
+    private _volumePrev = 0;
+    private _pitchPrev = 1;
 
     constructor(
         audioContext: AudioContext,

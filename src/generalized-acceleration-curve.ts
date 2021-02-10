@@ -7,11 +7,11 @@
  * @param e 
  */
 export class GeneralizedAccelerationCurve {
-    private a0: number = 0;
-    private a1: number = 0;
-    private v0: number = 1000;
-    private v1: number = 1000;
-    private e: number = 2;
+    private a0 = 0;
+    private a1 = 0;
+    private v0 = 1000;
+    private v1 = 1000;
+    private e = 2;
 
     constructor(a0: number, a1?: number, v0?: number, v1?: number, e?: number) {
         this.a0 = a0;

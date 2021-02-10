@@ -6,8 +6,8 @@ class BufferLoader {
     private onload: (bufferList?: AudioBuffer[]) => void;
     private bufferList: AudioBuffer[] = [];
     private durationList: number[] = [];
-    private loadCount: number = 0;
-    private soundParams: string = '';
+    private loadCount = 0;
+    private soundParams = '';
     private onupdate: (loadCount: number, entryCount: number) => void = (loadCount, entryCount) => { };
 
     /**

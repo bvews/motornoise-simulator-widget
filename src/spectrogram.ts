@@ -3,7 +3,7 @@ export class Spectrogram {
     private _canvasTemp: HTMLCanvasElement;
     private _analyserNode: AnalyserNode | undefined;
     private _frequencies: number[] = [];
-    private pixelPerFreq: number = 0;
+    private pixelPerFreq = 0;
     private _colors: number[][] = [];
 
     constructor(canvas: HTMLCanvasElement) {
@@ -64,7 +64,7 @@ export class Spectrogram {
         const light = [0, 255, 255];
 
         for (let i = 0; i < 256; i++) {
-            let rate = i / 255;
+            const rate = i / 255;
             //rate = rate * rate;
             let color = [0, 0, 0];
 
@@ -125,9 +125,7 @@ export class Spectrogram {
         const fftData = new Uint8Array(this._analyserNode.frequencyBinCount);
         this._analyserNode.getByteFrequencyData(fftData);
 
-        let context: CanvasRenderingContext2D | null;
-
-        context = this._canvasTemp.getContext('2d');
+        const context = this._canvasTemp.getContext('2d');
         if (context) {
             context.drawImage(this._canvasTemp, -1, 0);
 

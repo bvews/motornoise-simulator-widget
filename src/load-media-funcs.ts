@@ -1,6 +1,6 @@
 import { AudioEntry } from './motornoise-track';
 
-export function loadImages(imageEntries: any[] | undefined, onload: (imageEntries?: any[]) => void, onupdate?: (loadCount: number, entryCount: number) => void) {
+export function loadImages(imageEntries: any[] | undefined, onload: (imageEntries?: any[]) => void, onupdate?: (loadCount: number, entryCount: number) => void): void {
     if (!imageEntries) {
         if (onload) {
             onload();

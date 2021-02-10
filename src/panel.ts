@@ -1,7 +1,7 @@
 // Element: needle, cover, digital numbers, etc.
 // Component: gauge, LCD, etc.
 class PanelElement {
-    private layer: number = 0;
+    private layer = 0;
 
     constructor(vehicleState: any) {
         this.layer = 0;

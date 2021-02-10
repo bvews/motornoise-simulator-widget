@@ -71,7 +71,7 @@ export function loadVehicle(relativeUrl: string, onload: (vehicle: Vehicle) => v
     const fileCount = Object.keys(files).length;
     let loadCount = 0;
 
-    for (let key in files) {
+    for (const key in files) {
         const file = files[key];
         fetchText(relativeUrl + file.url, text => {
             file.text = text;
@@ -304,7 +304,7 @@ export function parseParameters(text: string): Parameters {
         const section = iniData[sectionName.toLowerCase()];
 
         if (section) {
-            for (let key in keys) {
+            for (const key in keys) {
                 result[key] = isNaN(Number(section[key.toLowerCase()])) ? keys[key] : parseFloat(section[key.toLowerCase()]);
             }
         }

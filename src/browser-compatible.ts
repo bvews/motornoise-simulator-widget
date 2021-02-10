@@ -1,36 +1,42 @@
 export class BrowserCompatible {
-    private browser: string | undefined;
-    private audioFileExtention: string | undefined;
+    private _browser: string | undefined;
+    private _audioFileExtention: string | undefined;
+    public get browser(): string | undefined {
+        return this._browser;
+    }
+    public get audioFileExtention(): string | undefined {
+        return this._audioFileExtention;
+    }
     constructor() {
-        this.browser = undefined;
-        this.audioFileExtention = undefined;
+        this._browser = undefined;
+        this._audioFileExtention = undefined;
 
         const userAgent = window.navigator.userAgent.toLowerCase();
         if (userAgent.includes('msie') || userAgent.includes('trident')) {
-            this.browser = 'msif';
+            this._browser = 'msif';
         } else if (userAgent.includes('edge')) {
-            this.browser = 'edge';
+            this._browser = 'edge';
         } else if (userAgent.includes('chrome')) {
-            this.browser = 'chrome';
+            this._browser = 'chrome';
         } else if (userAgent.includes('safari')) {
-            this.browser = 'safari';
+            this._browser = 'safari';
         } else if (userAgent.includes('firefox')) {
-            this.browser = 'firefox';
+            this._browser = 'firefox';
         } else if (userAgent.includes('opera')) {
-            this.browser = 'opera';
+            this._browser = 'opera';
         } else {
-            this.browser = undefined;
+            this._browser = undefined;
         }
 
         //if (this.browser === 'safari' || this.browser === 'chrome' || this.browser === 'firefox') {
-        if (this.browser === 'safari') {
-            this.audioFileExtention = '.mp4';
+        if (this._browser === 'safari') {
+            this._audioFileExtention = '.mp4';
             this.setSpan = (sn, d) => {
                 sn.loopEnd = d * 1.5;
                 sn.loopStart = d * 0.5;
             };
         } else {
-            this.audioFileExtention = '.ogg';
+            this._audioFileExtention = '.ogg';
             this.setSpan = (sn, d) => {
                 sn.loopEnd = d;
                 sn.loopStart = 0;

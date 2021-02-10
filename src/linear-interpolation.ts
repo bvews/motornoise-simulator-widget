@@ -10,9 +10,9 @@ export interface Point {
 export class LinearInterpolation {
     private x: number[] = [];
     private y: number[] = [];
-    private slope: number = 0;
-    private intercept: number = 0;
-    private prevIndex: number = NaN;
+    private slope = 0;
+    private intercept = 0;
+    private prevIndex = NaN;
 
     constructor(points: Point[]) {
         if (points) {

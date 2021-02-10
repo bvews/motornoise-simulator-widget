@@ -1,6 +1,7 @@
 import { MotornoiseSimulator } from './motornoise-simulator';
 import { AudioContextHandler } from './audio-context-handler';
 import { generateArcPath } from './svg-path-functions';
+import { BrowserCompatible } from './browser-compatible';
 
 /**
  *
@@ -136,8 +137,9 @@ export class MotornoiseSimulatorWidgetInitializer {
              * @param element 
              */
             const wakeupAudioContext = (audioContext: AudioContext, element: HTMLElement | null | undefined): void => {
+                const browserCompatible = new BrowserCompatible();
                 // For Safari
-                if (true) {
+                if (browserCompatible.browser === 'safari') {
                     const initAudioContextSafari = () => {
                         element?.removeEventListener('touchstart', initAudioContextSafari);
                         // Wake up AudioContext
@@ -199,7 +201,7 @@ export class MotornoiseSimulatorWidgetInitializer {
             }
 
             let intSpeed = NaN;
-            let prevNums = [0, NaN, NaN];
+            const prevNums = [0, NaN, NaN];
 
             const width = 42;
             pathElt?.setAttribute('stroke-width', width.toString());
@@ -211,8 +213,8 @@ export class MotornoiseSimulatorWidgetInitializer {
                 const radius = 225;
                 const step = 2;
 
-                let angle = speed * (maxAngle - minAngle) / (maxValue - minValue) + minAngle;
-                let angleD = (speed - step / 2) * (maxAngle - minAngle) / (maxValue - minValue) + minAngle;
+                const angle = speed * (maxAngle - minAngle) / (maxValue - minValue) + minAngle;
+                const angleD = (speed - step / 2) * (maxAngle - minAngle) / (maxValue - minValue) + minAngle;
 
                 const angleStep = (maxAngle - minAngle) / (maxValue - minValue) * step;
                 const digitalAngle = minAngle + Math.floor((angleD - minAngle) / angleStep) * angleStep - angleStep / 2;
@@ -228,7 +230,7 @@ export class MotornoiseSimulatorWidgetInitializer {
 
                         // Update digits.
                         const intSpeedAbs = Math.abs(intSpeed);
-                        let n0 = Math.floor(intSpeedAbs % 10);
+                        const n0 = Math.floor(intSpeedAbs % 10);
                         let n1 = Math.floor(Math.floor(intSpeedAbs / 10) % 10);
                         let n2 = Math.floor(Math.floor(intSpeedAbs / 100) % 10);
 

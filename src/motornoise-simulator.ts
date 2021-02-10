@@ -19,14 +19,14 @@ interface MotornoiseData {
  * Motornoise simulator class.
  */
 export class MotornoiseSimulator {
-    private intervalMillisec: number = 20;
-    private maxSpeed: number = 100;
+    private intervalMillisec = 20;
+    private maxSpeed = 100;
 
     public audioContext: AudioContext;
     private relativeUrl: string;
     // private bufferLoader: BufferLoader;
 
-    public notch: number = 0;
+    public notch = 0;
 
     private powerMotornoiseData?: MotornoiseData;
     private brakeMotornoiseData?: MotornoiseData;
@@ -38,21 +38,21 @@ export class MotornoiseSimulator {
     private runningResistanceSimulator?: RunningResistanceSimulator;
     private accelerationSimulator?: AccelerationSimulator;
 
-    public speed: number = 0;
-    private regenerationLimit: number = 0;
-    private runningNoiseIndex: number = 0;
-    private isAllFileLoaded: boolean = false;
-    private isMuted: boolean = false;
+    public speed = 0;
+    private regenerationLimit = 0;
+    private runningNoiseIndex = 0;
+    private isAllFileLoaded = false;
+    private isMuted = false;
 
     private browserCompatible = new BrowserCompatible();
 
     public ontick: (speed: number) => void = speed => { };
 
-    private _prevTimeStamp: number = 0;
-    private _isEnabledSpectrogram: boolean = false;
-    private _isRunning: boolean = false;
-    private _isMuted: boolean = false;
-    private _hidden: boolean = false;
+    private _prevTimeStamp = 0;
+    private _isEnabledSpectrogram = false;
+    private _isRunning = false;
+    private _isMuted = false;
+    private _hidden = false;
 
     /**
      * 
@@ -82,7 +82,7 @@ export class MotornoiseSimulator {
      * 
      * @param onAllFileLoaded 
      */
-    load(onAllFileLoaded: () => void, onupdate: (loadCount: number, entryCount: number) => void) {
+    load(onAllFileLoaded: () => void, onupdate: (loadCount: number, entryCount: number) => void): void {
         const audioContext = this.audioContext;
         const self = this;
         loadVehicle(this.relativeUrl, vehicle => {
@@ -360,8 +360,8 @@ export class MotornoiseSimulator {
 class AccelerationSimulator {
     private accelerationCurves: GeneralizedAccelerationCurve[] = [];
     private decelerationCurves: GeneralizedAccelerationCurve[] = [];
-    public maxPowerNotch: number = 5;
-    public maxBrakeNotch: number = 7;
+    public maxPowerNotch = 5;
+    public maxBrakeNotch = 7;
 
     constructor(trainDat: TrainDat | undefined, parameters: Parameters | undefined) {
         if (!trainDat) {

@@ -9,48 +9,48 @@ export function generateArcPath(radius: number | string, minAngle: number | stri
     maxAngle = typeof maxAngle === 'string' ? parseFloat(maxAngle) : maxAngle;
 
     if (minAngle === maxAngle) {
-        var minCos = Math.cos(bveDegToRad(minAngle));
-        var maxCos = Math.cos(bveDegToRad(maxAngle - 0.01));
-        var minSin = Math.sin(bveDegToRad(minAngle));
-        var maxSin = Math.sin(bveDegToRad(maxAngle - 0.01));
-        var largeArcFlag = '1';
+        const minCos = Math.cos(bveDegToRad(minAngle));
+        const maxCos = Math.cos(bveDegToRad(maxAngle - 0.01));
+        const minSin = Math.sin(bveDegToRad(minAngle));
+        const maxSin = Math.sin(bveDegToRad(maxAngle - 0.01));
+        const largeArcFlag = '1';
 
-        var values = [];
-        values[0] = "M";
+        const values = [];
+        values[0] = 'M';
         values[1] = minCos * radius;
         values[2] = minSin * radius;
-        values[3] = "A";
+        values[3] = 'A';
         values[4] = radius;
         values[5] = radius;
-        values[6] = "0";
+        values[6] = '0';
         values[7] = largeArcFlag;
-        values[8] = "1";
+        values[8] = '1';
         values[9] = maxCos * radius;
         values[10] = maxSin * radius;
-        values[11] = "Z";
+        values[11] = 'Z';
+        return values.join(' ');
+    } else {
+        const minCos = Math.cos(bveDegToRad(minAngle));
+        const maxCos = Math.cos(bveDegToRad(maxAngle));
+        const minSin = Math.sin(bveDegToRad(minAngle));
+        const maxSin = Math.sin(bveDegToRad(maxAngle));
+        const largeArcFlag = maxAngle - minAngle > 180 ? '1' : '0';
+
+        const values = [];
+        values[0] = 'M';
+        values[1] = minCos * radius;
+        values[2] = minSin * radius;
+        values[3] = 'A';
+        values[4] = radius;
+        values[5] = radius;
+        values[6] = '0';
+        values[7] = largeArcFlag;
+        values[8] = '1';
+        values[9] = maxCos * radius;
+        values[10] = maxSin * radius;
+        //values[11] = "Z";
         return values.join(' ');
     }
-
-    var minCos = Math.cos(bveDegToRad(minAngle));
-    var maxCos = Math.cos(bveDegToRad(maxAngle));
-    var minSin = Math.sin(bveDegToRad(minAngle));
-    var maxSin = Math.sin(bveDegToRad(maxAngle));
-    var largeArcFlag = maxAngle - minAngle > 180 ? '1' : '0';
-
-    var values = [];
-    values[0] = "M";
-    values[1] = minCos * radius;
-    values[2] = minSin * radius;
-    values[3] = "A";
-    values[4] = radius;
-    values[5] = radius;
-    values[6] = "0";
-    values[7] = largeArcFlag;
-    values[8] = "1";
-    values[9] = maxCos * radius;
-    values[10] = maxSin * radius;
-    //values[11] = "Z";
-    return values.join(' ');
 }
 
 function generateLinePath(rMin: number, rMax: number, innerWidth: number, outerWidth: number, angle: number): string {
@@ -60,7 +60,7 @@ function generateLinePath(rMin: number, rMax: number, innerWidth: number, outerW
     const sin = Math.sin(angle);
 
     const values = [];
-    values[0] = "M";
+    values[0] = 'M';
 
     values[1] = rMin * cos - innerWidth / 2 * sin;
     values[2] = rMin * sin + innerWidth / 2 * cos;
@@ -74,7 +74,7 @@ function generateLinePath(rMin: number, rMax: number, innerWidth: number, outerW
     values[7] = rMax * cos - outerWidth / 2 * sin;
     values[8] = rMax * sin + outerWidth / 2 * cos;
 
-    values[9] = "Z";
+    values[9] = 'Z';
     return values.join(' ');
 }
 
@@ -85,7 +85,7 @@ function generateNeedlePath(rMin: number, rMid: number, rMax: number, innerWidth
     const sin = Math.sin(angle);
 
     const values = [];
-    values[0] = "M";
+    values[0] = 'M';
 
     values[1] = rMin * cos - innerWidth / 2 * sin;
     values[2] = rMin * sin + innerWidth / 2 * cos;
@@ -105,6 +105,6 @@ function generateNeedlePath(rMin: number, rMid: number, rMax: number, innerWidth
     values[11] = rMid * cos - middleWidth / 2 * sin;
     values[12] = rMid * sin + middleWidth / 2 * cos;
 
-    values[13] = "Z";
+    values[13] = 'Z';
     return values.join(' ');
 }
