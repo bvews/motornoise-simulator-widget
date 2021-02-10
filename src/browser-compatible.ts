@@ -4,12 +4,7 @@ type AudioExtention = '.ogg' | '.mp4';
 export class BrowserCompatible {
     private _browser: Browser;
     private _audioFileExtension: AudioExtention;
-    public get browser(): Browser {
-        return this._browser;
-    }
-    public get audioFileExtension(): AudioExtention {
-        return this._audioFileExtension;
-    }
+
     constructor() {
         const userAgent = window.navigator.userAgent.toLowerCase();
         if (userAgent.includes('msie') || userAgent.includes('trident')) {
@@ -50,4 +45,11 @@ export class BrowserCompatible {
      * @param duration 
      */
     setSpan(sourceNode: AudioBufferSourceNode, duration: number): void { }
+    
+    public get browser(): Browser {
+        return this._browser;
+    }
+    public get audioFileExtension(): AudioExtention {
+        return this._audioFileExtension;
+    }
 }

@@ -7,8 +7,8 @@ declare global {
 }
 
 export class AudioContextHandler {
-    private audioContext?: AudioContext;
     public enabledWebAudioApi = false;
+    private audioContext?: AudioContext;
     constructor() {
         try {
             // Fix up prefixing

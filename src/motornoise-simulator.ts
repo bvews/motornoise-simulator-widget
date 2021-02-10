@@ -20,14 +20,16 @@ interface MotornoiseData {
  * Motornoise simulator class.
  */
 export class MotornoiseSimulator {
+    public audioContext: AudioContext;
+    public notch = 0;
+    public speed = 0;
+
     private intervalMillisec = 20;
     private maxSpeed = 100;
 
-    public audioContext: AudioContext;
     private relativeUrl: string;
     // private bufferLoader: BufferLoader;
 
-    public notch = 0;
 
     private powerMotornoiseData?: MotornoiseData;
     private brakeMotornoiseData?: MotornoiseData;
@@ -39,15 +41,12 @@ export class MotornoiseSimulator {
     private runningResistanceSimulator?: RunningResistanceSimulator;
     private accelerationSimulator?: AccelerationSimulator;
 
-    public speed = 0;
     private regenerationLimit = 0;
     private runningNoiseIndex = 0;
     private isAllFileLoaded = false;
     private isMuted = false;
 
     private browserCompatible = new BrowserCompatible();
-
-    public ontick: (speed: number) => void = speed => { };
 
     private _prevTimeStamp = 0;
     private _isEnabledSpectrogram = false;
@@ -141,19 +140,6 @@ export class MotornoiseSimulator {
             true));
 
         return audioTracks;
-    }
-
-    private _setupSpectrogram(audioContext: AudioContext, audioTracks: MotornoiseTrack[]): void {
-        const analyserNode = audioContext.createAnalyser();
-        audioTracks.forEach(({ gainNode }) => {
-            gainNode.connect(analyserNode);
-        });
-        this._spectrogram?.setAnalyser(analyserNode);
-        analyserNode.connect(audioContext.destination);
-
-        this._spectrogram?.setAnalyser(analyserNode);
-        this._spectrogram?.setDecibelsRange(-100, -30);
-        this._spectrogram?.setFftSize(4096, true);
     }
 
     handleVisibilitychange(event: Event): void {
@@ -309,21 +295,6 @@ export class MotornoiseSimulator {
         this._setNotch(0);
     }
 
-    private _setNotch(notch: number): void {
-        this.startMainLoop();
-
-        const as = this.accelerationSimulator;
-        if (isNaN(notch) || notch === 0) {
-            this.notch = 0;
-        } else if (as) {
-            if (notch > 0) {
-                this.notch = notch > as.maxPowerNotch ? as.maxPowerNotch : notch;
-            } else {
-                this.notch = notch < -as.maxBrakeNotch ? -as.maxBrakeNotch : notch;
-            }
-        }
-    }
-
     toggleMute(onMuted: () => void, onUnmuted: () => void): void {
         const audioContext = this.audioContext;
         const self = this;
@@ -355,6 +326,36 @@ export class MotornoiseSimulator {
 
     clearSpectrogram(): void {
         this._spectrogram?.clear();
+    }
+    
+    public ontick: (speed: number) => void = speed => { };
+
+    private _setupSpectrogram(audioContext: AudioContext, audioTracks: MotornoiseTrack[]): void {
+        const analyserNode = audioContext.createAnalyser();
+        audioTracks.forEach(({ gainNode }) => {
+            gainNode.connect(analyserNode);
+        });
+        this._spectrogram?.setAnalyser(analyserNode);
+        analyserNode.connect(audioContext.destination);
+
+        this._spectrogram?.setAnalyser(analyserNode);
+        this._spectrogram?.setDecibelsRange(-100, -30);
+        this._spectrogram?.setFftSize(4096, true);
+    }
+
+    private _setNotch(notch: number): void {
+        this.startMainLoop();
+
+        const as = this.accelerationSimulator;
+        if (isNaN(notch) || notch === 0) {
+            this.notch = 0;
+        } else if (as) {
+            if (notch > 0) {
+                this.notch = notch > as.maxPowerNotch ? as.maxPowerNotch : notch;
+            } else {
+                this.notch = notch < -as.maxBrakeNotch ? -as.maxBrakeNotch : notch;
+            }
+        }
     }
 }
 

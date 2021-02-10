@@ -3,12 +3,11 @@ import { AudioEntry } from './audio-entry';
 class BufferLoader {
     private context: AudioContext;
     private urlList: string[] = [];
-    private onload: (bufferList?: AudioBuffer[]) => void;
     private bufferList: AudioBuffer[] = [];
     private durationList: number[] = [];
     private loadCount = 0;
     private soundParams = '';
-    private onupdate: (loadCount: number, entryCount: number) => void = (loadCount, entryCount) => { };
+    private onload: (bufferList?: AudioBuffer[]) => void;
 
     /**
      * 
@@ -97,6 +96,8 @@ class BufferLoader {
         request.setRequestHeader('Cache-Control', 'no-cache');
         request.send();
     }
+    
+    private onupdate: (loadCount: number, entryCount: number) => void = (loadCount, entryCount) => { };
 }
 
 function audioBufferLoader(audioContext: AudioContext, audioEntries: AudioEntry[], onload: (entries?: AudioEntry[]) => void, onupdate: (loadCount: number, entryCount: number) => void): void {

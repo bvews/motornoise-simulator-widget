@@ -2,10 +2,10 @@ import { GeneralizedAccelerationCurve } from './generalized-acceleration-curve';
 import { Parameters, TrainDat } from './load-text-funcs';
 
 export class AccelerationSimulator {
-    private accelerationCurves: GeneralizedAccelerationCurve[] = [];
-    private decelerationCurves: GeneralizedAccelerationCurve[] = [];
     public maxPowerNotch = 5;
     public maxBrakeNotch = 7;
+    private accelerationCurves: GeneralizedAccelerationCurve[] = [];
+    private decelerationCurves: GeneralizedAccelerationCurve[] = [];
 
     constructor(trainDat: TrainDat | undefined, parameters: Parameters | undefined) {
         if (!trainDat) {

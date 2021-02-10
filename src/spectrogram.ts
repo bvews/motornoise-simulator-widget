@@ -151,6 +151,55 @@ export class Spectrogram {
         this._drawFrequencyMarkers();
     }
 
+    clear(): void {
+        this._clear(this._canvasTemp);
+        this._drawFrequencyMarkers();
+    }
+
+    setAnalyser(analyserNode: AnalyserNode): void {
+        analyserNode.smoothingTimeConstant = 0;
+        this._analyserNode = analyserNode;
+
+        // this.setDecibelsRange(-110, -40);
+        // this.setFftSize(8192);
+    }
+
+    setDecibelsRange(min: number, max: number): void {
+        if (this._analyserNode) {
+            const oldMax = this._analyserNode.maxDecibels;
+            const oldMin = this._analyserNode.minDecibels;
+
+            try {
+                this._analyserNode.maxDecibels = max;
+                this._analyserNode.minDecibels = min;
+            } catch (e) {
+                this._analyserNode.maxDecibels = oldMax;
+                this._analyserNode.minDecibels = oldMin;
+            }
+        }
+    }
+
+    setFftSize(fftSize: number, isAdjust: boolean): void {
+        if (this._analyserNode) {
+            const analyserNode = this._analyserNode;
+
+            if (isAdjust) {
+                const sampleRate = analyserNode.context.sampleRate;
+                if (sampleRate > 96000) {
+                    fftSize *= 4;
+                } else if (sampleRate > 48000) {
+                    fftSize *= 2;
+                }
+            }
+
+            try {
+                analyserNode.fftSize = fftSize;
+                this._drawFrequencyMarkers();
+            } catch (e) {
+            }
+        }
+    }
+
     private _drawFrequencyMarkers(): void {
         if (!this._analyserNode) {
             return;
@@ -198,61 +247,12 @@ export class Spectrogram {
         }
     }
 
-    clear(): void {
-        this._clear(this._canvasTemp);
-        this._drawFrequencyMarkers();
-    }
-
     private _clear(canvas: HTMLCanvasElement): void {
         const context = canvas.getContext('2d');
         const colorStyleText = `rgb(${this._colors[0].join(',')})`;
         if (context) {
             context.fillStyle = colorStyleText;
             context.fillRect(0, 0, canvas.width, canvas.height);
-        }
-    }
-
-    setAnalyser(analyserNode: AnalyserNode): void {
-        analyserNode.smoothingTimeConstant = 0;
-        this._analyserNode = analyserNode;
-
-        // this.setDecibelsRange(-110, -40);
-        // this.setFftSize(8192);
-    }
-
-    setDecibelsRange(min: number, max: number): void {
-        if (this._analyserNode) {
-            const oldMax = this._analyserNode.maxDecibels;
-            const oldMin = this._analyserNode.minDecibels;
-
-            try {
-                this._analyserNode.maxDecibels = max;
-                this._analyserNode.minDecibels = min;
-            } catch (e) {
-                this._analyserNode.maxDecibels = oldMax;
-                this._analyserNode.minDecibels = oldMin;
-            }
-        }
-    }
-
-    setFftSize(fftSize: number, isAdjust: boolean): void {
-        if (this._analyserNode) {
-            const analyserNode = this._analyserNode;
-
-            if (isAdjust) {
-                const sampleRate = analyserNode.context.sampleRate;
-                if (sampleRate > 96000) {
-                    fftSize *= 4;
-                } else if (sampleRate > 48000) {
-                    fftSize *= 2;
-                }
-            }
-
-            try {
-                analyserNode.fftSize = fftSize;
-                this._drawFrequencyMarkers();
-            } catch (e) {
-            }
         }
     }
 }

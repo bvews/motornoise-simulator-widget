@@ -3,6 +3,7 @@ import { Point } from './point';
 import { AudioEntry } from './audio-entry';
 
 export class MotornoiseTrack {
+    public gainNode: GainNode;
     private _audioContext: AudioContext;
     private _audioEntry: AudioEntry;
     private _powerFrequency: LinearInterpolation;
@@ -12,7 +13,6 @@ export class MotornoiseTrack {
     private _regenerationLimit: number;
     private _isRunningNoise: boolean;
     private _gainNode: GainNode;
-    public gainNode: GainNode;
     private _bufferNode?: AudioBufferSourceNode;
     private _volumePrev = 0;
     private _pitchPrev = 1;
