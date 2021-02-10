@@ -1,13 +1,12 @@
-import { LinearInterpolation, Point } from './linear-interpolation';
+import { LinearInterpolation } from './linear-interpolation.js';
+import { Point } from './point.js';
+import { AudioEntry } from './audio-entry.js';
 
-export interface AudioEntry {
-    url: string;
-    length: number;
-    leeway: number;
-    buffer?: AudioBuffer;
-}
-
+/**
+ * Represents a motornoise audio track.
+ */
 export class MotornoiseTrack {
+    public gainNode: GainNode;
     private _audioContext: AudioContext;
     private _audioEntry: AudioEntry;
     private _powerFrequency: LinearInterpolation;
@@ -17,21 +16,22 @@ export class MotornoiseTrack {
     private _regenerationLimit: number;
     private _isRunningNoise: boolean;
     private _gainNode: GainNode;
-    public gainNode: GainNode;
     private _bufferNode?: AudioBufferSourceNode;
-    private _volumePrev: number = 0;
-    private _pitchPrev: number = 1;
+    private _volumePrev = 0;
+    private _pitchPrev = 1;
 
-    constructor(
-        audioContext: AudioContext,
-        audioEntry: AudioEntry,
-        powerFrequency: Point[],
-        powerVolume: Point[],
-        brakeFrequency: Point[],
-        brakeVolume: Point[],
-        regenerationLimit: number,
-        isRunningNoise: boolean
-    ) {
+    /**
+     * 
+     * @param audioContext Audio Context.
+     * @param audioEntry Audio entry.
+     * @param powerFrequency Motornoise pitch transition parameter which is represented as set of (x, y) on train accelerating.
+     * @param powerVolume Motornoise volume transition parameter which is represented as set of (x, y) on train accelerating.
+     * @param brakeFrequency Motornoise pitch transition parameter which is represented as set of (x, y) on train dynamic braking. 
+     * @param brakeVolume Motornoise volume transition parameter which is represented as set of (x, y) on train dynamic braking.
+     * @param regenerationLimit Dynamic brake termination speed [km/h].
+     * @param isRunningNoise If true it is treated as runningnoise, otherwise motornoise.
+     */
+    constructor(audioContext: AudioContext, audioEntry: AudioEntry, powerFrequency: Point[], powerVolume: Point[], brakeFrequency: Point[], brakeVolume: Point[], regenerationLimit: number, isRunningNoise: boolean) {
         this._audioContext = audioContext;
         this._audioEntry = audioEntry;
 
@@ -53,9 +53,9 @@ export class MotornoiseTrack {
     }
 
     /**
-     * 
-     * @param speed - Current train speed
-     * @param acceleration - Current motor traction acceleration
+     * Update pitch and volume of this motornoise track.
+     * @param speed Current train speed.
+     * @param acceleration Current motor traction acceleration.
      */
     update(speed: number, acceleration: number): void {
         if (!this._audioContext || !this._audioEntry || !this._audioEntry.buffer) {
@@ -90,6 +90,9 @@ export class MotornoiseTrack {
         this._updateSound(pitch, volume);
     }
 
+    /**
+     * Stop simulating motornoise.
+     */
     stop(): void {
         if (!this._audioContext || !this._audioEntry || !this._audioEntry.buffer) {
             return;

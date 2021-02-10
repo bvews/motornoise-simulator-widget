@@ -1,6 +1,12 @@
-import { AudioEntry } from './motornoise-track';
+import { AudioEntry } from './audio-entry.js';
 
-export function loadImages(imageEntries: any[] | undefined, onload: (imageEntries?: any[]) => void, onupdate?: (loadCount: number, entryCount: number) => void) {
+/**
+ * Load multiple images.
+ * @param imageEntries Image entries.
+ * @param onload Callback which is called when all files are loaded.
+ * @param onupdate Callback which is called every a file load success.
+ */
+export function loadImages(imageEntries: any[] | undefined, onload: (imageEntries?: any[]) => void, onupdate?: (loadCount: number, entryCount: number) => void): void {
     if (!imageEntries) {
         if (onload) {
             onload();
@@ -12,7 +18,7 @@ export function loadImages(imageEntries: any[] | undefined, onload: (imageEntrie
     const imageCount = imageEntries.length;
     onupdate?.(loadCount, imageCount);
 
-    imageEntries.forEach(entry => {
+    imageEntries.forEach((entry) => {
         const image = new Image();
         image.onload = () => {
             entry.image = image;
@@ -35,11 +41,18 @@ export function loadImages(imageEntries: any[] | undefined, onload: (imageEntrie
             if (loadCount >= imageCount) {
                 onload(imageEntries);
             }
-        }
+        };
         image.src = entry.url;
     });
 }
 
+/**
+ * Load multiple audios.
+ * @param audioContext Audio Context.
+ * @param audioEntries Image entries.
+ * @param onload Callback which is called when all files are loaded.
+ * @param onupdate Callback which is called every a file load success.
+ */
 export function loadAudios(audioContext: AudioContext, audioEntries: AudioEntry[], onload: (entries?: AudioEntry[]) => void, onupdate: (loadCount: number, entryCount: number) => void): void {
     if (!audioContext || !audioEntries) {
         if (onload) {
@@ -52,44 +65,48 @@ export function loadAudios(audioContext: AudioContext, audioEntries: AudioEntry[
     const audioCount = audioEntries.length;
     onupdate(loadCount, audioCount);
 
-    audioEntries.forEach(entry => {
+    audioEntries.forEach((entry) => {
         // Load buffer asynchronously
         const request = new XMLHttpRequest();
         request.open('GET', entry.url, true);
         request.responseType = 'arraybuffer';
         request.onload = () => {
             // Asynchronously decode the audio file data from arrayBufferrequest.response
-            audioContext.decodeAudioData(request.response, buffer => {
-                loadCount++;
+            audioContext.decodeAudioData(
+                request.response,
+                (buffer) => {
+                    loadCount++;
 
-                if (!buffer) {
-                    console.error(`Error decoding file data: ${entry.url}`);
+                    if (!buffer) {
+                        console.error(`Error decoding file data: ${entry.url}`);
+                        entry.buffer = undefined;
+                    } else {
+                        entry.buffer = buffer;
+                    }
+
+                    if (onupdate) {
+                        // Report progress.
+                        onupdate(loadCount, audioCount);
+                    }
+                    if (loadCount >= audioCount) {
+                        onload(audioEntries);
+                    }
+                },
+                (error) => {
+                    loadCount++;
                     entry.buffer = undefined;
-                } else {
-                    entry.buffer = buffer;
-                }
+                    console.error('decodeAudioData error', error);
 
-                if (onupdate) {
-                    // Report progress.
-                    onupdate(loadCount, audioCount);
+                    if (onupdate) {
+                        // Report progress.
+                        onupdate(loadCount, audioCount);
+                    }
+                    if (loadCount >= audioCount) {
+                        onload(audioEntries);
+                    }
                 }
-                if (loadCount >= audioCount) {
-                    onload(audioEntries);
-                }
-            }, error => {
-                loadCount++;
-                entry.buffer = undefined;
-                console.error('decodeAudioData error', error);
-
-                if (onupdate) {
-                    // Report progress.
-                    onupdate(loadCount, audioCount);
-                }
-                if (loadCount >= audioCount) {
-                    onload(audioEntries);
-                }
-            });
-        }
+            );
+        };
         request.onerror = () => {
             loadCount++;
             entry.buffer = undefined;
@@ -102,36 +119,38 @@ export function loadAudios(audioContext: AudioContext, audioEntries: AudioEntry[
             if (loadCount >= audioCount) {
                 onload(audioEntries);
             }
-        }
+        };
         request.setRequestHeader('Cache-Control', 'no-cache');
         request.send();
     });
 }
 
 /**
- * 
- * @param imageEntries 
- * @param onupdate 
+ * Load multiple images.
+ * @param imageEntries Image entries.
+ * @param onupdate Callback which is called every a file load success.
  */
 export async function loadImagesModern(imageEntries: any[], onupdate: (loadCount: number, entryCount: number) => void): Promise<undefined> {
     if (!imageEntries) {
         return;
     }
     if (typeof onupdate !== 'function') {
-        onupdate = () => { };
+        onupdate = () => {};
     }
 
     const length = imageEntries.length;
     onupdate(0, length);
-    await Promise.all(imageEntries.map(async (entry, i) => {
-        try {
-            entry.image = await loadImage(entry.url);
-        } catch (e) {
-            entry.image = null;
-            console.error(`Failed to load "${entry.url}".`);
-        }
-        onupdate(i + 1, length);
-    }));
+    await Promise.all(
+        imageEntries.map(async (entry, i) => {
+            try {
+                entry.image = await loadImage(entry.url);
+            } catch (e) {
+                entry.image = null;
+                console.error(`Failed to load "${entry.url}".`);
+            }
+            onupdate(i + 1, length);
+        })
+    );
 
     function loadImage(url: string): Promise<HTMLImageElement> {
         return new Promise<HTMLImageElement>((resolve, reject) => {
@@ -146,41 +165,47 @@ export async function loadImagesModern(imageEntries: any[], onupdate: (loadCount
             });
             image.src = url;
         });
-    };
+    }
 }
 
 /**
- * 
- * @param audioContext 
- * @param audioEntries 
- * @param onupdate 
+ * Load multiple audios.
+ * @param audioContext Audio Context.
+ * @param audioEntries Audio entries.
+ * @param onupdate Callback which is called every a file load success.
  */
 export async function loadAudiosModern(audioContext: AudioContext, audioEntries: AudioEntry[], onupdate: (loadCount: number, entryCount: number) => void): Promise<undefined> {
     if (!audioContext || !audioEntries) {
         return;
     }
     if (typeof onupdate !== 'function') {
-        onupdate = () => { };
+        onupdate = () => {};
     }
 
     const length = audioEntries.length;
     onupdate(0, length);
-    await Promise.all(audioEntries.map(async (entry, i) => {
-        try {
-            const response = await fetch(entry.url);
-            const arrayBuffer = await response.arrayBuffer();
-            const audioBuffer = await decodeAudioData(audioContext, arrayBuffer);
-            entry.buffer = audioBuffer;
-        } catch (e) {
-            entry.buffer = undefined;
-            console.error(`Failed to load "${entry.url}".`);
-        }
-        onupdate(i + 1, length);
-    }));
+    await Promise.all(
+        audioEntries.map(async (entry, i) => {
+            try {
+                const response = await fetch(entry.url);
+                const arrayBuffer = await response.arrayBuffer();
+                const audioBuffer = await decodeAudioData(audioContext, arrayBuffer);
+                entry.buffer = audioBuffer;
+            } catch (e) {
+                entry.buffer = undefined;
+                console.error(`Failed to load "${entry.url}".`);
+            }
+            onupdate(i + 1, length);
+        })
+    );
 
     function decodeAudioData(audioContext: AudioContext, arrayBuffer: ArrayBuffer): Promise<AudioBuffer> {
         return new Promise<AudioBuffer>((resolve, reject) => {
-            audioContext.decodeAudioData(arrayBuffer, audioBuffer => resolve(audioBuffer), () => reject());
+            audioContext.decodeAudioData(
+                arrayBuffer,
+                (audioBuffer) => resolve(audioBuffer),
+                () => reject()
+            );
         });
-    };
+    }
 }

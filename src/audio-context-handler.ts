@@ -6,9 +6,13 @@ declare global {
     }
 }
 
+/**
+ * Audio Context handler.
+ */
 export class AudioContextHandler {
+    /** Whether Audio API is enabled. */
+    public enabledWebAudioApi = false;
     private audioContext?: AudioContext;
-    public enabledWebAudioApi: boolean = false;
     constructor() {
         try {
             // Fix up prefixing

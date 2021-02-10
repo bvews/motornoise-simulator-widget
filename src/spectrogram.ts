@@ -1,16 +1,22 @@
+/**
+ * Spectrogram drawing class.
+ */
 export class Spectrogram {
-    private _canvas: HTMLCanvasElement;
-    private _canvasTemp: HTMLCanvasElement;
-    private _analyserNode: AnalyserNode | undefined;
+    private _canvas?: HTMLCanvasElement | null;
+    private _canvasTemp?: HTMLCanvasElement | null;
+    private _analyserNode?: AnalyserNode | null;
     private _frequencies: number[] = [];
-    private pixelPerFreq: number = 0;
+    private pixelPerFreq = 0;
     private _colors: number[][] = [];
 
-    constructor(canvas: HTMLCanvasElement) {
-        this._canvas = canvas;
-        this._canvasTemp = document.createElement('canvas');
-        this._canvasTemp.width = canvas.width;
-        this._canvasTemp.height = canvas.height;
+    /**
+     * 
+     * @param canvas Canvas element which is used to draw spectrogram.
+     * @param analyserNode AnalyserNode which is used to get audio frequency data for drawing spectrogram. 
+     */
+    constructor(canvas?: HTMLCanvasElement | null, analyserNode?: AnalyserNode | null) {
+        this.canvas = canvas;
+        this.analyserNode = analyserNode;
 
         this._colors = [];
 
@@ -64,7 +70,7 @@ export class Spectrogram {
         const light = [0, 255, 255];
 
         for (let i = 0; i < 256; i++) {
-            let rate = i / 255;
+            const rate = i / 255;
             //rate = rate * rate;
             let color = [0, 0, 0];
 
@@ -109,6 +115,10 @@ export class Spectrogram {
         }
     }
 
+    /**
+     * Set frequency values. They are used for annotation on the spectrogram. 
+     * @param text String consists of frequency values. The values are separated by line break or comma.
+     */
     setFrequencyListText(text: string): void {
         this._frequencies = text.split(/[\n, ]/)
             .map(frequency => parseFloat(frequency))
@@ -117,17 +127,18 @@ export class Spectrogram {
         this._drawFrequencyMarkers();
     }
 
+    /**
+     * Feed the spectrogram.
+     */
     update(): void {
-        if (!this._analyserNode) {
+        if (!this._canvas || !this._canvasTemp || !this._analyserNode) {
             return;
         }
 
         const fftData = new Uint8Array(this._analyserNode.frequencyBinCount);
         this._analyserNode.getByteFrequencyData(fftData);
 
-        let context: CanvasRenderingContext2D | null;
-
-        context = this._canvasTemp.getContext('2d');
+        const context = this._canvasTemp.getContext('2d');
         if (context) {
             context.drawImage(this._canvasTemp, -1, 0);
 
@@ -153,8 +164,74 @@ export class Spectrogram {
         this._drawFrequencyMarkers();
     }
 
+    /**
+     * Clear the spectrogram.
+     */
+    clear(): void {
+        this._clear(this._canvasTemp);
+        this._drawFrequencyMarkers();
+    }
+
+    /**
+     * Set AnalyserNode.
+     * @param analyserNode AnalyserNode.
+     */
+    setAnalyser(analyserNode: AnalyserNode): void {
+        analyserNode.smoothingTimeConstant = 0;
+        this._analyserNode = analyserNode;
+
+        // this.setDecibelsRange(-110, -40);
+        // this.setFftSize(8192);
+    }
+
+    /**
+     * Set displayable value range of the spectrogram in decibels.
+     * @param min Min decibels [dB].
+     * @param max Max decibels [dB].
+     */
+    setDecibelsRange(min: number, max: number): void {
+        if (this._analyserNode) {
+            const oldMax = this._analyserNode.maxDecibels;
+            const oldMin = this._analyserNode.minDecibels;
+
+            try {
+                this._analyserNode.maxDecibels = max;
+                this._analyserNode.minDecibels = min;
+            } catch (e) {
+                this._analyserNode.maxDecibels = oldMax;
+                this._analyserNode.minDecibels = oldMin;
+            }
+        }
+    }
+
+    /**
+     * Set FFT size.
+     * @param fftSize FFT size. The value must be power of 2.
+     * @param isAdjust If true, FFT size is adjusted by sample rate.
+     */
+    setFftSize(fftSize: number, isAdjust: boolean): void {
+        if (this._analyserNode) {
+            const analyserNode = this._analyserNode;
+
+            if (isAdjust) {
+                const sampleRate = analyserNode.context.sampleRate;
+                if (sampleRate > 96000) {
+                    fftSize *= 4;
+                } else if (sampleRate > 48000) {
+                    fftSize *= 2;
+                }
+            }
+
+            try {
+                analyserNode.fftSize = fftSize;
+                this._drawFrequencyMarkers();
+            } catch (e) {
+            }
+        }
+    }
+
     private _drawFrequencyMarkers(): void {
-        if (!this._analyserNode) {
+        if (!this._canvas || !this._canvasTemp || !this._analyserNode) {
             return;
         }
 
@@ -200,12 +277,10 @@ export class Spectrogram {
         }
     }
 
-    clear(): void {
-        this._clear(this._canvasTemp);
-        this._drawFrequencyMarkers();
-    }
-
-    private _clear(canvas: HTMLCanvasElement): void {
+    private _clear(canvas: HTMLCanvasElement | null | undefined): void {
+        if (!canvas) {
+            return;
+        }
         const context = canvas.getContext('2d');
         const colorStyleText = `rgb(${this._colors[0].join(',')})`;
         if (context) {
@@ -214,47 +289,41 @@ export class Spectrogram {
         }
     }
 
-    setAnalyser(analyserNode: AnalyserNode): void {
-        analyserNode.smoothingTimeConstant = 0;
+    /** Canvas element which is used to draw spectrogram. */
+    public get canvas(): HTMLCanvasElement | null | undefined {
+        return this._canvas;
+    }
+    
+    /** Canvas element which is used to draw spectrogram. */
+    public set canvas(canvas: HTMLCanvasElement | null | undefined) {
+        if (canvas) {
+            this._canvasTemp = document.createElement('canvas');
+            this._canvasTemp.width = canvas.width;
+            this._canvasTemp.height = canvas.height;
+        }
+
+        // this._canvas?.removeEventListener('resize', (event) => { });
+        // canvas?.addEventListener('resize', (event) => {
+        //     if (this._canvasTemp) {
+        //         this._canvasTemp.width = canvas.width;
+        //         this._canvasTemp.height = canvas.height;
+        //     }
+        // });
+
+        this._canvas = canvas;
+    }
+
+    /** AnalyserNode which is used to get audio frequency data for drawing spectrogram. */
+    public get analyserNode(): AnalyserNode | null | undefined {
+        return this._analyserNode;
+    }
+    
+    /** AnalyserNode which is used to get audio frequency data for drawing spectrogram. */
+    public set analyserNode(analyserNode: AnalyserNode | null | undefined) {
+        // analyserNode.smoothingTimeConstant = 0;
         this._analyserNode = analyserNode;
 
         // this.setDecibelsRange(-110, -40);
         // this.setFftSize(8192);
-    }
-
-    setDecibelsRange(min: number, max: number): void {
-        if (this._analyserNode) {
-            const oldMax = this._analyserNode.maxDecibels;
-            const oldMin = this._analyserNode.minDecibels;
-
-            try {
-                this._analyserNode.maxDecibels = max;
-                this._analyserNode.minDecibels = min;
-            } catch (e) {
-                this._analyserNode.maxDecibels = oldMax;
-                this._analyserNode.minDecibels = oldMin;
-            }
-        }
-    }
-
-    setFftSize(fftSize: number, isAdjust: boolean): void {
-        if (this._analyserNode) {
-            const analyserNode = this._analyserNode;
-
-            if (isAdjust) {
-                const sampleRate = analyserNode.context.sampleRate;
-                if (sampleRate > 96000) {
-                    fftSize *= 4;
-                } else if (sampleRate > 48000) {
-                    fftSize *= 2;
-                }
-            }
-
-            try {
-                analyserNode.fftSize = fftSize;
-                this._drawFrequencyMarkers();
-            } catch (e) {
-            }
-        }
     }
 }

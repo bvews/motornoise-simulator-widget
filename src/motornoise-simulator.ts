@@ -1,11 +1,12 @@
-import { MotornoiseTrack } from './motornoise-track';
-import { Spectrogram } from './spectrogram';
-import { GeneralizedAccelerationCurve } from './generalized-acceleration-curve';
-import { LinearInterpolation } from './linear-interpolation';
-import { loadVehicle, Vehicle, Parameters, TrainDat } from './load-text-funcs';
-import { loadImages, loadAudios } from './load-media-funcs';
-import { BrowserCompatible } from './browser-compatible';
-
+import { MotornoiseTrack } from './motornoise-track.js';
+import { Spectrogram } from './spectrogram.js';
+import { GeneralizedAccelerationCurve } from './generalized-acceleration-curve.js';
+import { LinearInterpolation } from './linear-interpolation.js';
+import { RunningResistanceSimulator } from './running-resistance-simulator.js';
+import { AccelerationSimulator } from './acceleration-simulator.js';
+import { loadVehicle, Vehicle, Parameters, TrainDat } from './load-text-funcs.js';
+import { loadImages, loadAudios } from './load-media-funcs.js';
+import { BrowserCompatible } from './browser-compatible.js';
 
 interface MotornoiseData {
     urls: string[];
@@ -19,14 +20,15 @@ interface MotornoiseData {
  * Motornoise simulator class.
  */
 export class MotornoiseSimulator {
-    private intervalMillisec: number = 20;
-    private maxSpeed: number = 100;
-
     public audioContext: AudioContext;
+    public notch = 0;
+    public speed = 0;
+
+    private intervalMillisec = 20;
+    private maxSpeed = 100;
+
     private relativeUrl: string;
     // private bufferLoader: BufferLoader;
-
-    public notch: number = 0;
 
     private powerMotornoiseData?: MotornoiseData;
     private brakeMotornoiseData?: MotornoiseData;
@@ -38,28 +40,25 @@ export class MotornoiseSimulator {
     private runningResistanceSimulator?: RunningResistanceSimulator;
     private accelerationSimulator?: AccelerationSimulator;
 
-    public speed: number = 0;
-    private regenerationLimit: number = 0;
-    private runningNoiseIndex: number = 0;
-    private isAllFileLoaded: boolean = false;
-    private isMuted: boolean = false;
+    private regenerationLimit = 0;
+    private runningNoiseIndex = 0;
+    private isAllFileLoaded = false;
+    private isMuted = false;
 
     private browserCompatible = new BrowserCompatible();
 
-    public ontick: (speed: number) => void = speed => { };
-
-    private _prevTimeStamp: number = 0;
-    private _isEnabledSpectrogram: boolean = false;
-    private _isRunning: boolean = false;
-    private _isMuted: boolean = false;
-    private _hidden: boolean = false;
+    private _prevTimeStamp = 0;
+    private _isEnabledSpectrogram = false;
+    private _isRunning = false;
+    private _isMuted = false;
+    private _hidden = false;
 
     /**
-     * 
-     * @param audioContext 
-     * @param relativeUrl 
-     * @param maxSpeed 
-     * @param canvas 
+     *
+     * @param audioContext Audio Context.
+     * @param relativeUrl Relative path to directory which includes asset files.
+     * @param maxSpeed Train speed which activate speed limiter [km/h].
+     * @param canvas Canvas used for spectrogram display.
      */
     constructor(audioContext: AudioContext, relativeUrl: string, maxSpeed: number, canvas: HTMLCanvasElement | null | undefined) {
         this.maxSpeed = maxSpeed > 0 ? Number(maxSpeed) : 100;
@@ -79,13 +78,14 @@ export class MotornoiseSimulator {
     }
 
     /**
-     * 
-     * @param onAllFileLoaded 
+     * Load assets.
+     * @param onAllFileLoaded Callback which is called when all assets are loaded and ready to simulate.
+     * @param onupdate Callback which is called every an audio file load success.
      */
-    load(onAllFileLoaded: () => void, onupdate: (loadCount: number, entryCount: number) => void) {
+    load(onAllFileLoaded: () => void, onupdate: (loadCount: number, entryCount: number) => void): void {
         const audioContext = this.audioContext;
         const self = this;
-        loadVehicle(this.relativeUrl, vehicle => {
+        loadVehicle(this.relativeUrl, (vehicle) => {
             // Create running resistance simulator.
             self.runningResistanceSimulator = new RunningResistanceSimulator(vehicle.parameters);
 
@@ -93,14 +93,18 @@ export class MotornoiseSimulator {
             self.accelerationSimulator = new AccelerationSimulator(vehicle.trainDat, vehicle.parameters);
 
             loadImages(undefined, (images: any) => {
-                const audioEntries = vehicle.sound.motor.concat(vehicle.sound.run)
-                    .filter((entry: any) => entry);
-                loadAudios(audioContext, audioEntries, () => {
-                    self._audioTracks = self.createAudioTracks(audioContext, vehicle);
-                    self._setupSpectrogram(audioContext, self._audioTracks);
-                    onAllFileLoaded();
-                    self.isAllFileLoaded = true;
-                }, onupdate);
+                const audioEntries = vehicle.sound.motor.concat(vehicle.sound.run).filter((entry: any) => entry);
+                loadAudios(
+                    audioContext,
+                    audioEntries,
+                    () => {
+                        self._audioTracks = self.createAudioTracks(audioContext, vehicle);
+                        self._setupSpectrogram(audioContext, self._audioTracks);
+                        onAllFileLoaded();
+                        self.isAllFileLoaded = true;
+                    },
+                    onupdate
+                );
             });
         });
     }
@@ -117,44 +121,26 @@ export class MotornoiseSimulator {
 
         const audioTracks = [];
         for (let i = 0; i < trackCount; i++) {
-            audioTracks.push(new MotornoiseTrack(
-                audioContext,
-                vehicle.sound.motor[i],
-                motorNoise.power.frequency[i],
-                motorNoise.power.volume[i],
-                motorNoise.brake.frequency[i],
-                motorNoise.brake.volume[i],
-                vehicle.parameters.mainCircuit.regenerationLimit,
-                false));
+            audioTracks.push(new MotornoiseTrack(audioContext, vehicle.sound.motor[i], motorNoise.power.frequency[i], motorNoise.power.volume[i], motorNoise.brake.frequency[i], motorNoise.brake.volume[i], vehicle.parameters.mainCircuit.regenerationLimit, false));
         }
-        const runVolume = [{ 'x': 0, 'y': 0.001 }, { 'x': 90, 'y': 1 }, { 'x': 1000, 'y': 1 }];
-        const runFrequency = [{ 'x': 0, 'y': 0.001 }, { 'x': 90, 'y': 1 }];
-        audioTracks.push(new MotornoiseTrack(
-            audioContext,
-            vehicle.sound.run[0],
-            runFrequency,
-            runVolume,
-            runFrequency,
-            runVolume,
-            vehicle.parameters.mainCircuit.regenerationLimit,
-            true));
+        const runVolume = [
+            { x: 0, y: 0.001 },
+            { x: 90, y: 1 },
+            { x: 1000, y: 1 },
+        ];
+        const runFrequency = [
+            { x: 0, y: 0.001 },
+            { x: 90, y: 1 },
+        ];
+        audioTracks.push(new MotornoiseTrack(audioContext, vehicle.sound.run[0], runFrequency, runVolume, runFrequency, runVolume, vehicle.parameters.mainCircuit.regenerationLimit, true));
 
         return audioTracks;
     }
 
-    private _setupSpectrogram(audioContext: AudioContext, audioTracks: MotornoiseTrack[]): void {
-        const analyserNode = audioContext.createAnalyser();
-        audioTracks.forEach(({ gainNode }) => {
-            gainNode.connect(analyserNode);
-        });
-        this._spectrogram?.setAnalyser(analyserNode);
-        analyserNode.connect(audioContext.destination);
-
-        this._spectrogram?.setAnalyser(analyserNode);
-        this._spectrogram?.setDecibelsRange(-100, -30);
-        this._spectrogram?.setFftSize(4096, true);
-    }
-
+    /**
+     * Event handler for page leaving/coming back.
+     * @param event (Unused)
+     */
     handleVisibilitychange(event: Event): void {
         if (this.audioContext) {
             if (document.hidden) {
@@ -173,6 +159,10 @@ export class MotornoiseSimulator {
         }
     }
 
+    /**
+     * Start simulator main loop.
+     * @param intervalMillisec (Unused)
+     */
     startMainLoop(intervalMillisec?: number): void {
         if (!this._isRunning) {
             this._isRunning = true;
@@ -207,6 +197,9 @@ export class MotornoiseSimulator {
         }
     }
 
+    /**
+     * Stop simulator main loop.
+     */
     stopMainLoop(): void {
         this._isRunning = false;
 
@@ -242,7 +235,7 @@ export class MotornoiseSimulator {
         const ar = this.runningResistanceSimulator.getAcceleration(speed);
         const accelerationValue = this.accelerationSimulator.getAcceleration(speed, notch);
 
-        speed += (accelerationValue + ar) * intervalMillisec / 1000;
+        speed += ((accelerationValue + ar) * intervalMillisec) / 1000;
         if (speed > this.maxSpeed) {
             speed = this.maxSpeed;
         } else if (speed < 0) {
@@ -263,7 +256,7 @@ export class MotornoiseSimulator {
 
         if (speed === 0) {
             //this.setAllVolumeZero();
-            this._audioTracks.forEach(track => {
+            this._audioTracks.forEach((track) => {
                 track.stop();
             });
 
@@ -279,7 +272,7 @@ export class MotornoiseSimulator {
         }
 
         // Update motornoise and runningnoise.
-        this._audioTracks.forEach(track => {
+        this._audioTracks.forEach((track) => {
             track.update(speed, notch);
         });
 
@@ -288,24 +281,103 @@ export class MotornoiseSimulator {
         }
     }
 
+    /**
+     * Increment master controller handle.
+     */
     setNotchIncrement(): void {
         this._setNotch(this.notch + 1);
     }
 
+    /**
+     * Decrement master controller handle.
+     */
     setNotchDecrement(): void {
         this._setNotch(this.notch - 1);
     }
 
+    /**
+     * Set master controller handle to maximum power position.
+     */
     setNotchFullPower(): void {
         this._setNotch(Number.POSITIVE_INFINITY);
     }
 
+    /**
+     * Set master controller handle to full brake position.
+     */
     setNotchFullBrake(): void {
         this._setNotch(Number.NEGATIVE_INFINITY);
     }
 
+    /**
+     * Set master controller handle to neutral position.
+     */
     setNotchNeutral(): void {
         this._setNotch(0);
+    }
+
+    /**
+     * Toggle whether sound is muted.
+     * @param onMuted Callback which is called when sound is muted.
+     * @param onUnmuted Callback which is called when sound is unmuted.
+     */
+    toggleMute(onMuted: () => void, onUnmuted: () => void): void {
+        const audioContext = this.audioContext;
+        const self = this;
+
+        if (audioContext.state === 'running') {
+            audioContext.suspend().then(() => {
+                onMuted();
+                self.isMuted = true;
+            });
+        } else if (audioContext.state === 'suspended') {
+            audioContext.resume().then(() => {
+                onUnmuted();
+                self.isMuted = false;
+            });
+        }
+    }
+
+    /**
+     * Toggle whether the spectrogram visibility. 
+     * @param callbackOnHide Callback which is called when the spectrogram vanishes.
+     * @param callbackOnShow Callback which is called when the spectrogram is shown.
+     */
+    toggleSpectrogram(callbackOnHide: () => void, callbackOnShow: () => void): void {
+        if (this._isEnabledSpectrogram) {
+            this._isEnabledSpectrogram = false;
+            callbackOnHide();
+        } else {
+            this._isEnabledSpectrogram = true;
+            this.clearSpectrogram();
+            callbackOnShow();
+        }
+    }
+
+    /**
+     * Clear the spectrogram. 
+     */
+    clearSpectrogram(): void {
+        this._spectrogram?.clear();
+    }
+
+    /**
+     * Callback which is called every frame.
+     * @param speed Train speed.
+     */
+    public ontick: (speed: number) => void = (speed) => {};
+
+    private _setupSpectrogram(audioContext: AudioContext, audioTracks: MotornoiseTrack[]): void {
+        const analyserNode = audioContext.createAnalyser();
+        audioTracks.forEach(({ gainNode }) => {
+            gainNode.connect(analyserNode);
+        });
+        this._spectrogram?.setAnalyser(analyserNode);
+        analyserNode.connect(audioContext.destination);
+
+        this._spectrogram?.setAnalyser(analyserNode);
+        this._spectrogram?.setDecibelsRange(-100, -30);
+        this._spectrogram?.setFftSize(4096, true);
     }
 
     private _setNotch(notch: number): void {
@@ -322,144 +394,4 @@ export class MotornoiseSimulator {
             }
         }
     }
-
-    toggleMute(onMuted: () => void, onUnmuted: () => void): void {
-        const audioContext = this.audioContext;
-        const self = this;
-
-        if (audioContext.state === 'running') {
-            audioContext.suspend().then(() => {
-                onMuted();
-                self.isMuted = true;
-            });
-        }
-        else if (audioContext.state === 'suspended') {
-            audioContext.resume().then(() => {
-                onUnmuted();
-                self.isMuted = false;
-            });
-        }
-    }
-
-    toggleSpectrogram(callbackOnHide: () => void, callbackOnShow: () => void): void {
-        if (this._isEnabledSpectrogram) {
-            this._isEnabledSpectrogram = false;
-            callbackOnHide();
-        } else {
-            this._isEnabledSpectrogram = true;
-            this.clearSpectrogram();
-            callbackOnShow();
-        }
-    }
-
-    clearSpectrogram(): void {
-        this._spectrogram?.clear();
-    }
 }
-
-class AccelerationSimulator {
-    private accelerationCurves: GeneralizedAccelerationCurve[] = [];
-    private decelerationCurves: GeneralizedAccelerationCurve[] = [];
-    public maxPowerNotch: number = 5;
-    public maxBrakeNotch: number = 7;
-
-    constructor(trainDat: TrainDat | undefined, parameters: Parameters | undefined) {
-        if (!trainDat) {
-            return;
-        } else {
-            if (!parameters) {
-                // const maxDeceleration = Number(trainDat[11]);
-                // const maxPowerNotch = parseInt(trainDat[38]);
-                // const maxBrakeNotch = parseInt(trainDat[39]);
-
-                // this.maxPowerNotch = maxPowerNotch;
-                // this.maxBrakeNotch = maxBrakeNotch;
-
-                // for (let i = 0; i < maxPowerNotch; i++) {
-                //     const accelerationParams = trainDat[i + 2].split(',');
-                //     const a0 = Number(accelerationParams[0]);
-                //     const a1 = Number(accelerationParams[1]);
-                //     const v0 = Number(accelerationParams[2]);
-                //     const v1 = Number(accelerationParams[3]);
-                //     const e = Number(accelerationParams[4]);
-                //     accelerationCurves[i] = new GeneralizedAccelerationCurve(a0, a1, v0, v1, e);
-                // }
-
-                // for (let i = 0; i < maxBrakeNotch; i++) {
-                //     decelerationCurves[i] = new GeneralizedAccelerationCurve(-maxDeceleration / maxBrakeNotch * (i + 1));
-                // }
-            } else {
-                const maxDeceleration = trainDat.performance.deceleration;
-                const cab = parameters.cab || parameters.oneLeverCab;
-                if (cab) {
-                    this.maxPowerNotch = cab.powerNotchCount;
-                    this.maxBrakeNotch = cab.brakeNotchCount;
-                }
-
-                trainDat.acceleration.forEach((a: any) => {
-                    this.accelerationCurves.push(new GeneralizedAccelerationCurve(a.a0, a.a1, a.v1, a.v2, a.e));
-                });
-
-                for (let i = 0; i < this.maxBrakeNotch; i++) {
-                    this.decelerationCurves[i] = new GeneralizedAccelerationCurve(-maxDeceleration / this.maxBrakeNotch * (i + 1));
-                }
-            }
-        }
-    }
-
-    getAcceleration(speed: number, notch: number): number {
-        if (notch > 0 && this.accelerationCurves[notch - 1]) {
-            return this.accelerationCurves[notch - 1].getAcceleration(speed);
-        } else if (notch < 0 && this.decelerationCurves[-notch - 1]) {
-            return this.decelerationCurves[-notch - 1].getAcceleration(speed);
-        } else {
-            return 0;
-        }
-    }
-}
-
-class RunningResistanceSimulator {
-    private motorcarWeight: number;
-    private trailerWeight: number;
-    private motorcarCount: number;
-    private trailerCount: number;
-    private motorcarInertiaFactor: number;
-    private trailerInertiaFactor: number;
-
-    private coefficientA: number;
-    private coefficientB: number;
-    private coefficientC: number;
-
-    constructor(parameters: Parameters, mw = 31500, tw = 31500, mc = 1, tc = 1, mif = 0.01, tif = 0.05, a?: number, b?: number, c?: number) {
-        if (parameters && parameters.dynamics) {
-            const dynamics = parameters.dynamics;
-
-            mw = mw ? mw : dynamics.motorcarWeight;
-            tw = tw ? tw : dynamics.trailerWeight;
-            mc = mc ? mc : dynamics.motorcarCount;
-            tc = tc ? tc : dynamics.trailerCount;
-            mif = mif ? mif : dynamics.motorcarInertiaFactor;
-            tif = tif ? tif : dynamics.trailerInertiaFactor;
-        }
-
-        this.motorcarWeight = isNaN(mw) ? 31500 : Number(mw);
-        this.trailerWeight = isNaN(tw) ? 31500 : Number(tw);
-        this.motorcarCount = isNaN(mc) ? 1 : Number(mc);
-        this.trailerCount = isNaN(tc) ? 1 : Number(tc);
-        this.motorcarInertiaFactor = isNaN(mif) ? 0.01 : Number(mif);
-        this.trailerInertiaFactor = isNaN(tif) ? 0.05 : Number(tif);
-
-        this.coefficientA = a == undefined ? 0.275 + 0.076 * (this.motorcarCount + this.trailerCount - 1) : a;
-        this.coefficientB = b == undefined ? 0.000242 * this.motorcarCount * this.motorcarWeight + 0.0000275 * this.trailerCount * this.trailerWeight : b;
-        this.coefficientC = c == undefined ? 0.0162 * this.motorcarCount * this.motorcarWeight + 0.00765 * this.trailerCount * this.trailerWeight : c;
-    }
-    getForce(speed: number): number {
-        return this.coefficientA * speed * speed + this.coefficientB * speed + this.coefficientC;
-    }
-
-    getAcceleration(speed: number): number {
-        const resistanceForce = this.coefficientA * speed * speed + this.coefficientB * speed + this.coefficientC;
-        return -3.6 * resistanceForce / (this.motorcarCount * this.motorcarWeight * (this.motorcarInertiaFactor + 1) + this.trailerCount * this.trailerWeight * (this.trailerInertiaFactor + 1));
-    }
-}
-

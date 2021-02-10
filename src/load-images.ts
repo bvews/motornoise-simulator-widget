@@ -3,7 +3,7 @@ function loadImages(imageEntries: any[], onload: (imageEntries?: any[]) => void,
     const imageCount = imageEntries.length;
     onupdate(loadCount, imageCount);
 
-    imageEntries.forEach(entry => {
+    imageEntries.forEach((entry) => {
         const image = new Image();
         image.onload = () => {
             entry.image = image;
@@ -26,7 +26,7 @@ function loadImages(imageEntries: any[], onload: (imageEntries?: any[]) => void,
             if (loadCount >= imageCount) {
                 onload(imageEntries);
             }
-        }
+        };
         image.src = entry.url;
     });
 }

@@ -1,19 +1,19 @@
-export interface Point {
-    x: number;
-    y: number;
-}
+import { Point } from './point.js';
 
 /**
- * 
- * @param points 
+ * Linear interpolation.
  */
 export class LinearInterpolation {
     private x: number[] = [];
     private y: number[] = [];
-    private slope: number = 0;
-    private intercept: number = 0;
-    private prevIndex: number = NaN;
+    private slope = 0;
+    private intercept = 0;
+    private prevIndex = NaN;
 
+    /**
+     * 
+     * @param points Set of (x, y).
+     */
     constructor(points: Point[]) {
         if (points) {
             // TODO: Resolve 'x' duplication.
@@ -32,7 +32,7 @@ export class LinearInterpolation {
     }
 
     /**
-     * 
+     *
      * @param array
      * @param value
      */
@@ -45,8 +45,7 @@ export class LinearInterpolation {
             mid = Math.floor((min + max) / 2);
             if (array[mid] <= value) {
                 min = mid;
-            }
-            else {
+            } else {
                 max = mid;
             }
         }
@@ -54,8 +53,9 @@ export class LinearInterpolation {
     }
 
     /**
-     * 
-     * @param value 
+     * Linear interpolation.
+     * @param value A value.
+     * @returns Interpolated value.
      */
     interpolate(value: number): number {
         const x = this.x;
@@ -63,11 +63,9 @@ export class LinearInterpolation {
 
         if (x.length == 0) {
             return 0;
-        }
-        else if (x.length == 1) {
+        } else if (x.length == 1) {
             return y[0];
-        }
-        else {
+        } else {
             if (this.prevIndex !== null && value > x[this.prevIndex] && value <= x[this.prevIndex + 1]) {
                 return this.slope * value + this.intercept;
             }
@@ -75,11 +73,9 @@ export class LinearInterpolation {
             let index;
             if (value <= x[0]) {
                 index = 0;
-            }
-            else if (value > x[x.length - 1]) {
+            } else if (value > x[x.length - 1]) {
                 index = x.length - 2;
-            }
-            else {
+            } else {
                 index = this.binarySearch(x, value);
             }
 

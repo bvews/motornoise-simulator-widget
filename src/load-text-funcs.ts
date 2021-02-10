@@ -1,5 +1,5 @@
-import { Point } from './linear-interpolation';
-import { AudioEntry } from './motornoise-track';
+import { Point } from './point.js';
+import { AudioEntry } from './audio-entry.js';
 
 export interface Vehicle {
     parameters: Parameters;
@@ -21,11 +21,11 @@ export interface Vehicle {
 }
 
 export interface Parameters {
-    cab: {
+    cab?: {
         powerNotchCount: number;
         brakeNotchCount: number;
     };
-    oneLeverCab: {
+    oneLeverCab?: {
         powerNotchCount: number;
         brakeNotchCount: number;
     };
@@ -56,8 +56,13 @@ export interface TrainDat {
     };
 }
 
+/**
+ * Load BVE Trainsim Vehicle data.
+ * @param relativeUrl Relative path to directory which includes vehicle data text files.
+ * @param onload Callback which is called when all files are loaded.
+ */
 export function loadVehicle(relativeUrl: string, onload: (vehicle: Vehicle) => void): void {
-    const files: { [key: string]: { url: string, text: string } } = {
+    const files: { [key: string]: { url: string; text: string } } = {
         sound: { url: 'Sound.txt', text: '' },
         parameters: { url: 'Parameters.txt', text: '' },
         trainDat: { url: 'Train.dat', text: '' },
@@ -67,13 +72,12 @@ export function loadVehicle(relativeUrl: string, onload: (vehicle: Vehicle) => v
         brakeVolume: { url: 'BrakeVol.csv', text: '' },
     };
 
-
     const fileCount = Object.keys(files).length;
     let loadCount = 0;
 
-    for (let key in files) {
+    for (const key in files) {
         const file = files[key];
-        fetchText(relativeUrl + file.url, text => {
+        fetchText(relativeUrl + file.url, (text) => {
             file.text = text;
             loadCount++;
             if (loadCount >= fileCount) {
@@ -83,33 +87,46 @@ export function loadVehicle(relativeUrl: string, onload: (vehicle: Vehicle) => v
                     motorNoise: {
                         power: {
                             volume: parseCsv(files.powerVolume.text),
-                            frequency: parseCsv(files.powerFrequency.text)
+                            frequency: parseCsv(files.powerFrequency.text),
                         },
                         brake: {
                             volume: parseCsv(files.brakeVolume.text),
-                            frequency: parseCsv(files.brakeFrequency.text)
-                        }
+                            frequency: parseCsv(files.brakeFrequency.text),
+                        },
                     },
-                    trainDat: parseTrainDat(files.trainDat.text)
+                    trainDat: parseTrainDat(files.trainDat.text),
                 });
             }
         });
     }
 }
 
+/**
+ * Load a text file.
+ * @param url Path to a text file.
+ * @param onload Callback which is called when the file is loaded.
+ */
 export function fetchText(url: string, onload: (text: string) => void): void {
     const xhr = new XMLHttpRequest();
 
-    xhr.addEventListener('load', event => {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            onload(xhr.responseText);
-        } else {
+    xhr.addEventListener(
+        'load',
+        (event) => {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                onload(xhr.responseText);
+            } else {
+                onload('');
+            }
+        },
+        false
+    );
+    xhr.addEventListener(
+        'error',
+        (event) => {
             onload('');
-        }
-    }, false);
-    xhr.addEventListener('error', event => {
-        onload('');
-    }, false);
+        },
+        false
+    );
 
     xhr.open('GET', url, true);
     xhr.setRequestHeader('Cache-Control', 'no-cache');
@@ -117,9 +134,9 @@ export function fetchText(url: string, onload: (text: string) => void): void {
 }
 
 /**
- * 
- * @param text
- * @returns
+ * Parse a text as INI data.
+ * @param text INI file text.
+ * @returns INI file data.
  */
 export function parseIni(text: string): { [section: string]: { [key: string]: string } } {
     const result: { [section: string]: { [key: string]: string } } = {};
@@ -155,9 +172,9 @@ export function parseIni(text: string): { [section: string]: { [key: string]: st
 }
 
 /**
- * 
- * @param text
- * @returns
+ * Parse a text as CSV data.
+ * @param text CSV file text.
+ * @returns Table of (x, y).
  */
 export function parseCsv(text: string): Point[][] {
     const result: Point[][] = [];
@@ -182,11 +199,17 @@ export function parseCsv(text: string): Point[][] {
     return result;
 }
 
-export function parseSound(text: string, relativeUrl: string): { motor: AudioEntry[], run: AudioEntry[] } {
+/**
+ * Parse a text as BVE Trainsim Vehicle Sound data.
+ * @param text Vehicle Sound file text.
+ * @param relativeUrl Relative path to a Vehicle Sound file text file.
+ * @returns BVE Trainsim Vehicle Sound data.
+ */
+export function parseSound(text: string, relativeUrl: string): { motor: AudioEntry[]; run: AudioEntry[] } {
     const iniData = parseIni(text);
-    const result: { motor: AudioEntry[], run: AudioEntry[] } = {
+    const result: { motor: AudioEntry[]; run: AudioEntry[] } = {
         motor: [],
-        run: []
+        run: [],
     };
 
     if (iniData['motor']) {
@@ -204,13 +227,18 @@ export function parseSound(text: string, relativeUrl: string): { motor: AudioEnt
     return result;
 }
 
+/**
+ * Create a Audio entry from a entry in BVE Trainsim Vehicle Sound data.
+ * @param text A entry in BVE Trainsim Vehicle Sound data.
+ * @returns Audio entry.
+ */
 export function createAudioEntry(text: string): AudioEntry {
     const items = text.split(',');
 
     const userAgent = window.navigator.userAgent.toLowerCase();
     let browser;
     if (userAgent.includes('msie') || userAgent.includes('trident')) {
-        browser = 'msif';
+        browser = 'msie';
     } else if (userAgent.includes('edge')) {
         browser = 'edge';
     } else if (userAgent.includes('chrome')) {
@@ -243,15 +271,20 @@ export function createAudioEntry(text: string): AudioEntry {
     return {
         url,
         length,
-        leeway
+        leeway,
     };
 }
 
+/**
+ * Parse a text as BVE Trainsim Vehicle Parameters data.
+ * @param text Vehicle Parameters file text.
+ * @returns BVE Trainsim Vehicle Parameters data.
+ */
 export function parseParameters(text: string): Parameters {
     const iniData = parseIni(text);
     const result: Parameters = {
         mainCircuit: {
-            regenerationLimit: 5
+            regenerationLimit: 5,
         },
         dynamics: {
             motorcarWeight: 31500,
@@ -260,33 +293,27 @@ export function parseParameters(text: string): Parameters {
             trailerCount: 5,
             motorcarInertiaFactor: 0.1,
             trailerInertiaFactor: 0.05,
-            carLength: 20
+            carLength: 20,
         },
-        oneLeverCab: {
-            powerNotchCount: 5,
-            brakeNotchCount: 7
-        },
-        cab: {
-            powerNotchCount: 5,
-            brakeNotchCount: 7
-        }
+        oneLeverCab: undefined,
+        cab: undefined,
     };
 
     if (iniData['cab']) {
         result.cab = {
             powerNotchCount: isNaN(Number(iniData['cab']['powernotchcount'])) ? 5 : parseInt(iniData['cab']['powernotchcount']),
-            brakeNotchCount: isNaN(Number(iniData['cab']['brakenotchcount'])) ? 7 : parseInt(iniData['cab']['brakenotchcount'])
+            brakeNotchCount: isNaN(Number(iniData['cab']['brakenotchcount'])) ? 7 : parseInt(iniData['cab']['brakenotchcount']),
         };
     }
     if (iniData['onelevercab']) {
         result.oneLeverCab = {
             powerNotchCount: isNaN(Number(iniData['onelevercab']['powernotchcount'])) ? 5 : parseInt(iniData['onelevercab']['powernotchcount']),
-            brakeNotchCount: isNaN(Number(iniData['onelevercab']['brakenotchcount'])) ? 7 : parseInt(iniData['onelevercab']['brakenotchcount'])
+            brakeNotchCount: isNaN(Number(iniData['onelevercab']['brakenotchcount'])) ? 7 : parseInt(iniData['onelevercab']['brakenotchcount']),
         };
     }
     if (iniData['maincircuit']) {
         result.mainCircuit = {
-            regenerationLimit: isNaN(Number(iniData['maincircuit']['regenerationlimit'])) ? 5 : parseFloat(iniData['maincircuit']['regenerationlimit'])
+            regenerationLimit: isNaN(Number(iniData['maincircuit']['regenerationlimit'])) ? 5 : parseFloat(iniData['maincircuit']['regenerationlimit']),
         };
     }
     result.dynamics = parseSection(iniData, 'dynamics', {
@@ -296,7 +323,7 @@ export function parseParameters(text: string): Parameters {
         trailerCount: 5,
         motorcarInertiaFactor: 0.1,
         trailerInertiaFactor: 0.05,
-        carLength: 20
+        carLength: 20,
     });
 
     function parseSection<T extends any>(iniData: { [section: string]: { [key: string]: string } }, sectionName: string, keys: T): T {
@@ -304,7 +331,7 @@ export function parseParameters(text: string): Parameters {
         const section = iniData[sectionName.toLowerCase()];
 
         if (section) {
-            for (let key in keys) {
+            for (const key in keys) {
                 result[key] = isNaN(Number(section[key.toLowerCase()])) ? keys[key] : parseFloat(section[key.toLowerCase()]);
             }
         }
@@ -315,19 +342,24 @@ export function parseParameters(text: string): Parameters {
     return result;
 }
 
+/**
+ * Parse a text as BVE Trainsim Train.dat data.
+ * @param text Train.dat file text.
+ * @returns Train.dat data.
+ */
 export function parseTrainDat(text: string): TrainDat {
     const lines = text.split(/\r?\n/);
 
     const acceleration = [];
     for (let i = 2; i < 2 + 8; i++) {
         if (lines[i]) {
-            const values = lines[i].split(',').map(value => parseFloat(value));
+            const values = lines[i].split(',').map((value) => parseFloat(value));
             acceleration.push({
                 a0: values[0],
                 a1: values[1],
                 v1: values[2],
                 v2: values[3],
-                e: values[4]
+                e: values[4],
             });
         }
     }
@@ -335,8 +367,8 @@ export function parseTrainDat(text: string): TrainDat {
     const result = {
         acceleration,
         performance: {
-            deceleration: parseFloat(lines[11]) || 3.5
-        }
+            deceleration: parseFloat(lines[11]) || 3.5,
+        },
     };
 
     return result;

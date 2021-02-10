@@ -1,14 +1,13 @@
 // Element: needle, cover, digital numbers, etc.
 // Component: gauge, LCD, etc.
 class PanelElement {
-    private layer: number = 0;
+    private layer = 0;
 
     constructor(vehicleState: any) {
         this.layer = 0;
     }
 
-    render(canvas: HTMLCanvasElement, vehicleState: any) {
-    }
+    render(canvas: HTMLCanvasElement, vehicleState: any) {}
 }
 
 class Panel {
@@ -29,7 +28,7 @@ class Panel {
 
         // Clear canvas
 
-        this.panelElements.forEach(element => {
+        this.panelElements.forEach((element) => {
             element.render(canvas, state);
         });
     }
