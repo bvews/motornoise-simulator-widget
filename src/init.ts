@@ -1,3 +1,4 @@
+import './toggle-language.js';
 import { MotornoiseSimulatorWidgetInitializer } from './motornoise-simulator-widget-initializer.js';
 
 (() => {
