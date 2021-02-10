@@ -17,6 +17,12 @@
   },
   "homepage": "https://github.com/bvews/motornoise-simulator-widget#readme",
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.15.0",
+    "@typescript-eslint/parser": "^4.15.0",
+    "eslint": "^7.19.0",
+    "eslint-config-prettier": "^7.2.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "prettier": "^2.2.1",
     "typescript": "^4.1.3"
   }
 }
