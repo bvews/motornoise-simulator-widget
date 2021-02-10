@@ -210,7 +210,7 @@ export function createAudioEntry(text: string): AudioEntry {
     const userAgent = window.navigator.userAgent.toLowerCase();
     let browser;
     if (userAgent.includes('msie') || userAgent.includes('trident')) {
-        browser = 'msif';
+        browser = 'msie';
     } else if (userAgent.includes('edge')) {
         browser = 'edge';
     } else if (userAgent.includes('chrome')) {

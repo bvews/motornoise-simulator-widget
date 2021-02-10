@@ -43,7 +43,7 @@ export function getVorbisAudioLength(arrayBuffer: ArrayBuffer): number {
 
     if (posVorbis !== -1 && posOggs !== -1) {
         sampleRate = dataView.getUint32(posVorbis + 12, true);
-        sampleCount = dataView.getUint32(posOggs + 6, true); // Acturally 64bit value
+        sampleCount = dataView.getUint32(posOggs + 6, true); // Actually 64bit value
     }
     return sampleCount / sampleRate;
 }

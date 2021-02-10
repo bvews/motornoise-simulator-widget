@@ -15,9 +15,9 @@ class BufferLoader {
      * @param context 
      * @param urlList 
      * @param callback 
-     * @param extention
+     * @param extension
      */
-    constructor(context: AudioContext, urlList: string[], callback: (bufferList?: AudioBuffer[]) => void, extention: string) {
+    constructor(context: AudioContext, urlList: string[], callback: (bufferList?: AudioBuffer[]) => void, extension: string) {
         this.context = context;
         this.urlList = urlList;
         this.onload = callback;

@@ -1,19 +1,19 @@
 export class BrowserCompatible {
     private _browser: string | undefined;
-    private _audioFileExtention: string | undefined;
+    private _audioFileExtension: string | undefined;
     public get browser(): string | undefined {
         return this._browser;
     }
-    public get audioFileExtention(): string | undefined {
-        return this._audioFileExtention;
+    public get audioFileExtension(): string | undefined {
+        return this._audioFileExtension;
     }
     constructor() {
         this._browser = undefined;
-        this._audioFileExtention = undefined;
+        this._audioFileExtension = undefined;
 
         const userAgent = window.navigator.userAgent.toLowerCase();
         if (userAgent.includes('msie') || userAgent.includes('trident')) {
-            this._browser = 'msif';
+            this._browser = 'msie';
         } else if (userAgent.includes('edge')) {
             this._browser = 'edge';
         } else if (userAgent.includes('chrome')) {
@@ -30,13 +30,13 @@ export class BrowserCompatible {
 
         //if (this.browser === 'safari' || this.browser === 'chrome' || this.browser === 'firefox') {
         if (this._browser === 'safari') {
-            this._audioFileExtention = '.mp4';
+            this._audioFileExtension = '.mp4';
             this.setSpan = (sn, d) => {
                 sn.loopEnd = d * 1.5;
                 sn.loopStart = d * 0.5;
             };
         } else {
-            this._audioFileExtention = '.ogg';
+            this._audioFileExtension = '.ogg';
             this.setSpan = (sn, d) => {
                 sn.loopEnd = d;
                 sn.loopStart = 0;
