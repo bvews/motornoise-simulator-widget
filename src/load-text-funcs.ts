@@ -56,6 +56,11 @@ export interface TrainDat {
     };
 }
 
+/**
+ * Load BVE Trainsim Vehicle data.
+ * @param relativeUrl Relative path to directory which includes vehicle data text files.
+ * @param onload Callback which is called when all files are loaded.
+ */
 export function loadVehicle(relativeUrl: string, onload: (vehicle: Vehicle) => void): void {
     const files: { [key: string]: { url: string; text: string } } = {
         sound: { url: 'Sound.txt', text: '' },
@@ -96,6 +101,11 @@ export function loadVehicle(relativeUrl: string, onload: (vehicle: Vehicle) => v
     }
 }
 
+/**
+ * Load a text file.
+ * @param url Path to a text file.
+ * @param onload Callback which is called when the file is loaded.
+ */
 export function fetchText(url: string, onload: (text: string) => void): void {
     const xhr = new XMLHttpRequest();
 
@@ -124,9 +134,9 @@ export function fetchText(url: string, onload: (text: string) => void): void {
 }
 
 /**
- *
- * @param text
- * @returns
+ * Parse a text as INI data.
+ * @param text INI file text.
+ * @returns INI file data.
  */
 export function parseIni(text: string): { [section: string]: { [key: string]: string } } {
     const result: { [section: string]: { [key: string]: string } } = {};
@@ -162,9 +172,9 @@ export function parseIni(text: string): { [section: string]: { [key: string]: st
 }
 
 /**
- *
- * @param text
- * @returns
+ * Parse a text as CSV data.
+ * @param text CSV file text.
+ * @returns Table of (x, y).
  */
 export function parseCsv(text: string): Point[][] {
     const result: Point[][] = [];
@@ -189,6 +199,12 @@ export function parseCsv(text: string): Point[][] {
     return result;
 }
 
+/**
+ * Parse a text as BVE Trainsim Vehicle Sound data.
+ * @param text Vehicle Sound file text.
+ * @param relativeUrl Relative path to a Vehicle Sound file text file.
+ * @returns BVE Trainsim Vehicle Sound data.
+ */
 export function parseSound(text: string, relativeUrl: string): { motor: AudioEntry[]; run: AudioEntry[] } {
     const iniData = parseIni(text);
     const result: { motor: AudioEntry[]; run: AudioEntry[] } = {
@@ -211,6 +227,11 @@ export function parseSound(text: string, relativeUrl: string): { motor: AudioEnt
     return result;
 }
 
+/**
+ * Create a Audio entry from a entry in BVE Trainsim Vehicle Sound data.
+ * @param text A entry in BVE Trainsim Vehicle Sound data.
+ * @returns Audio entry.
+ */
 export function createAudioEntry(text: string): AudioEntry {
     const items = text.split(',');
 
@@ -254,6 +275,11 @@ export function createAudioEntry(text: string): AudioEntry {
     };
 }
 
+/**
+ * Parse a text as BVE Trainsim Vehicle Parameters data.
+ * @param text Vehicle Parameters file text.
+ * @returns BVE Trainsim Vehicle Parameters data.
+ */
 export function parseParameters(text: string): Parameters {
     const iniData = parseIni(text);
     const result: Parameters = {
@@ -316,6 +342,11 @@ export function parseParameters(text: string): Parameters {
     return result;
 }
 
+/**
+ * Parse a text as BVE Trainsim Train.dat data.
+ * @param text Train.dat file text.
+ * @returns Train.dat data.
+ */
 export function parseTrainDat(text: string): TrainDat {
     const lines = text.split(/\r?\n/);
 

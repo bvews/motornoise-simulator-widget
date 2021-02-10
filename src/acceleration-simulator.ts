@@ -1,12 +1,20 @@
 import { GeneralizedAccelerationCurve } from './generalized-acceleration-curve.js';
 import { Parameters, TrainDat } from './load-text-funcs.js';
 
+/**
+ * Simple train acceleration simulator.
+ */
 export class AccelerationSimulator {
     public maxPowerNotch = 5;
     public maxBrakeNotch = 7;
     private accelerationCurves: GeneralizedAccelerationCurve[] = [];
     private decelerationCurves: GeneralizedAccelerationCurve[] = [];
 
+    /**
+     *
+     * @param trainDat Object which represents BVE Trainsim Train.dat.
+     * @param parameters Object which represents BVE Trainsim Vehicle Parameters file.
+     */
     constructor(trainDat: TrainDat | undefined, parameters: Parameters | undefined) {
         if (!trainDat) {
             return;
@@ -48,6 +56,12 @@ export class AccelerationSimulator {
         }
     }
 
+    /**
+     * Get current train acceleration.
+     * @param speed Train speed.
+     * @param notch Handle position. If it is negative value, it represents brake handle position.
+     * @returns Train acceleration. If it is negative value, it represents deceleration.
+     */
     getAcceleration(speed: number, notch: number): number {
         if (notch > 0 && this.accelerationCurves[notch - 1]) {
             return this.accelerationCurves[notch - 1].getAcceleration(speed);

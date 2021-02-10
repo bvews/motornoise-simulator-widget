@@ -1,6 +1,9 @@
 type Browser = 'msie' | 'edge' | 'chrome' | 'safari' | 'firefox' | 'opera' | 'unknown';
 type AudioExtension = '.ogg' | '.mp4';
 
+/**
+ * Browser compatible class.
+ */
 export class BrowserCompatible {
     private _browser: Browser;
     private _audioFileExtension: AudioExtension;
@@ -46,9 +49,11 @@ export class BrowserCompatible {
      */
     setSpan(sourceNode: AudioBufferSourceNode, duration: number): void {}
 
+    /** Returns string which represents current browser. */
     public get browser(): Browser {
         return this._browser;
     }
+    /** Returns extention of audio file which is should be loaded in current browser. */
     public get audioFileExtension(): AudioExtension {
         return this._audioFileExtension;
     }

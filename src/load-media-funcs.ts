@@ -1,5 +1,11 @@
 import { AudioEntry } from './audio-entry.js';
 
+/**
+ * Load multiple images.
+ * @param imageEntries Image entries.
+ * @param onload Callback which is called when all files are loaded.
+ * @param onupdate Callback which is called every a file load success.
+ */
 export function loadImages(imageEntries: any[] | undefined, onload: (imageEntries?: any[]) => void, onupdate?: (loadCount: number, entryCount: number) => void): void {
     if (!imageEntries) {
         if (onload) {
@@ -40,6 +46,13 @@ export function loadImages(imageEntries: any[] | undefined, onload: (imageEntrie
     });
 }
 
+/**
+ * Load multiple audios.
+ * @param audioContext Audio Context.
+ * @param audioEntries Image entries.
+ * @param onload Callback which is called when all files are loaded.
+ * @param onupdate Callback which is called every a file load success.
+ */
 export function loadAudios(audioContext: AudioContext, audioEntries: AudioEntry[], onload: (entries?: AudioEntry[]) => void, onupdate: (loadCount: number, entryCount: number) => void): void {
     if (!audioContext || !audioEntries) {
         if (onload) {
@@ -113,9 +126,9 @@ export function loadAudios(audioContext: AudioContext, audioEntries: AudioEntry[
 }
 
 /**
- *
- * @param imageEntries
- * @param onupdate
+ * Load multiple images.
+ * @param imageEntries Image entries.
+ * @param onupdate Callback which is called every a file load success.
  */
 export async function loadImagesModern(imageEntries: any[], onupdate: (loadCount: number, entryCount: number) => void): Promise<undefined> {
     if (!imageEntries) {
@@ -156,10 +169,10 @@ export async function loadImagesModern(imageEntries: any[], onupdate: (loadCount
 }
 
 /**
- *
- * @param audioContext
- * @param audioEntries
- * @param onupdate
+ * Load multiple audios.
+ * @param audioContext Audio Context.
+ * @param audioEntries Audio entries.
+ * @param onupdate Callback which is called every a file load success.
  */
 export async function loadAudiosModern(audioContext: AudioContext, audioEntries: AudioEntry[], onupdate: (loadCount: number, entryCount: number) => void): Promise<undefined> {
     if (!audioContext || !audioEntries) {

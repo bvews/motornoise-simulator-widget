@@ -1,8 +1,20 @@
 
+/**
+ * Convert angle used in BVE Trainsim to ordinary radian.
+ * @param degree Angle in degree which is used in BVE Trainsim.
+ * @return Angle in radian.
+ */
 function bveDegToRad(degree: number): number {
     return (degree + 270) / 180.0 * Math.PI;
 }
 
+/**
+ * Generate SVG path string which represents an arc.
+ * @param radius Radius of arc.
+ * @param minAngle Arc begin angle [deg].
+ * @param maxAngle Arc end angle [deg].
+ * @returns SVG path string which represents an arc.
+ */
 export function generateArcPath(radius: number | string, minAngle: number | string, maxAngle: number | string): string {
     radius = typeof radius === 'string' ? parseFloat(radius) : radius;
     minAngle = typeof minAngle === 'string' ? parseFloat(minAngle) : minAngle;

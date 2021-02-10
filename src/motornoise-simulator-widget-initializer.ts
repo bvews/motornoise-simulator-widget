@@ -4,18 +4,16 @@ import { generateArcPath } from './svg-path-functions.js';
 import { BrowserCompatible } from './browser-compatible.js';
 
 /**
- *
- * @callback createHtmlElement
- * @returns
- */
-/**
- *
- * @param createHtmlElement
+ * Motornoise simulator widget initializer class.
  */
 export class MotornoiseSimulatorWidgetInitializer {
     private widgets?: HTMLElement;
     private audioContextHandler = new AudioContextHandler();
 
+    /**
+     * 
+     * @param createHtmlElement Factory of Motornoise Simulator Widget HTML Fragment.
+     */
     constructor(createHtmlElement: () => HTMLElement | DocumentFragment) {
         const handler = this.audioContextHandler;
         const enabledWebAudioApi = handler.enabledWebAudioApi;

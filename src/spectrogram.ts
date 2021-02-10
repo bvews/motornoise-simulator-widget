@@ -1,3 +1,6 @@
+/**
+ * Spectrogram drawing class.
+ */
 export class Spectrogram {
     private _canvas?: HTMLCanvasElement | null;
     private _canvasTemp?: HTMLCanvasElement | null;
@@ -6,6 +9,11 @@ export class Spectrogram {
     private pixelPerFreq = 0;
     private _colors: number[][] = [];
 
+    /**
+     * 
+     * @param canvas Canvas element which is used to draw spectrogram.
+     * @param analyserNode AnalyserNode which is used to get audio frequency data for drawing spectrogram. 
+     */
     constructor(canvas?: HTMLCanvasElement | null, analyserNode?: AnalyserNode | null) {
         this.canvas = canvas;
         this.analyserNode = analyserNode;
@@ -107,6 +115,10 @@ export class Spectrogram {
         }
     }
 
+    /**
+     * Set frequency values. They are used for annotation on the spectrogram. 
+     * @param text String consists of frequency values. The values are separated by line break or comma.
+     */
     setFrequencyListText(text: string): void {
         this._frequencies = text.split(/[\n, ]/)
             .map(frequency => parseFloat(frequency))
@@ -115,6 +127,9 @@ export class Spectrogram {
         this._drawFrequencyMarkers();
     }
 
+    /**
+     * Feed the spectrogram.
+     */
     update(): void {
         if (!this._canvas || !this._canvasTemp || !this._analyserNode) {
             return;
@@ -149,11 +164,18 @@ export class Spectrogram {
         this._drawFrequencyMarkers();
     }
 
+    /**
+     * Clear the spectrogram.
+     */
     clear(): void {
         this._clear(this._canvasTemp);
         this._drawFrequencyMarkers();
     }
 
+    /**
+     * Set AnalyserNode.
+     * @param analyserNode AnalyserNode.
+     */
     setAnalyser(analyserNode: AnalyserNode): void {
         analyserNode.smoothingTimeConstant = 0;
         this._analyserNode = analyserNode;
@@ -162,6 +184,11 @@ export class Spectrogram {
         // this.setFftSize(8192);
     }
 
+    /**
+     * Set displayable value range of the spectrogram in decibels.
+     * @param min Min decibels [dB].
+     * @param max Max decibels [dB].
+     */
     setDecibelsRange(min: number, max: number): void {
         if (this._analyserNode) {
             const oldMax = this._analyserNode.maxDecibels;
@@ -177,6 +204,11 @@ export class Spectrogram {
         }
     }
 
+    /**
+     * Set FFT size.
+     * @param fftSize FFT size. The value must be power of 2.
+     * @param isAdjust If true, FFT size is adjusted by sample rate.
+     */
     setFftSize(fftSize: number, isAdjust: boolean): void {
         if (this._analyserNode) {
             const analyserNode = this._analyserNode;
@@ -257,10 +289,12 @@ export class Spectrogram {
         }
     }
 
+    /** Canvas element which is used to draw spectrogram. */
     public get canvas(): HTMLCanvasElement | null | undefined {
         return this._canvas;
     }
-
+    
+    /** Canvas element which is used to draw spectrogram. */
     public set canvas(canvas: HTMLCanvasElement | null | undefined) {
         if (canvas) {
             this._canvasTemp = document.createElement('canvas');
@@ -279,10 +313,12 @@ export class Spectrogram {
         this._canvas = canvas;
     }
 
+    /** AnalyserNode which is used to get audio frequency data for drawing spectrogram. */
     public get analyserNode(): AnalyserNode | null | undefined {
         return this._analyserNode;
     }
-
+    
+    /** AnalyserNode which is used to get audio frequency data for drawing spectrogram. */
     public set analyserNode(analyserNode: AnalyserNode | null | undefined) {
         // analyserNode.smoothingTimeConstant = 0;
         this._analyserNode = analyserNode;

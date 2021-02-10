@@ -1,7 +1,7 @@
 /**
- *
- * @param arrayBuffer
- * @returns - Audio duration [sec].
+ * Calc audio duration from Vorbis audio binary data.
+ * @param arrayBuffer ArrayBuffer of Vorbis audio binary data.
+ * @returns Audio duration [sec].
  */
 export function getVorbisAudioLength(arrayBuffer: ArrayBuffer): number {
     const dataView = new DataView(arrayBuffer);

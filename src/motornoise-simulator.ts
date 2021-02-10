@@ -55,10 +55,10 @@ export class MotornoiseSimulator {
 
     /**
      *
-     * @param audioContext
-     * @param relativeUrl
-     * @param maxSpeed
-     * @param canvas
+     * @param audioContext Audio Context.
+     * @param relativeUrl Relative path to directory which includes asset files.
+     * @param maxSpeed Train speed which activate speed limiter [km/h].
+     * @param canvas Canvas used for spectrogram display.
      */
     constructor(audioContext: AudioContext, relativeUrl: string, maxSpeed: number, canvas: HTMLCanvasElement | null | undefined) {
         this.maxSpeed = maxSpeed > 0 ? Number(maxSpeed) : 100;
@@ -78,8 +78,9 @@ export class MotornoiseSimulator {
     }
 
     /**
-     *
-     * @param onAllFileLoaded
+     * Load assets.
+     * @param onAllFileLoaded Callback which is called when all assets are loaded and ready to simulate.
+     * @param onupdate Callback which is called every an audio file load success.
      */
     load(onAllFileLoaded: () => void, onupdate: (loadCount: number, entryCount: number) => void): void {
         const audioContext = this.audioContext;
@@ -136,6 +137,10 @@ export class MotornoiseSimulator {
         return audioTracks;
     }
 
+    /**
+     * Event handler for page leaving/coming back.
+     * @param event (Unused)
+     */
     handleVisibilitychange(event: Event): void {
         if (this.audioContext) {
             if (document.hidden) {
@@ -154,6 +159,10 @@ export class MotornoiseSimulator {
         }
     }
 
+    /**
+     * Start simulator main loop.
+     * @param intervalMillisec (Unused)
+     */
     startMainLoop(intervalMillisec?: number): void {
         if (!this._isRunning) {
             this._isRunning = true;
@@ -188,6 +197,9 @@ export class MotornoiseSimulator {
         }
     }
 
+    /**
+     * Stop simulator main loop.
+     */
     stopMainLoop(): void {
         this._isRunning = false;
 
@@ -269,26 +281,46 @@ export class MotornoiseSimulator {
         }
     }
 
+    /**
+     * Increment master controller handle.
+     */
     setNotchIncrement(): void {
         this._setNotch(this.notch + 1);
     }
 
+    /**
+     * Decrement master controller handle.
+     */
     setNotchDecrement(): void {
         this._setNotch(this.notch - 1);
     }
 
+    /**
+     * Set master controller handle to maximum power position.
+     */
     setNotchFullPower(): void {
         this._setNotch(Number.POSITIVE_INFINITY);
     }
 
+    /**
+     * Set master controller handle to full brake position.
+     */
     setNotchFullBrake(): void {
         this._setNotch(Number.NEGATIVE_INFINITY);
     }
 
+    /**
+     * Set master controller handle to neutral position.
+     */
     setNotchNeutral(): void {
         this._setNotch(0);
     }
 
+    /**
+     * Toggle whether sound is muted.
+     * @param onMuted Callback which is called when sound is muted.
+     * @param onUnmuted Callback which is called when sound is unmuted.
+     */
     toggleMute(onMuted: () => void, onUnmuted: () => void): void {
         const audioContext = this.audioContext;
         const self = this;
@@ -306,6 +338,11 @@ export class MotornoiseSimulator {
         }
     }
 
+    /**
+     * Toggle whether the spectrogram visibility. 
+     * @param callbackOnHide Callback which is called when the spectrogram vanishes.
+     * @param callbackOnShow Callback which is called when the spectrogram is shown.
+     */
     toggleSpectrogram(callbackOnHide: () => void, callbackOnShow: () => void): void {
         if (this._isEnabledSpectrogram) {
             this._isEnabledSpectrogram = false;
@@ -317,10 +354,17 @@ export class MotornoiseSimulator {
         }
     }
 
+    /**
+     * Clear the spectrogram. 
+     */
     clearSpectrogram(): void {
         this._spectrogram?.clear();
     }
 
+    /**
+     * Callback which is called every frame.
+     * @param speed Train speed.
+     */
     public ontick: (speed: number) => void = (speed) => {};
 
     private _setupSpectrogram(audioContext: AudioContext, audioTracks: MotornoiseTrack[]): void {

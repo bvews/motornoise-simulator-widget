@@ -1,8 +1,7 @@
 import { Point } from './point.js';
 
 /**
- *
- * @param points
+ * Linear interpolation.
  */
 export class LinearInterpolation {
     private x: number[] = [];
@@ -11,6 +10,10 @@ export class LinearInterpolation {
     private intercept = 0;
     private prevIndex = NaN;
 
+    /**
+     * 
+     * @param points Set of (x, y).
+     */
     constructor(points: Point[]) {
         if (points) {
             // TODO: Resolve 'x' duplication.
@@ -50,8 +53,9 @@ export class LinearInterpolation {
     }
 
     /**
-     *
-     * @param value
+     * Linear interpolation.
+     * @param value A value.
+     * @returns Interpolated value.
      */
     interpolate(value: number): number {
         const x = this.x;

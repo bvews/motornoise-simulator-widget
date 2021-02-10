@@ -6,7 +6,11 @@ declare global {
     }
 }
 
+/**
+ * Audio Context handler.
+ */
 export class AudioContextHandler {
+    /** Whether Audio API is enabled. */
     public enabledWebAudioApi = false;
     private audioContext?: AudioContext;
     constructor() {
