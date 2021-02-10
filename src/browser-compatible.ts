@@ -1,16 +1,16 @@
+type Browser = 'msie' | 'edge' | 'chrome' | 'safari' | 'firefox' | 'opera' | 'unknown';
+type AudioExtention = '.ogg' | '.mp4';
+
 export class BrowserCompatible {
-    private _browser: string | undefined;
-    private _audioFileExtension: string | undefined;
-    public get browser(): string | undefined {
+    private _browser: Browser;
+    private _audioFileExtension: AudioExtention;
+    public get browser(): Browser {
         return this._browser;
     }
-    public get audioFileExtension(): string | undefined {
+    public get audioFileExtension(): AudioExtention {
         return this._audioFileExtension;
     }
     constructor() {
-        this._browser = undefined;
-        this._audioFileExtension = undefined;
-
         const userAgent = window.navigator.userAgent.toLowerCase();
         if (userAgent.includes('msie') || userAgent.includes('trident')) {
             this._browser = 'msie';
@@ -25,7 +25,7 @@ export class BrowserCompatible {
         } else if (userAgent.includes('opera')) {
             this._browser = 'opera';
         } else {
-            this._browser = undefined;
+            this._browser = 'unknown';
         }
 
         //if (this.browser === 'safari' || this.browser === 'chrome' || this.browser === 'firefox') {
