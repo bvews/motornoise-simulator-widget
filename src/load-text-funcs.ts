@@ -1,5 +1,5 @@
-import { Point } from './point';
-import { AudioEntry } from './audio-entry';
+import { Point } from './point.js';
+import { AudioEntry } from './audio-entry.js';
 
 export interface Vehicle {
     parameters: Parameters;

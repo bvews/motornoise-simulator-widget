@@ -1,4 +1,4 @@
-import { AudioEntry } from './audio-entry';
+import { AudioEntry } from './audio-entry.js';
 
 export function loadImages(imageEntries: any[] | undefined, onload: (imageEntries?: any[]) => void, onupdate?: (loadCount: number, entryCount: number) => void): void {
     if (!imageEntries) {

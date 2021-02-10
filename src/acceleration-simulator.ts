@@ -1,5 +1,5 @@
-import { GeneralizedAccelerationCurve } from './generalized-acceleration-curve';
-import { Parameters, TrainDat } from './load-text-funcs';
+import { GeneralizedAccelerationCurve } from './generalized-acceleration-curve.js';
+import { Parameters, TrainDat } from './load-text-funcs.js';
 
 export class AccelerationSimulator {
     public maxPowerNotch = 5;

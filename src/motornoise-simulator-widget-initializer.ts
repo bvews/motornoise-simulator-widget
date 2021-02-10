@@ -1,7 +1,7 @@
-import { MotornoiseSimulator } from './motornoise-simulator';
-import { AudioContextHandler } from './audio-context-handler';
-import { generateArcPath } from './svg-path-functions';
-import { BrowserCompatible } from './browser-compatible';
+import { MotornoiseSimulator } from './motornoise-simulator.js';
+import { AudioContextHandler } from './audio-context-handler.js';
+import { generateArcPath } from './svg-path-functions.js';
+import { BrowserCompatible } from './browser-compatible.js';
 
 /**
  *

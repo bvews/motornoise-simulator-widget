@@ -1,4 +1,4 @@
-import { AudioEntry } from './audio-entry';
+import { AudioEntry } from './audio-entry.js';
 
 class BufferLoader {
     private context: AudioContext;

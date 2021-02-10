@@ -1,4 +1,4 @@
-import { Parameters } from './load-text-funcs';
+import { Parameters } from './load-text-funcs.js';
 
 export class RunningResistanceSimulator {
     private motorcarWeight: number;

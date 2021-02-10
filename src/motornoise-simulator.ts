@@ -1,12 +1,12 @@
-import { MotornoiseTrack } from './motornoise-track';
-import { Spectrogram } from './spectrogram';
-import { GeneralizedAccelerationCurve } from './generalized-acceleration-curve';
-import { LinearInterpolation } from './linear-interpolation';
-import { RunningResistanceSimulator } from './running-resistance-simulator';
-import { AccelerationSimulator } from './acceleration-simulator';
-import { loadVehicle, Vehicle, Parameters, TrainDat } from './load-text-funcs';
-import { loadImages, loadAudios } from './load-media-funcs';
-import { BrowserCompatible } from './browser-compatible';
+import { MotornoiseTrack } from './motornoise-track.js';
+import { Spectrogram } from './spectrogram.js';
+import { GeneralizedAccelerationCurve } from './generalized-acceleration-curve.js';
+import { LinearInterpolation } from './linear-interpolation.js';
+import { RunningResistanceSimulator } from './running-resistance-simulator.js';
+import { AccelerationSimulator } from './acceleration-simulator.js';
+import { loadVehicle, Vehicle, Parameters, TrainDat } from './load-text-funcs.js';
+import { loadImages, loadAudios } from './load-media-funcs.js';
+import { BrowserCompatible } from './browser-compatible.js';
 
 interface MotornoiseData {
     urls: string[];
