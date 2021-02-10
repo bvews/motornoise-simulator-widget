@@ -21,11 +21,11 @@ export interface Vehicle {
 }
 
 export interface Parameters {
-    cab: {
+    cab?: {
         powerNotchCount: number;
         brakeNotchCount: number;
     };
-    oneLeverCab: {
+    oneLeverCab?: {
         powerNotchCount: number;
         brakeNotchCount: number;
     };
@@ -262,14 +262,8 @@ export function parseParameters(text: string): Parameters {
             trailerInertiaFactor: 0.05,
             carLength: 20
         },
-        oneLeverCab: {
-            powerNotchCount: 5,
-            brakeNotchCount: 7
-        },
-        cab: {
-            powerNotchCount: 5,
-            brakeNotchCount: 7
-        }
+        oneLeverCab: undefined,
+        cab: undefined
     };
 
     if (iniData['cab']) {
