@@ -1,16 +1,14 @@
 export class Spectrogram {
-    private _canvas: HTMLCanvasElement;
-    private _canvasTemp: HTMLCanvasElement;
-    private _analyserNode: AnalyserNode | undefined;
+    private _canvas?: HTMLCanvasElement | null;
+    private _canvasTemp?: HTMLCanvasElement | null;
+    private _analyserNode?: AnalyserNode | null;
     private _frequencies: number[] = [];
     private pixelPerFreq = 0;
     private _colors: number[][] = [];
 
-    constructor(canvas: HTMLCanvasElement) {
-        this._canvas = canvas;
-        this._canvasTemp = document.createElement('canvas');
-        this._canvasTemp.width = canvas.width;
-        this._canvasTemp.height = canvas.height;
+    constructor(canvas?: HTMLCanvasElement | null, analyserNode?: AnalyserNode | null) {
+        this.canvas = canvas;
+        this.analyserNode = analyserNode;
 
         this._colors = [];
 
@@ -118,7 +116,7 @@ export class Spectrogram {
     }
 
     update(): void {
-        if (!this._analyserNode) {
+        if (!this._canvas || !this._canvasTemp || !this._analyserNode) {
             return;
         }
 
@@ -201,7 +199,7 @@ export class Spectrogram {
     }
 
     private _drawFrequencyMarkers(): void {
-        if (!this._analyserNode) {
+        if (!this._canvas || !this._canvasTemp || !this._analyserNode) {
             return;
         }
 
@@ -247,12 +245,49 @@ export class Spectrogram {
         }
     }
 
-    private _clear(canvas: HTMLCanvasElement): void {
+    private _clear(canvas: HTMLCanvasElement | null | undefined): void {
+        if (!canvas) {
+            return;
+        }
         const context = canvas.getContext('2d');
         const colorStyleText = `rgb(${this._colors[0].join(',')})`;
         if (context) {
             context.fillStyle = colorStyleText;
             context.fillRect(0, 0, canvas.width, canvas.height);
         }
+    }
+
+    public get canvas(): HTMLCanvasElement | null | undefined {
+        return this._canvas;
+    }
+
+    public set canvas(canvas: HTMLCanvasElement | null | undefined) {
+        if (canvas) {
+            this._canvasTemp = document.createElement('canvas');
+            this._canvasTemp.width = canvas.width;
+            this._canvasTemp.height = canvas.height;
+        }
+
+        // this._canvas?.removeEventListener('resize', (event) => { });
+        // canvas?.addEventListener('resize', (event) => {
+        //     if (this._canvasTemp) {
+        //         this._canvasTemp.width = canvas.width;
+        //         this._canvasTemp.height = canvas.height;
+        //     }
+        // });
+
+        this._canvas = canvas;
+    }
+
+    public get analyserNode(): AnalyserNode | null | undefined {
+        return this._analyserNode;
+    }
+
+    public set analyserNode(analyserNode: AnalyserNode | null | undefined) {
+        // analyserNode.smoothingTimeConstant = 0;
+        this._analyserNode = analyserNode;
+
+        // this.setDecibelsRange(-110, -40);
+        // this.setFftSize(8192);
     }
 }
